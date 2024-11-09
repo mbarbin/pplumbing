@@ -1,18 +1,9 @@
 (library
- (name pp_log_test)
- (public_name pp-log-tests.pp_log_test)
- (flags
-  :standard
-  -w
-  +a-4-40-41-42-44-45-48-66
-  -warn-error
-  +a
-  -open
-  Base
-  -open
-  Expect_test_helpers_base)
- (libraries base expect_test_helpers_core.expect_test_helpers_base pp_log)
+ (name err_test)
+ (public_name pp-log-tests.err_test)
  (inline_tests)
+ (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
+ (libraries err)
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
  (preprocess

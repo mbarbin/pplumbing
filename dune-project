@@ -17,58 +17,31 @@
 
 (package
  (name pp-log)
- (synopsis "A collection of libraries to log and raise user messages with Pp")
+ (synopsis
+  "A collection of libraries to log and raise user messages with Pp")
  (depends
   (ocaml
    (>= 5.2))
-  (base
-   (and
-    (>= v0.17)
-    (< v0.18)))
   (cmdlang
-   (>= 0.0.5))
-  (cmdlang-cmdliner-runner
    (>= 0.0.5))
   (cmdlang-to-cmdliner
    (>= 0.0.5))
   (cmdliner
-   (= 1.3.0))
-  (err
-   (>= 0.0.5))
-  (ppx_compare
+   (>= 1.3.0))
+  (fmt
+   (>= 0.9.0))
+  (loc
+   (>= 0.2.0))
+  (logs
+   (>= 0.7.0))
+  (pp
+   (>= 1.2.0))
+  (sexplib0
    (and
     (>= v0.17)
     (< v0.18)))
-  (ppx_enumerate
-   (and
-    (>= v0.17)
-    (< v0.18)))
-  (ppx_hash
-   (and
-    (>= v0.17)
-    (< v0.18)))
-  (ppx_here
-   (and
-    (>= v0.17)
-    (< v0.18)))
-  (ppx_let
-   (and
-    (>= v0.17)
-    (< v0.18)))
-  (ppx_sexp_conv
-   (and
-    (>= v0.17)
-    (< v0.18)))
-  (ppx_sexp_value
-   (and
-    (>= v0.17)
-    (< v0.18)))
-  (ppxlib
-   (>= 0.33))
-  (stdio
-   (and
-    (>= v0.17)
-    (< v0.18)))))
+  (stdune
+   (>= 3.16))))
 
 (package
  (name pp-log-tests)
@@ -76,8 +49,6 @@
  (depends
   (ocaml
    (>= 5.2))
-  (pp-log
-   (= :version))
   (ocamlformat
    (and
     :with-dev-setup
@@ -88,18 +59,24 @@
     (< v0.18)))
   (cmdlang
    (>= 0.0.5))
-  (cmdlang-cmdliner-runner
-   (>= 0.0.5))
   (cmdlang-to-cmdliner
    (>= 0.0.5))
   (cmdliner
-   (= 1.3.0))
-  (err
-   (>= 0.0.5))
+   (>= 1.3.0))
   (expect_test_helpers_core
    (and
     (>= v0.17)
     (< v0.18)))
+  (fmt
+   (>= 0.9.0))
+  (loc
+   (>= 0.2.0))
+  (logs
+   (>= 0.7.0))
+  (pp
+   (>= 1.2.0))
+  (pp-log
+   (= :version))
   (ppx_compare
    (and
     (>= v0.17)
@@ -139,10 +116,16 @@
     (< v0.18)))
   (ppxlib
    (>= 0.33))
+  (sexplib0
+   (and
+    (>= v0.17)
+    (< v0.18)))
   (stdio
    (and
     (>= v0.17)
     (< v0.18)))
+  (stdune
+   (>= 3.16))
   (sherlodoc
    (and
     :with-doc
