@@ -48,6 +48,23 @@
    (>= 3.16))))
 
 (package
+ (name cmdlang-cmdliner-runner)
+ (synopsis "A cmdlang runner using cmdliner and pp-log")
+ (depends
+  (ocaml
+   (>= 4.14))
+  (cmdlang
+   (= :version))
+  (cmdlang-to-cmdliner
+   (= :version))
+  (cmdliner
+   (and
+    (>= 1.3.0)
+    (< 1.4)))
+  (pp-log
+   (= :version))))
+
+(package
  (name pp-log-tests)
  (synopsis "Tests for pp-log")
  (depends

@@ -1,7 +1,5 @@
-(library
- (name err_test)
- (public_name pp-log-tests.err_test)
- (inline_tests)
+(executable
+ (name main)
  (flags
   :standard
   -w
@@ -11,15 +9,15 @@
   -open
   Base
   -open
-  Expect_test_helpers_base)
+  Cmdlang)
  (libraries
   base
-  cmdliner
-  err
-  expect_test_helpers_core.expect_test_helpers_base
+  cmdlang
+  cmdlang-cmdliner-runner
   loc
+  logs
   pp-log.cli
-  stdune)
+  pp-log.err)
  (instrumentation
   (backend bisect_ppx))
  (lint
@@ -29,9 +27,12 @@
    -unused-code-warnings=force
    ppx_compare
    ppx_enumerate
-   ppx_expect
    ppx_hash
    ppx_here
    ppx_let
    ppx_sexp_conv
    ppx_sexp_value)))
+
+(cram
+ (package pp-log-tests)
+ (deps main.exe))
