@@ -38,22 +38,6 @@ let () =
     | _ -> assert false)
 ;;
 
-module Style = struct
-  type t = Stdune.User_message.Style.t =
-    | Loc
-    | Error
-    | Warning
-    | Kwd
-    | Id
-    | Prompt
-    | Hint
-    | Details
-    | Ok
-    | Debug
-    | Success
-    | Ansi_styles of Stdune.Ansi_color.Style.t list
-end
-
 let of_stdune_user_message ?(exit_code = Exit_code.some_error) t =
   { messages = Appendable_list.singleton t; exit_code }
 ;;
@@ -276,7 +260,7 @@ let handle_messages_and_exit ~err:{ messages; exit_code } ~backtrace =
   if Int.equal exit_code Exit_code.internal_error
   then (
     let message =
-      let prefix = Pp.seq (Pp.tag Style.Error (Pp.verbatim "Backtrace")) (Pp.char ':') in
+      let prefix = Pp.seq (Pp_tty.tag Error (Pp.verbatim "Backtrace")) (Pp.char ':') in
       let backtrace = pp_backtrace backtrace in
       Stdune.User_message.make
         ~prefix
@@ -313,7 +297,7 @@ let protect ?(exn_handler = Fun.const None) f =
      | None ->
        let message =
          let prefix =
-           Pp.seq (Pp.tag Style.Error (Pp.verbatim "Internal Error")) (Pp.char ':')
+           Pp.seq (Pp_tty.tag Error (Pp.verbatim "Internal Error")) (Pp.char ':')
          in
          let backtrace = pp_backtrace backtrace in
          Stdune.User_message.make

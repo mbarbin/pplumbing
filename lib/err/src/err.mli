@@ -81,26 +81,6 @@ val exit : Exit_code.t -> _
 
 (** {1 Raising errors} *)
 
-module Style : sig
-  (** You may decorate the messages built with this library with styles that
-      will make them look awesome in a console. Enhance your users experience
-      today! *)
-
-  type t = Stdune.User_message.Style.t =
-    | Loc
-    | Error
-    | Warning
-    | Kwd
-    | Id
-    | Prompt
-    | Hint
-    | Details
-    | Ok
-    | Debug
-    | Success
-    | Ansi_styles of Stdune.Ansi_color.Style.t list
-end
-
 (** Raise a user error. You may override [exit_code] with the requested exit
     code to end the program with. It defaults to {!val:Exit_code.some_error}.
 
@@ -115,9 +95,9 @@ end
     ]} *)
 val raise
   :  ?loc:Loc.t
-  -> ?hints:Style.t Pp.t list
+  -> ?hints:Pp_tty.t list
   -> ?exit_code:Exit_code.t
-  -> Style.t Pp.t list
+  -> Pp_tty.t list
   -> _
 
 (** Reraise with added context. Usage:
@@ -132,17 +112,17 @@ val reraise
   :  Printexc.raw_backtrace
   -> t
   -> ?loc:Loc.t
-  -> ?hints:Style.t Pp.t list
+  -> ?hints:Pp_tty.t list
   -> ?exit_code:Exit_code.t
-  -> Style.t Pp.t list
+  -> Pp_tty.t list
   -> _
 
 (** Create a err and return it, instead of raising it right away. *)
 val create
   :  ?loc:Loc.t
-  -> ?hints:Style.t Pp.t list
+  -> ?hints:Pp_tty.t list
   -> ?exit_code:Exit_code.t
-  -> Style.t Pp.t list
+  -> Pp_tty.t list
   -> t
 
 (** [append ?exit_code t1 t2] creates a new err that contains all messages of t1
@@ -168,7 +148,7 @@ val ok_exn : ('a, t) result -> 'a
 
 val create_s
   :  ?loc:Loc.t
-  -> ?hints:Style.t Pp.t list
+  -> ?hints:Pp_tty.t list
   -> ?exit_code:Exit_code.t
   -> string
   -> Sexplib0.Sexp.t
@@ -176,7 +156,7 @@ val create_s
 
 val raise_s
   :  ?loc:Loc.t
-  -> ?hints:Style.t Pp.t list
+  -> ?hints:Pp_tty.t list
   -> ?exit_code:Exit_code.t
   -> string
   -> Sexplib0.Sexp.t
@@ -194,7 +174,7 @@ val reraise_s
   :  Printexc.raw_backtrace
   -> t
   -> ?loc:Loc.t
-  -> ?hints:Style.t Pp.t list
+  -> ?hints:Pp_tty.t list
   -> ?exit_code:Exit_code.t
   -> string
   -> Sexplib0.Sexp.t
@@ -208,7 +188,7 @@ val pp_of_sexp : Sexplib0.Sexp.t -> _ Pp.t
 (** {1 Hints} *)
 
 (** Produces a "Did you mean ...?" hint *)
-val did_you_mean : string -> candidates:string list -> Style.t Pp.t list
+val did_you_mean : string -> candidates:string list -> Pp_tty.t list
 
 (** Set by the {!val:For_test.wrap} when wrapping sections for tests, accessed
     by libraries if needed. *)
@@ -258,21 +238,21 @@ val prerr : ?reset_separator:bool -> t -> unit
     exit code of the application. Use with care. *)
 
 (** Emit an error on stderr and increase the global error count. *)
-val error : ?loc:Loc.t -> ?hints:Style.t Pp.t list -> Style.t Pp.t list -> unit
+val error : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
 
 (** Emit a warning on stderr and increase the global warning count. *)
-val warning : ?loc:Loc.t -> ?hints:Style.t Pp.t list -> Style.t Pp.t list -> unit
+val warning : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
 
 (** Emit a information message on stderr. Required verbosity level of [Info] or
     more, disabled by default. *)
-val info : ?loc:Loc.t -> ?hints:Style.t Pp.t list -> Style.t Pp.t list -> unit
+val info : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
 
 (** The last argument to [debug] is lazy in order to avoid the allocation when
     debug messages are disabled. This isn't done with the other functions,
     because we don't expect other logging functions to be used in a way that
     impacts the program's performance, and using lazy causes added programming
     friction. *)
-val debug : ?loc:Loc.t -> ?hints:Style.t Pp.t list -> Style.t Pp.t list Lazy.t -> unit
+val debug : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list Lazy.t -> unit
 
 (** {1 Handler}
 
