@@ -56,9 +56,9 @@
   (ocaml
    (>= 4.14))
   (cmdlang
-   (= :version))
+   (>= 0.0.5))
   (cmdlang-to-cmdliner
-   (= :version))
+   (>= 0.0.5))
   (cmdliner
    (and
     (>= 1.3.0)
