@@ -15,6 +15,8 @@
 
 (documentation "https://mbarbin.github.io/pp-log/")
 
+(using mdx 0.4)
+
 (package
  (name pp-log)
  (synopsis
@@ -96,6 +98,8 @@
    (>= 0.2.0))
   (logs
    (>= 0.7.0))
+  (mdx
+   (>= 2.4))
   (ordering
    (>= 3.16))
   (pp

@@ -11,7 +11,13 @@
   Base
   -open
   Expect_test_helpers_base)
- (libraries base expect_test_helpers_core.expect_test_helpers_base pp_log)
+ (libraries
+  base
+  expect_test_helpers_core.expect_test_helpers_base
+  fmt
+  logs
+  logs.fmt
+  pp_log)
  (inline_tests)
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
