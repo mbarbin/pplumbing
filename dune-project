@@ -15,6 +15,8 @@
 
 (documentation "https://mbarbin.github.io/pp-log/")
 
+(using mdx 0.4)
+
 (package
  (name pp-log)
  (synopsis
@@ -48,6 +50,23 @@
    (>= 3.16))))
 
 (package
+ (name cmdlang-cmdliner-runner)
+ (synopsis "A cmdlang runner using cmdliner and pp-log")
+ (depends
+  (ocaml
+   (>= 4.14))
+  (cmdlang
+   (>= 0.0.5))
+  (cmdlang-to-cmdliner
+   (>= 0.0.5))
+  (cmdliner
+   (and
+    (>= 1.3.0)
+    (< 1.4)))
+  (pp-log
+   (= :version))))
+
+(package
  (name pp-log-tests)
  (synopsis "Tests for pp-log")
  (depends
@@ -79,6 +98,8 @@
    (>= 0.2.0))
   (logs
    (>= 0.7.0))
+  (mdx
+   (>= 2.4))
   (ordering
    (>= 3.16))
   (pp

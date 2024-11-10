@@ -74,12 +74,16 @@ val print : ?config:Print_config.t -> t -> unit
 (** Print to [stderr] (not thread safe) *)
 val prerr : ?config:Print_config.t -> t -> unit
 
-module O : sig
-  val ( ++ ) : 'a Pp.t -> 'a Pp.t -> 'a Pp.t
+(*_ End of the section derived from [Stdune.User_message].
 
-  (** A shorthand for verbatim. *)
-  val v : string -> _ Pp.t
-end
+  ---------------------------------------------------------------------------- *)
+
+(** An alias for [Pp.tag] dedicated to the expected [Style.t] type. Using this
+    function allows to write the [Style.t] constructor without qualifying them,
+    which may be more ergonomic. *)
+val tag : Style.t -> t -> t
+
+(** {1 Basic helpers} *)
 
 val parens : 'a Pp.t -> 'a Pp.t
 val brackets : 'a Pp.t -> 'a Pp.t
@@ -88,6 +92,18 @@ val simple_quotes : 'a Pp.t -> 'a Pp.t
 val double_quotes : 'a Pp.t -> 'a Pp.t
 
 (** {1 Opinionated helpers} *)
+
+(** A pretty printer for code locations. The uses a common syntax that is
+    usually configured by editors to allow jumping to locations. If the file
+    listed by the location is available, this will render a small quotation
+    for the location, such as in:
+
+    {[
+      File "my-file", line 42, character 6-11:
+      42 | Hello World
+                 ^^^^^
+    ]} *)
+val loc : Loc.t -> t
 
 module type To_string = sig
   type t

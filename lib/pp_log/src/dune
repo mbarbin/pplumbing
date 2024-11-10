@@ -2,7 +2,14 @@
  (name pp_log)
  (public_name pp-log)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries logs pp pp_tty stdune)
+ (libraries logs pp pp_tty)
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
  (preprocess no_preprocessing))
+
+(mdx
+ (package pp-log-tests)
+ (deps
+  (package pp-log))
+ (files :standard - *.mli)
+ (preludes prelude.txt))
