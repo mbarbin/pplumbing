@@ -2,9 +2,7 @@ type level = Logs.level
 type src = Logs.src
 
 let render fmt pps =
-  let pp =
-    Pp.vbox (Pp.concat_map pps ~sep:Pp.nop ~f:(fun pp -> Pp.seq (Pp.box pp) Pp.cut))
-  in
+  let pp = Pp.vbox (Pp.concat_map pps ~sep:Pp.cut ~f:Pp.box) in
   if fmt == Format.std_formatter
   then Pp_tty.Ansi_color.print (Pp.map_tags pp ~f:Pp_tty.Print_config.default)
   else if fmt == Format.err_formatter
