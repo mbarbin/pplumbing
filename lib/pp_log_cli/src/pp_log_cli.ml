@@ -1,3 +1,28 @@
+module Log_level = struct
+  type t = Logs.level option
+
+  let all : t list =
+    [ None
+    ; Some Logs.App
+    ; Some Logs.Error
+    ; Some Logs.Warning
+    ; Some Logs.Info
+    ; Some Logs.Debug
+    ]
+  ;;
+
+  let to_string : t -> string = function
+    | None -> "quiet"
+    | Some level ->
+      (match level with
+       | App -> "app"
+       | Error -> "error"
+       | Warning -> "warning"
+       | Info -> "info"
+       | Debug -> "debug")
+  ;;
+end
+
 module Config = struct
   let logs_level_arg =
     let open Command.Std in
@@ -8,14 +33,7 @@ module Config = struct
     and+ verbosity =
       Arg.named_opt
         [ "verbosity" ]
-        (Param.assoc
-           [ "quiet", None
-           ; "app", Some Logs.App
-           ; "error", Some Logs.Error
-           ; "warning", Some Logs.Warning
-           ; "info", Some Logs.Info
-           ; "debug", Some Logs.Debug
-           ])
+        (Param.enumerated (module Log_level))
         ~docv:"LEVEL"
         ~doc:"Be more or less verbose. Takes over $(b,v)."
     and+ quiet =
@@ -33,11 +51,23 @@ module Config = struct
          | _ -> Some Logs.Debug))
   ;;
 
+  module Fmt_style_renderer = struct
+    type t = Fmt.style_renderer option
+
+    let all = [ None; Some `Ansi_tty; Some `None ]
+
+    let to_string = function
+      | None -> "auto"
+      | Some `Ansi_tty -> "always"
+      | Some `None -> "never"
+    ;;
+  end
+
   let fmt_style_renderer_arg =
     let open Command.Std in
     Arg.named_with_default
       [ "color" ]
-      (Param.assoc [ "auto", None; "always", Some `Ansi_tty; "never", Some `None ])
+      (Param.enumerated (module Fmt_style_renderer))
       ~default:None
       ~docv:"WHEN"
       ~doc:"Colorize the output"
