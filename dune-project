@@ -25,9 +25,9 @@
   (ocaml
    (>= 5.2))
   (cmdlang
-   (>= 0.0.5))
+   (>= 0.0.8))
   (cmdlang-to-cmdliner
-   (>= 0.0.5))
+   (>= 0.0.8))
   (cmdliner
    (>= 1.3.0))
   (dyn
@@ -56,13 +56,12 @@
   (ocaml
    (>= 4.14))
   (cmdlang
-   (>= 0.0.5))
+   (>= 0.0.8))
   (cmdlang-to-cmdliner
-   (>= 0.0.5))
+   (>= 0.0.8))
   (cmdliner
    (and
-    (>= 1.3.0)
-    (< 1.4)))
+    (>= 1.3.0)))
   (pp-log
    (= :version))))
 
@@ -81,9 +80,9 @@
     (>= v0.17)
     (< v0.18)))
   (cmdlang
-   (>= 0.0.5))
+   (>= 0.0.8))
   (cmdlang-to-cmdliner
-   (>= 0.0.5))
+   (>= 0.0.8))
   (cmdliner
    (>= 1.3.0))
   (dyn
