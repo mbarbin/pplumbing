@@ -8,7 +8,7 @@ homepage: "https://github.com/mbarbin/pp-log"
 doc: "https://mbarbin.github.io/pp-log/"
 bug-reports: "https://github.com/mbarbin/pp-log/issues"
 depends: [
-  "dune" {>= "3.16"}
+  "dune" {>= "3.17"}
   "ocaml" {>= "4.14"}
   "cmdlang" {>= "0.0.9"}
   "cmdlang-to-cmdliner" {>= "0.0.9"}

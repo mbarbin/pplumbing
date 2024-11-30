@@ -1,4 +1,4 @@
-(lang dune 3.16)
+(lang dune 3.17)
 
 (name pp-log)
 
@@ -31,7 +31,7 @@
   (cmdliner
    (>= 1.3.0))
   (dyn
-   (>= 3.16))
+   (>= 3.17))
   (fmt
    (>= 0.9.0))
   (loc
@@ -39,7 +39,7 @@
   (logs
    (>= 0.7.0))
   (ordering
-   (>= 3.16))
+   (>= 3.17))
   (pp
    (>= 2.0.0))
   (sexplib0
@@ -47,7 +47,7 @@
     (>= v0.17)
     (< v0.18)))
   (stdune
-   (>= 3.16))))
+   (>= 3.17))))
 
 (package
  (name cmdlang-cmdliner-runner)
@@ -86,7 +86,7 @@
   (cmdliner
    (>= 1.3.0))
   (dyn
-   (>= 3.16))
+   (>= 3.17))
   (expect_test_helpers_core
    (and
     (>= v0.17)
@@ -102,7 +102,7 @@
   (mdx
    (>= 2.4))
   (ordering
-   (>= 3.16))
+   (>= 3.17))
   (pp
    (>= 2.0.0))
   (pp-log
@@ -155,7 +155,7 @@
     (>= v0.17)
     (< v0.18)))
   (stdune
-   (>= 3.16))
+   (>= 3.17))
   (sherlodoc
    (and
     :with-doc
