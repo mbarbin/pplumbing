@@ -51,10 +51,10 @@ let roundtrip_test original_config =
       print_s
         [%sexp
           "Roundtrip Failed"
-          , { args : string list
-            ; original_config : Config_with_sexp.t
-            ; config : Config_with_sexp.t
-            }] [@coverage off]
+        , { args : string list
+          ; original_config : Config_with_sexp.t
+          ; config : Config_with_sexp.t
+          }] [@coverage off]
   in
   let cmd = Cmdliner.Cmd.v (Cmdliner.Cmd.info "err_cli") term in
   match Cmdliner.Cmd.eval cmd ~argv:(Array.of_list ("err_cli" :: args)) with

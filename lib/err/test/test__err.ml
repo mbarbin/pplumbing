@@ -343,7 +343,8 @@ let%expect_test "error" =
       { err_count = (Err.error_count () : int)
       ; warn_count = (Err.warning_count () : int)
       }];
-  [%expect {|
+  [%expect
+    {|
     ((err_count  2)
      (warn_count 0))
     |}];
@@ -352,7 +353,8 @@ let%expect_test "error" =
 
 let%expect_test "error handler" =
   Err.For_test.protect (fun () -> Err.error [ Pp.text "Hello Error1" ]);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Error1
     [123]
     |}];
@@ -380,7 +382,8 @@ let%expect_test "warning" =
       { err_count = (Err.error_count () : int)
       ; warn_count = (Err.warning_count () : int)
       }];
-  [%expect {|
+  [%expect
+    {|
     ((err_count  0)
      (warn_count 2))
     |}];
@@ -397,13 +400,15 @@ let%expect_test "warning handler" =
       { err_count = (Err.error_count () : int)
       ; warn_count = (Err.warning_count () : int)
       }];
-  [%expect {|
+  [%expect
+    {|
     ((err_count  0)
      (warn_count 1))
     |}];
   Ref.set_temporarily Err.Private.warn_error true ~f:(fun () ->
     Err.For_test.protect (fun () -> Err.warning [ Pp.text "Hello Warning1" ]));
-  [%expect {|
+  [%expect
+    {|
     Warning: Hello Warning1
     [123]
     |}];
@@ -414,7 +419,8 @@ let%expect_test "warning handler" =
       { err_count = (Err.error_count () : int)
       ; warn_count = (Err.warning_count () : int)
       }];
-  [%expect {|
+  [%expect
+    {|
     ((err_count  0)
      (warn_count 1))
     |}];
@@ -433,7 +439,8 @@ let%expect_test "exn_handler" =
     | _ -> None
   in
   Err.For_test.protect ~exn_handler (fun () -> failwith "Hello Exn");
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Exn
     [123]
     |}];

@@ -40,7 +40,8 @@ let%expect_test "exit" =
   test (fun () -> Err.exit Err.Exit_code.cli_error);
   [%expect {| [124] |}];
   test (fun () -> Err.exit Err.Exit_code.internal_error);
-  [%expect {|
+  [%expect
+    {|
     Backtrace: <backtrace disabled in tests>
     [125]
     |}];

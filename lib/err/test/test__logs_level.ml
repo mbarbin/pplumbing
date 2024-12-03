@@ -14,7 +14,8 @@ let%expect_test "log levels" =
      You must either set both levels consistently, or use
      [Pp_log_cli.setup_config]. *)
   test (Some Warning);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Error1
 
     Warning: Hello Warning1
@@ -23,7 +24,8 @@ let%expect_test "log levels" =
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
   test (Some Info);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Error1
 
     Warning: Hello Warning1
@@ -32,7 +34,8 @@ let%expect_test "log levels" =
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
   test (Some Debug);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Error1
 
     Warning: Hello Warning1
@@ -67,14 +70,16 @@ let%expect_test "log levels" =
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| false |}];
   test (Some Error);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Error1
     [123]
     |}];
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
   test (Some Warning);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Error1
 
     Warning: Hello Warning1
@@ -126,14 +131,16 @@ let%expect_test "log levels" =
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| false |}];
   test (Some Error);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Error1
     [123]
     |}];
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
   test (Some Warning);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Error1
 
     Warning: Hello Warning1
@@ -194,7 +201,8 @@ let%expect_test "raise when quiet" =
     in
     set_logs_level None;
     Err.raise [ Pp.text "Hello Exn1" ]);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello Exn1
     [123]
     |}];

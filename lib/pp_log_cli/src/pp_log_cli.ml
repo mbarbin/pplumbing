@@ -84,10 +84,10 @@ module Config = struct
   ;;
 
   let create
-    ?(logs_level = default.logs_level)
-    ?(fmt_style_renderer = default.fmt_style_renderer)
-    ?(warn_error = default.warn_error)
-    ()
+        ?(logs_level = default.logs_level)
+        ?(fmt_style_renderer = default.fmt_style_renderer)
+        ?(warn_error = default.warn_error)
+        ()
     =
     { logs_level; fmt_style_renderer; warn_error }
   ;;

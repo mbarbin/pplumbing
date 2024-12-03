@@ -47,7 +47,8 @@ let%expect_test "catch" =
       let bt = Stdlib.Printexc.get_raw_backtrace () in
       Stdlib.Printexc.raise_with_backtrace (Err.E e) bt);
   ();
-  [%expect {|
+  [%expect
+    {|
     Error: Hello from raising library
     [123]
     |}]
@@ -105,7 +106,8 @@ let%expect_test "match" =
     | Error e ->
       let bt = Stdlib.Printexc.get_raw_backtrace () in
       Stdlib.Printexc.raise_with_backtrace (Err.E e) bt);
-  [%expect {|
+  [%expect
+    {|
     Error: Hello from error returning library
     [123]
     |}];
