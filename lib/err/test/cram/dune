@@ -16,6 +16,7 @@
   cmdlang-cmdliner-runner
   loc
   logs
+  pp
   pp-log.cli
   pp-log.err)
  (instrumentation

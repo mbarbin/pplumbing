@@ -17,7 +17,9 @@
   cmdliner
   err
   expect_test_helpers_core.expect_test_helpers_base
+  fpath
   loc
+  logs
   pp-log.cli
   stdune)
  (instrumentation

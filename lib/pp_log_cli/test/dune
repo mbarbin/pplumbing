@@ -22,6 +22,7 @@
   err
   expect_test_helpers_core.expect_test_helpers_base
   loc
+  logs
   pp_log_cli
   stdune)
  (instrumentation
