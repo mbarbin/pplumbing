@@ -41,7 +41,7 @@
   (ordering
    (>= 3.16))
   (pp
-   (>= 1.2.0))
+   (>= 2.0.0))
   (sexplib0
    (and
     (>= v0.17)
@@ -102,7 +102,7 @@
   (ordering
    (>= 3.16))
   (pp
-   (>= 1.2.0))
+   (>= 2.0.0))
   (pp-log
    (= :version))
   (ppx_compare

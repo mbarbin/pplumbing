@@ -18,7 +18,7 @@ depends: [
   "loc" {>= "0.2.0"}
   "logs" {>= "0.7.0"}
   "ordering" {>= "3.16"}
-  "pp" {>= "1.2.0"}
+  "pp" {>= "2.0.0"}
   "sexplib0" {>= "v0.17" & < "v0.18"}
   "stdune" {>= "3.16"}
   "odoc" {with-doc}
