@@ -43,7 +43,8 @@ module RGB8 : sig
       The first 24 bits are discarded. *)
   val of_int : int -> t
 
-  (** [RGB8.of_char c] creates an [RGB8.t] from a [char] considered as an 8 bit integer. *)
+  (** [RGB8.of_char c] creates an [RGB8.t] from a [char] considered as an 8 bit integer.
+  *)
   val of_char : char -> t
 
   (** [RGB8.to_char t] returns the [char] value of [t] considered as an 8 bit integer. *)

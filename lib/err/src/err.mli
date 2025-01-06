@@ -28,18 +28,18 @@ type t
 
     {ul
      {- When reporting an error:
-       {[
-         if had_error then Err.raise [ Pp.text "An error occurred" ]
-       ]}
-    }
+        {[
+          if had_error then Err.raise [ Pp.text "An error occurred" ]
+        ]}
+     }
     }
 
     {ul
      {- When requesting an exit code:
-       {[
-         if shall_exit_42 then Err.exit 42
-       ]}
-    }
+        {[
+          if shall_exit_42 then Err.exit 42
+        ]}
+     }
     }
 
     The standard usage for this library is to wrap entire sections in a
