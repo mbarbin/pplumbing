@@ -83,6 +83,8 @@
     (< v0.18)))
   (cmdlang
    (>= 0.0.9))
+  (cmdlang-cmdliner-runner
+   (= :version))
   (cmdlang-to-cmdliner
    (>= 0.0.9))
   (cmdliner
