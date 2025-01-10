@@ -56,14 +56,13 @@
  (synopsis "A cmdlang runner using cmdliner and pp-log")
  (depends
   (ocaml
-   (>= 4.14))
+   (>= 5.2))
   (cmdlang
    (>= 0.0.9))
   (cmdlang-to-cmdliner
    (>= 0.0.9))
   (cmdliner
-   (and
-    (>= 1.3.0)))
+   (>= 1.3.0))
   (pp-log
    (= :version))))
 

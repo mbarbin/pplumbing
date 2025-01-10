@@ -9,7 +9,7 @@ doc: "https://mbarbin.github.io/pp-log/"
 bug-reports: "https://github.com/mbarbin/pp-log/issues"
 depends: [
   "dune" {>= "3.17"}
-  "ocaml" {>= "4.14"}
+  "ocaml" {>= "5.2"}
   "cmdlang" {>= "0.0.9"}
   "cmdlang-to-cmdliner" {>= "0.0.9"}
   "cmdliner" {>= "1.3.0"}
