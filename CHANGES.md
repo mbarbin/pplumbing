@@ -1,4 +1,4 @@
-## 0.0.9 (unreleased)
+## 0.0.9 (2025-03-09)
 
 This release is about preparing the publication of the project to the public opam repository.
 
