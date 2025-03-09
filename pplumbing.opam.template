@@ -1,6 +1,6 @@
 description: """\
 
-[Pplombing] is a set of utility libraries to use with [pp]. It is
+[pplumbing] is a set of utility libraries to use with [pp]. It is
 compatible with [logs] and inspired by design choices used by [dune]
 for user messages:
 
