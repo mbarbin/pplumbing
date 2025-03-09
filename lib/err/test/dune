@@ -1,6 +1,6 @@
 (library
  (name err_test)
- (public_name pp-log-tests.err_test)
+ (public_name pplombing-tests.err_test)
  (inline_tests)
  (flags
   :standard
@@ -20,7 +20,7 @@
   fpath
   loc
   logs
-  pp-log.cli
+  pplombing.log-cli
   stdune)
  (instrumentation
   (backend bisect_ppx))

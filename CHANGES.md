@@ -1,3 +1,12 @@
+## 0.0.9 (2025-03-09)
+
+This release is about preparing the publication of the project to the public opam repository.
+
+### Changed
+
+- Rename project `pplombing`.
+- Now publish `cmdlang-cmdliner-runner` as a subpackage.
+
 ## 0.0.8 (2024-11-14)
 
 ### Changed
@@ -15,4 +24,4 @@ Initialize release, continue from release numbers of `cmdlang`.
 
 ### Changed
 
-- Renamed `Err_cli` => `Pp_log_cli`.
+- Renamed `Err_cli` => `Log_cli`.

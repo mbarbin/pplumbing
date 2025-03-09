@@ -1,5 +1,5 @@
-(** Err_cli contains functions to work with Err on the side of end programs
-    (such as a command line tool, as opposed to libraries).
+(** [Log_cli] contains functions to work with [Err] on the side of end
+    programs (such as a command line tool, as opposed to libraries).
 
     It defines a command line parser to configure the [Err] library, while
     taking take of setting the [Logs] and [Fmt] style rendering. *)
@@ -43,6 +43,6 @@ val setup_config : config:Config.t -> unit
 
     {[
       let open Command.Std in
-      let+ () = Pp_log_cli.set_config () in ...
+      let+ () = Log_cli.set_config () in ...
     ]} *)
 val set_config : unit -> unit Command.Arg.t

@@ -16,7 +16,7 @@ end
 let write_cmd =
   Command.make
     ~summary:"write to an error-log"
-    (let%map_open.Command () = Pp_log_cli.set_config ()
+    (let%map_open.Command () = Log_cli.set_config ()
      and file = Arg.named [ "file" ] Param.string ~docv:"FILE" ~doc:"file"
      and line = Arg.named [ "line" ] Param.int ~docv:"N" ~doc:"line number"
      and pos_cnum = Arg.named [ "pos-cnum" ] Param.int ~docv:"N" ~doc:"character position"

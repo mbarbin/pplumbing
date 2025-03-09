@@ -1,6 +1,6 @@
 (lang dune 3.17)
 
-(name pp-log)
+(name pplombing)
 
 (generate_opam_files)
 
@@ -11,16 +11,16 @@
 (maintainers "Mathieu Barbin <opensource@mbarbin.org>")
 
 (source
- (github mbarbin/pp-log))
+ (github mbarbin/pplombing))
 
-(documentation "https://mbarbin.github.io/pp-log/")
+(documentation "https://mbarbin.github.io/pplombing/")
 
 (using mdx 0.4)
 
 (implicit_transitive_deps false)
 
 (package
- (name pp-log)
+ (name pplombing)
  (synopsis
   "A collection of libraries to log and raise user messages with Pp")
  (depends
@@ -52,23 +52,8 @@
    (>= 3.17))))
 
 (package
- (name cmdlang-cmdliner-runner)
- (synopsis "A cmdlang runner using cmdliner and pp-log")
- (depends
-  (ocaml
-   (>= 5.2))
-  (cmdlang
-   (>= 0.0.9))
-  (cmdlang-to-cmdliner
-   (>= 0.0.9))
-  (cmdliner
-   (>= 1.3.0))
-  (pp-log
-   (= :version))))
-
-(package
- (name pp-log-tests)
- (synopsis "Tests for pp-log")
+ (name pplombing-tests)
+ (synopsis "Tests for pplombing")
  (depends
   (ocaml
    (>= 5.2))
@@ -82,8 +67,6 @@
     (< v0.18)))
   (cmdlang
    (>= 0.0.9))
-  (cmdlang-cmdliner-runner
-   (= :version))
   (cmdlang-to-cmdliner
    (>= 0.0.9))
   (cmdliner
@@ -108,7 +91,7 @@
    (>= 3.17))
   (pp
    (>= 2.0.0))
-  (pp-log
+  (pplombing
    (= :version))
   (ppx_compare
    (and

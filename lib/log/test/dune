@@ -1,7 +1,6 @@
 (library
- (name pp_log_cli_test)
- (public_name pp-log-tests.pp_log_cli_test)
- (inline_tests)
+ (name log_test)
+ (public_name pplombing-tests.log_test)
  (flags
   :standard
   -w
@@ -11,22 +10,15 @@
   -open
   Base
   -open
-  Expect_test_helpers_base
-  -open
-  Cmdlang)
+  Expect_test_helpers_base)
  (libraries
   base
-  cmdlang
-  cmdlang-to-cmdliner
-  cmdliner
-  err
   expect_test_helpers_core.expect_test_helpers_base
-  loc
+  fmt
+  log
   logs
-  pp_log_cli
-  stdune)
- (instrumentation
-  (backend bisect_ppx))
+  logs.fmt)
+ (inline_tests)
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
  (preprocess

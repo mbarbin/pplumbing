@@ -1,6 +1,6 @@
 # License
 
-`Pp_log` is released under MIT.
+`pplombing` is released under MIT.
 
 ## A note about `Stdune`
 
