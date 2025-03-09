@@ -1,6 +1,6 @@
-# pplombing
+# pplumbing
 
-[![CI Status](https://github.com/mbarbin/pplombing/workflows/ci/badge.svg)](https://github.com/mbarbin/pplombing/actions/workflows/ci.yml)
+[![CI Status](https://github.com/mbarbin/pplumbing/workflows/ci/badge.svg)](https://github.com/mbarbin/pplumbing/actions/workflows/ci.yml)
 
 In this project I explore designs to build pretty printed documents to log and raise user messages with `pp`.
 

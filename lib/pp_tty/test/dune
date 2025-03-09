@@ -1,6 +1,6 @@
 (library
  (name pp_tty_test)
- (public_name pplombing-tests.pp_tty_test)
+ (public_name pplumbing-tests.pp_tty_test)
  (inline_tests)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
  (libraries pp_tty)

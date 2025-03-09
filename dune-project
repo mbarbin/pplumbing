@@ -1,6 +1,6 @@
 (lang dune 3.17)
 
-(name pplombing)
+(name pplumbing)
 
 (generate_opam_files)
 
@@ -11,16 +11,16 @@
 (maintainers "Mathieu Barbin <opensource@mbarbin.org>")
 
 (source
- (github mbarbin/pplombing))
+ (github mbarbin/pplumbing))
 
-(documentation "https://mbarbin.github.io/pplombing/")
+(documentation "https://mbarbin.github.io/pplumbing/")
 
 (using mdx 0.4)
 
 (implicit_transitive_deps false)
 
 (package
- (name pplombing)
+ (name pplumbing)
  (synopsis
   "A collection of libraries to log and raise user messages with Pp")
  (depends
@@ -52,8 +52,8 @@
    (>= 3.17))))
 
 (package
- (name pplombing-tests)
- (synopsis "Tests for pplombing")
+ (name pplumbing-tests)
+ (synopsis "Tests for pplumbing")
  (depends
   (ocaml
    (>= 5.2))
@@ -91,7 +91,7 @@
    (>= 3.17))
   (pp
    (>= 2.0.0))
-  (pplombing
+  (pplumbing
    (= :version))
   (ppx_compare
    (and
