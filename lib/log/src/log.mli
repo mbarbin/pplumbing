@@ -34,7 +34,7 @@ type src = Logs.src
 
 (** {1 Logging functions} *)
 
-(** {2 Pp_log interface}
+(** {2 Log interface}
 
     We've looked through sherlocode to get some sense of how the [Logs]
     interface is used. In the most common cases, the function [m] is applied

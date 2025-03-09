@@ -1,3 +1,12 @@
+## 0.0.9 (unreleased)
+
+This release is about preparing the publication of the project to the public opam repository.
+
+### Changed
+
+- Rename project `pplombing`.
+- Now publish `cmdlang-cmdliner-runner` as a subpackage.
+
 ## 0.0.8 (2024-11-14)
 
 ### Changed

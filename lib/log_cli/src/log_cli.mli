@@ -1,4 +1,4 @@
-(** [Log_cli] contains functions to work with Err on the side of end
+(** [Log_cli] contains functions to work with [Err] on the side of end
     programs (such as a command line tool, as opposed to libraries).
 
     It defines a command line parser to configure the [Err] library, while
