@@ -1,17 +1,35 @@
 description: """\
 
-In this project I explore designs to build pretty printed documents to
-log and raise user messages with [pp].
+[Pplombing] is a set of utility libraries to use with [pp]. It is
+compatible with [logs] and inspired by design choices used by [dune]
+for user messages:
 
-I intend to produce something compatible with [logs], [pp] and design
-choices made by [dune] for user messages.
+- [Pp_tty] extends [pp] to build colored documents in the user's
+  terminal using ansi escape codes.
 
-This is very experimental and a work in progress.
+- [Err] is an abstraction to report located errors and warnings to the
+  user.
 
+- [Log] is an interface to [logs] using [Pp_tty] rather than [Format].
+
+- [Log_cli] contains functions to work with [Err] on the side of end
+  programs (such as a command line tool, as opposed to libraries).
+
+- [Cmdlang_cmdliner_runner] is a library for running command line
+  programs specified with [cmdlang] with [cmdliner] as a backend and
+  making opinionated choices, assuming your dependencies are using
+  [Err].
+
+These libraries are meant to combine nicely into a small ecosystem of
+useful helpers to build CLIs in OCaml.
+
+[cmdliner]: https://github.com/dbuenzli/cmdliner
+[cmdlang]: https://github.com/mbarbin/cmdlang
+[dune]: https://github.com/ocaml/dune
+[fmt]: https://github.com/dbuenzli/fmt
 [logs]: https://github.com/dbuenzli/logs
 [pp]: https://github.com/ocaml-dune/pp
-[dune]: https://github.com/ocaml/dune
 
 """
-tags: [ "logs" "pp" ]
+tags: [ "cli" "cmdlang" "logs" "pp" ]
 x-maintenance-intent: [ "(latest)" ]

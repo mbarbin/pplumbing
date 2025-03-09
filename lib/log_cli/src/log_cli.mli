@@ -1,5 +1,5 @@
-(** Err_cli contains functions to work with Err on the side of end programs
-    (such as a command line tool, as opposed to libraries).
+(** [Log_cli] contains functions to work with Err on the side of end
+    programs (such as a command line tool, as opposed to libraries).
 
     It defines a command line parser to configure the [Err] library, while
     taking take of setting the [Logs] and [Fmt] style rendering. *)

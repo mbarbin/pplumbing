@@ -52,21 +52,6 @@
    (>= 3.17))))
 
 (package
- (name cmdlang-cmdliner-runner)
- (synopsis "A cmdlang runner using cmdliner and pplombing")
- (depends
-  (ocaml
-   (>= 5.2))
-  (cmdlang
-   (>= 0.0.9))
-  (cmdlang-to-cmdliner
-   (>= 0.0.9))
-  (cmdliner
-   (>= 1.3.0))
-  (pplombing
-   (= :version))))
-
-(package
  (name pplombing-tests)
  (synopsis "Tests for pplombing")
  (depends
@@ -82,8 +67,6 @@
     (< v0.18)))
   (cmdlang
    (>= 0.0.9))
-  (cmdlang-cmdliner-runner
-   (= :version))
   (cmdlang-to-cmdliner
    (>= 0.0.9))
   (cmdliner

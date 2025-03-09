@@ -13,10 +13,10 @@
  (libraries
   base
   cmdlang
-  cmdlang-cmdliner-runner
   loc
   logs
   pp
+  pplombing.cmdlang-cmdliner-runner
   pplombing.err
   pplombing.log-cli)
  (instrumentation
