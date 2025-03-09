@@ -43,6 +43,6 @@ val setup_config : config:Config.t -> unit
 
     {[
       let open Command.Std in
-      let+ () = Pp_log_cli.set_config () in ...
+      let+ () = Log_cli.set_config () in ...
     ]} *)
 val set_config : unit -> unit Command.Arg.t

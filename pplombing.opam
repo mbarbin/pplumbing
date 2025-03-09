@@ -4,9 +4,9 @@ synopsis: "A collection of libraries to log and raise user messages with Pp"
 maintainer: ["Mathieu Barbin <opensource@mbarbin.org>"]
 authors: ["Mathieu Barbin"]
 license: "MIT"
-homepage: "https://github.com/mbarbin/pp-log"
-doc: "https://mbarbin.github.io/pp-log/"
-bug-reports: "https://github.com/mbarbin/pp-log/issues"
+homepage: "https://github.com/mbarbin/pplombing"
+doc: "https://mbarbin.github.io/pplombing/"
+bug-reports: "https://github.com/mbarbin/pplombing/issues"
 depends: [
   "dune" {>= "3.17"}
   "ocaml" {>= "5.2"}
@@ -37,7 +37,7 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/mbarbin/pp-log.git"
+dev-repo: "git+https://github.com/mbarbin/pplombing.git"
 description: """\
 
 In this project I explore designs to build pretty printed documents to

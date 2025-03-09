@@ -12,7 +12,7 @@ let%expect_test "log levels" =
   in
   (* [Logs.set_level] on its own is not sufficient to impact the [Err] library.
      You must either set both levels consistently, or use
-     [Pp_log_cli.setup_config]. *)
+     [Log_cli.setup_config]. *)
   test (Some Warning);
   [%expect
     {|
@@ -113,10 +113,10 @@ let%expect_test "log levels" =
     |}];
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
-  (* In this section we go through [Pp_log_cli]. *)
+  (* In this section we go through [Log_cli]. *)
   let test level =
     Err.For_test.protect (fun () ->
-      Pp_log_cli.setup_config ~config:(Pp_log_cli.Config.create ~logs_level:level ());
+      Log_cli.setup_config ~config:(Log_cli.Config.create ~logs_level:level ());
       Err.error [ Pp.text "Hello Error1" ];
       Err.warning [ Pp.text "Hello Warning1" ];
       Err.info [ Pp.text "Hello Info1" ];
@@ -182,7 +182,7 @@ let%expect_test "error when quiet" =
      accounted for in the [error_count] and [had_errors]. *)
   Err.For_test.protect (fun () ->
     let set_logs_level logs_level =
-      Pp_log_cli.setup_config ~config:(Pp_log_cli.Config.create ~logs_level ())
+      Log_cli.setup_config ~config:(Log_cli.Config.create ~logs_level ())
     in
     set_logs_level None;
     Err.error [ Pp.text "Hello Exn1" ]);
@@ -197,7 +197,7 @@ let%expect_test "raise when quiet" =
      and behaves as usual. *)
   Err.For_test.protect (fun () ->
     let set_logs_level logs_level =
-      Pp_log_cli.setup_config ~config:(Pp_log_cli.Config.create ~logs_level ())
+      Log_cli.setup_config ~config:(Log_cli.Config.create ~logs_level ())
     in
     set_logs_level None;
     Err.raise [ Pp.text "Hello Exn1" ]);

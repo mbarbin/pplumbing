@@ -1,6 +1,6 @@
 (library
  (name pp_tty)
- (public_name pp-log.tty)
+ (public_name pplombing.pp-tty)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
  (libraries dyn loc ordering pp stdune)
  (instrumentation

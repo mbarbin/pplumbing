@@ -8,7 +8,7 @@
 
     {[
       let hello ?src () =
-        Pp_log.info ?src (fun () -> [ Pp.textf "Hello %s World!" "Friendly" ])
+        Log.info ?src (fun () -> [ Pp.textf "Hello %s World!" "Friendly" ])
       ;;
     ]}
 
@@ -16,7 +16,7 @@
 
     {[
       let hello ?src () =
-        Pp_log.info ?src (fun () ->
+        Log.info ?src (fun () ->
           [ Pp.concat
               ~sep:Pp.space
               [ Pp.text "Hello"
@@ -50,7 +50,7 @@ type src = Logs.src
 
     {[
       let hello ?src ?header ?tags () =
-        Pp_log.info ?src ?header ?tags (fun () ->
+        Log.info ?src ?header ?tags (fun () ->
           [ Pp.concat
               ~sep:Pp.space
               [ Pp.text "Hello"
@@ -86,11 +86,11 @@ module Logs : sig
         let hello ?src () = Logs.info ?src (fun m -> m "Hello %s!" "World")
       ]}
 
-      Can be written with [Pp_log.Logs] as:
+      Can be written with [Log.Logs] as:
 
       {[
         let hello ?src () =
-          Pp_log.Logs.info ?src (fun m -> m [ Pp.textf "Hello %s!" "World" ])
+          Log.Logs.info ?src (fun m -> m [ Pp.textf "Hello %s!" "World" ])
         ;;
       ]} *)
 

@@ -17,8 +17,8 @@
   loc
   logs
   pp
-  pp-log.cli
-  pp-log.err)
+  pplombing.err
+  pplombing.log-cli)
  (instrumentation
   (backend bisect_ppx))
  (lint
@@ -35,5 +35,5 @@
    ppx_sexp_value)))
 
 (cram
- (package pp-log-tests)
+ (package pplombing-tests)
  (deps main.exe))

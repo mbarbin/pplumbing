@@ -15,4 +15,4 @@ Initialize release, continue from release numbers of `cmdlang`.
 
 ### Changed
 
-- Renamed `Err_cli` => `Pp_log_cli`.
+- Renamed `Err_cli` => `Log_cli`.

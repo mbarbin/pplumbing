@@ -26,12 +26,12 @@ module Config_with_sexp = struct
     [@@deriving equal, sexp_of]
   end
 
-  type t = Pp_log_cli.Config.t
+  type t = Log_cli.Config.t
 
   let to_internal t =
-    { Internal.logs_level = Pp_log_cli.Config.logs_level t
-    ; fmt_style_renderer = Pp_log_cli.Config.fmt_style_renderer t
-    ; warn_error = Pp_log_cli.Config.warn_error t
+    { Internal.logs_level = Log_cli.Config.logs_level t
+    ; fmt_style_renderer = Log_cli.Config.fmt_style_renderer t
+    ; warn_error = Log_cli.Config.warn_error t
     }
   ;;
 
@@ -40,11 +40,11 @@ module Config_with_sexp = struct
 end
 
 let roundtrip_test original_config =
-  let args = Pp_log_cli.Config.to_args original_config in
+  let args = Log_cli.Config.to_args original_config in
   let term =
     let open Cmdliner.Term.Syntax in
-    let+ config = Cmdlang_to_cmdliner.Translate.arg Pp_log_cli.Config.arg in
-    Pp_log_cli.setup_config ~config;
+    let+ config = Cmdlang_to_cmdliner.Translate.arg Log_cli.Config.arg in
+    Log_cli.setup_config ~config;
     if Config_with_sexp.equal original_config config
     then print_s [%sexp { args : string list; config : Config_with_sexp.t }]
     else
@@ -64,13 +64,13 @@ let roundtrip_test original_config =
 ;;
 
 let%expect_test "roundtrip" =
-  roundtrip_test (Pp_log_cli.Config.create ());
+  roundtrip_test (Log_cli.Config.create ());
   [%expect
     {|
     ((args ())
      (config ((logs_level (Warning)) (fmt_style_renderer ()) (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~logs_level:None ());
+  roundtrip_test (Log_cli.Config.create ~logs_level:None ());
   [%expect
     {|
     ((args (--quiet))
@@ -79,43 +79,43 @@ let%expect_test "roundtrip" =
        (fmt_style_renderer ())
        (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~logs_level:(Some App) ());
+  roundtrip_test (Log_cli.Config.create ~logs_level:(Some App) ());
   [%expect
     {|
     ((args (--verbosity app))
      (config ((logs_level (App)) (fmt_style_renderer ()) (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~logs_level:(Some Error) ());
+  roundtrip_test (Log_cli.Config.create ~logs_level:(Some Error) ());
   [%expect
     {|
     ((args (--verbosity error))
      (config ((logs_level (Error)) (fmt_style_renderer ()) (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~logs_level:(Some Warning) ());
+  roundtrip_test (Log_cli.Config.create ~logs_level:(Some Warning) ());
   [%expect
     {|
     ((args ())
      (config ((logs_level (Warning)) (fmt_style_renderer ()) (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~logs_level:(Some Info) ());
+  roundtrip_test (Log_cli.Config.create ~logs_level:(Some Info) ());
   [%expect
     {|
     ((args (--verbosity info))
      (config ((logs_level (Info)) (fmt_style_renderer ()) (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~logs_level:(Some Debug) ());
+  roundtrip_test (Log_cli.Config.create ~logs_level:(Some Debug) ());
   [%expect
     {|
     ((args (--verbosity debug))
      (config ((logs_level (Debug)) (fmt_style_renderer ()) (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~fmt_style_renderer:None ());
+  roundtrip_test (Log_cli.Config.create ~fmt_style_renderer:None ());
   [%expect
     {|
     ((args ())
      (config ((logs_level (Warning)) (fmt_style_renderer ()) (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~fmt_style_renderer:(Some `Ansi_tty) ());
+  roundtrip_test (Log_cli.Config.create ~fmt_style_renderer:(Some `Ansi_tty) ());
   [%expect
     {|
     ((args (--color always))
@@ -124,7 +124,7 @@ let%expect_test "roundtrip" =
        (fmt_style_renderer (Ansi_tty))
        (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~fmt_style_renderer:(Some `None) ());
+  roundtrip_test (Log_cli.Config.create ~fmt_style_renderer:(Some `None) ());
   [%expect
     {|
     ((args (--color never))
@@ -133,7 +133,7 @@ let%expect_test "roundtrip" =
        (fmt_style_renderer (None))
        (warn_error false))))
     |}];
-  roundtrip_test (Pp_log_cli.Config.create ~warn_error:true ());
+  roundtrip_test (Log_cli.Config.create ~warn_error:true ());
   [%expect
     {|
     ((args (--warn-error))
@@ -148,8 +148,8 @@ let%expect_test "roundtrip" =
 let parse args =
   let term =
     let open Cmdliner.Term.Syntax in
-    let+ config = Cmdlang_to_cmdliner.Translate.arg Pp_log_cli.Config.arg in
-    Pp_log_cli.setup_config ~config;
+    let+ config = Cmdlang_to_cmdliner.Translate.arg Log_cli.Config.arg in
+    Log_cli.setup_config ~config;
     print_s [%sexp { args : string list; config : Config_with_sexp.t }]
   in
   let cmd = Cmdliner.Cmd.v (Cmdliner.Cmd.info "err_cli") term in
