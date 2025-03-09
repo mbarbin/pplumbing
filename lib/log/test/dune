@@ -17,8 +17,7 @@
   fmt
   log
   logs
-  logs.fmt
-  pplombing.log)
+  logs.fmt)
  (inline_tests)
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
