@@ -1,6 +1,6 @@
 # License
 
-`pplombing` is released under MIT.
+`pplumbing` is released under MIT.
 
 ## A note about `Stdune`
 

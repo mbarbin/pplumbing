@@ -1,6 +1,6 @@
 (library
  (name log)
- (public_name pplombing.log)
+ (public_name pplumbing.log)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
  (libraries logs pp pp_tty)
  (lint
@@ -8,8 +8,8 @@
  (preprocess no_preprocessing))
 
 (mdx
- (package pplombing-tests)
+ (package pplumbing-tests)
  (deps
-  (package pplombing))
+  (package pplumbing))
  (files :standard - *.mli)
  (preludes prelude.txt))

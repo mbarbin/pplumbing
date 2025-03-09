@@ -16,9 +16,9 @@
   loc
   logs
   pp
-  pplombing.cmdlang-cmdliner-runner
-  pplombing.err
-  pplombing.log-cli)
+  pplumbing.cmdlang-cmdliner-runner
+  pplumbing.err
+  pplumbing.log-cli)
  (instrumentation
   (backend bisect_ppx))
  (lint
@@ -35,5 +35,5 @@
    ppx_sexp_value)))
 
 (cram
- (package pplombing-tests)
+ (package pplumbing-tests)
  (deps main.exe))
