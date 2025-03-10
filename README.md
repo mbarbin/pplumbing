@@ -1,6 +1,7 @@
 # pplumbing
 
 [![CI Status](https://github.com/mbarbin/pplumbing/workflows/ci/badge.svg)](https://github.com/mbarbin/pplumbing/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/mbarbin/pplumbing/badge.svg?branch=main)](https://coveralls.io/github/mbarbin/pplumbing?branch=main)
 
 In this project I explore designs to build pretty printed documents to log and raise user messages with `pp`.
 
