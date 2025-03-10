@@ -11,7 +11,7 @@
 
 - `Log` is an interface to `logs` using `Pp_tty` rather than `Format`.
 
-- `Log_cli` contains functions to work with `Err` on the side of end programs (such as a command line tools). It defines a command line helpers to configure the `Err` library, while taking care of setting the `logs` and `fmt` style rendering.
+- `Log_cli` contains functions to work with `Err` on the side of end programs (such as a command line tools). It defines command line helpers to configure the `Err` library, while taking care of setting the `logs` and `fmt` style rendering.
 
 - `Cmdlang_cmdliner_runner` is a library for running command line programs specified with `cmdlang` with `cmdliner` as a backend and making opinionated choices, assuming your dependencies are using `Err`.
 
