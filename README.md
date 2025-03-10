@@ -1,7 +1,16 @@
-# pplumbing
+<h1 align="center">
+  <p align="center">pplumbing</p>
+  <img
+    src="./doc/static/img/pplumbing.jpg"
+    width='216'
+    alt="Logo"
+  />
+</h1>
 
-[![CI Status](https://github.com/mbarbin/pplumbing/workflows/ci/badge.svg)](https://github.com/mbarbin/pplumbing/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/mbarbin/pplumbing/badge.svg?branch=main)](https://coveralls.io/github/mbarbin/pplumbing?branch=main)
+<p align="center">
+  <a href="https://github.com/mbarbin/pplumbing/actions/workflows/ci.yml"><img src="https://github.com/mbarbin/pplumbing/workflows/ci/badge.svg" alt="CI Status"/></a>
+  <a href="https://coveralls.io/github/mbarbin/pplumbing?branch=main"><img src="https://coveralls.io/repos/github/mbarbin/pplumbing/badge.svg?branch=main" alt="Coverage Status"/></a>
+</p>
 
 *pplumbing* defines a set of utility libraries to use with `pp`. It is compatible with `logs` and inspired by design choices used by *Dune* for user messages:
 
