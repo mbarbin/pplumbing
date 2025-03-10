@@ -3,12 +3,31 @@
 [![CI Status](https://github.com/mbarbin/pplumbing/workflows/ci/badge.svg)](https://github.com/mbarbin/pplumbing/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/mbarbin/pplumbing/badge.svg?branch=main)](https://coveralls.io/github/mbarbin/pplumbing?branch=main)
 
-In this project I explore designs to build pretty printed documents to log and raise user messages with `pp`.
+*pplumbing* defines a set of utility libraries to use with `pp`. It is compatible with `logs` and inspired by design choices used by *Dune* for user messages:
 
-I intend to produce something compatible with [logs](https://github.com/dbuenzli/logs), [pp](https://github.com/ocaml-dune/pp) and design choices made by `dune` for [user_message](https://github.com/ocaml/dune/blob/main/otherlibs/stdune/src/user_message.mli).
+- `Pp_tty` extends `pp` to build colored documents in the user's terminal using ANSI escape codes.
 
-This is very experimental and a work in progress.
+- `Err` is an abstraction to report located errors and warnings to the user.
+
+- `Log` is an interface to `logs` using `Pp_tty` rather than `Format`.
+
+- `Log_cli` contains functions to work with `Err` on the side of end programs (such as a command line tools). It defines a command line helpers to configure the `Err` library, while taking care of setting the `logs` and `fmt` style rendering.
+
+- `Cmdlang_cmdliner_runner` is a library for running command line programs specified with `cmdlang` with `cmdliner` as a backend and making opinionated choices, assuming your dependencies are using `Err`.
+
+These libraries are meant to combine nicely into a small ecosystem of useful helpers to build CLIs in OCaml.
+
+## Links to plumbed projects
+
+- [cmdlang](https://github.com/mbarbin/cmdlang)
+- [cmdliner](https://github.com/dbuenzli/cmdliner)
+- [dune](https://github.com/ocaml/dune)
+- [fmt](https://github.com/dbuenzli/fmt)
+- [logs](https://github.com/dbuenzli/logs)
+- [pp](https://github.com/ocaml-dune/pp)
 
 ## Acknowledgements
 
-- We would like to thank the Dune developers for the user-facing error handling of Dune (`Stdune.User_message`), on which we based the error handling scheme used in (`Err`). By adopting a similar approach, we aim to provide a consistent and unified user experience for OCaml users across different tools and libraries.
+- We are thankful to the authors and contributors of the projects we use as dependencies.
+
+- We would like to thank the *Dune* developers for the user-facing error handling of Dune (`Stdune.User_message`), on which we based the error handling scheme used in `Err`. By adopting a similar approach, we aim to provide a consistent and unified user experience for OCaml users across different tools and libraries.

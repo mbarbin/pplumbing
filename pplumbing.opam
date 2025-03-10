@@ -40,20 +40,22 @@ build: [
 dev-repo: "git+https://github.com/mbarbin/pplumbing.git"
 description: """\
 
-[pplumbing] is a set of utility libraries to use with [pp]. It is
-compatible with [logs] and inspired by design choices used by [dune]
-for user messages:
+[pplumbing] defines a set of utility libraries to use with [pp]. It
+is compatible with [logs] and inspired by design choices used by
+[dune] for user messages:
 
 - [Pp_tty] extends [pp] to build colored documents in the user's
   terminal using ansi escape codes.
 
-- [Err] is an abstraction to report located errors and warnings to the
-  user.
+- [Err] is an abstraction to report located errors and warnings to
+  the user.
 
 - [Log] is an interface to [logs] using [Pp_tty] rather than [Format].
 
 - [Log_cli] contains functions to work with [Err] on the side of end
-  programs (such as a command line tool, as opposed to libraries).
+  programs (such as a command line tool). It defines command line
+  helpers to configure the [Err] library, while taking care of setting
+  the [logs] and [fmt] style rendering.
 
 - [Cmdlang_cmdliner_runner] is a library for running command line
   programs specified with [cmdlang] with [cmdliner] as a backend and
@@ -63,8 +65,8 @@ for user messages:
 These libraries are meant to combine nicely into a small ecosystem of
 useful helpers to build CLIs in OCaml.
 
-[cmdliner]: https://github.com/dbuenzli/cmdliner
 [cmdlang]: https://github.com/mbarbin/cmdlang
+[cmdliner]: https://github.com/dbuenzli/cmdliner
 [dune]: https://github.com/ocaml/dune
 [fmt]: https://github.com/dbuenzli/fmt
 [logs]: https://github.com/dbuenzli/logs
