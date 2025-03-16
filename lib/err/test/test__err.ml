@@ -20,7 +20,7 @@ let%expect_test "am_running_test" =
 let%expect_test "raise" =
   Err.For_test.protect (fun () ->
     Err.raise
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
       [ Pp.text "Hello Raise" ]);
   [%expect
@@ -45,7 +45,7 @@ let%expect_test "reraise" =
   Err.For_test.protect (fun () ->
     match
       Err.raise
-        ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file.txt"))
+        ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
         ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
         [ Pp.text "Hello Raise" ]
     with
@@ -55,7 +55,7 @@ let%expect_test "reraise" =
       Err.reraise
         bt
         e
-        ~loc:(Loc.in_file ~path:(Fpath.v "path/to/other-file.txt"))
+        ~loc:(Loc.of_file ~path:(Fpath.v "path/to/other-file.txt"))
         ~exit_code:Err.Exit_code.internal_error
         [ Pp.text "Re raised with context"; Pp.verbatim "x" ]);
   [%expect
@@ -77,7 +77,7 @@ let%expect_test "reraise" =
 let%expect_test "create" =
   let err =
     Err.create
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
       [ Pp.text "Hello Make" ]
   in
@@ -95,13 +95,13 @@ let%expect_test "create" =
 let%expect_test "append" =
   let err1 =
     Err.create
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file-1.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file-1.txt"))
       ~exit_code:41
       [ Pp.text "Hello Error 1" ]
   in
   let err2 =
     Err.create
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file-2.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file-2.txt"))
       ~exit_code:42
       [ Pp.text "Hello Error 2" ]
   in
@@ -153,7 +153,7 @@ let%expect_test "of_stdune_message" =
 let%expect_test "ok_exn" =
   let err =
     Err.create
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
       [ Pp.text "Hello Make" ]
   in
@@ -173,7 +173,7 @@ let%expect_test "ok_exn" =
 let%expect_test "create_s" =
   let err =
     Err.create_s
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
       "The summary of the error"
       [%sexp { x = 42; y = Some "msg"; var = "bah" }]
@@ -193,7 +193,7 @@ let%expect_test "create_s" =
 let%expect_test "raise_s" =
   Err.For_test.protect (fun () ->
     Err.raise_s
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
       "Hello Raise"
       [%sexp { hello = 42 }]);
@@ -212,7 +212,7 @@ let%expect_test "reraise_s" =
   Err.For_test.protect (fun () ->
     match
       Err.raise_s
-        ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file.txt"))
+        ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
         ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
         "Hello Raise"
         [%sexp { hello = 42 }]
@@ -223,7 +223,7 @@ let%expect_test "reraise_s" =
       Err.reraise_s
         bt
         e
-        ~loc:(Loc.in_file ~path:(Fpath.v "path/to/other-file.txt"))
+        ~loc:(Loc.of_file ~path:(Fpath.v "path/to/other-file.txt"))
         "Re raised with context"
         [%sexp { x = 42 }]);
   [%expect
@@ -244,13 +244,13 @@ let%expect_test "reraise_s" =
 let%expect_test "prerr" =
   let err1 =
     Err.create
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file-1.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file-1.txt"))
       ~exit_code:41
       [ Pp.text "Hello Error 1" ]
   in
   let err2 =
     Err.create
-      ~loc:(Loc.in_file ~path:(Fpath.v "path/to/my-file-2.txt"))
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file-2.txt"))
       ~exit_code:42
       [ Pp.text "Hello Error 2" ]
   in
@@ -290,8 +290,8 @@ let am_running_test () = print_s [%sexp (Err.am_running_test () : bool)]
 
 let%expect_test "multiple errors" =
   Err.For_test.protect (fun () ->
-    Err.error ~loc:(Loc.in_file ~path:(Fpath.v "my/file1")) [ Pp.text "Hello Error1" ];
-    Err.error ~loc:(Loc.in_file ~path:(Fpath.v "my/file2")) [ Pp.text "Hello Error1" ];
+    Err.error ~loc:(Loc.of_file ~path:(Fpath.v "my/file1")) [ Pp.text "Hello Error1" ];
+    Err.error ~loc:(Loc.of_file ~path:(Fpath.v "my/file2")) [ Pp.text "Hello Error1" ];
     ());
   [%expect
     {|
@@ -494,8 +494,8 @@ let%expect_test "raise without handler" =
 let%expect_test "reset separator" =
   (* By default, consecutive messages are separated by a blank line. *)
   Err.For_test.protect (fun () ->
-    Err.error ~loc:(Loc.in_file ~path:(Fpath.v "my/file1")) [ Pp.text "Hello Error1" ];
-    Err.error ~loc:(Loc.in_file ~path:(Fpath.v "my/file2")) [ Pp.text "Hello Error1" ];
+    Err.error ~loc:(Loc.of_file ~path:(Fpath.v "my/file1")) [ Pp.text "Hello Error1" ];
+    Err.error ~loc:(Loc.of_file ~path:(Fpath.v "my/file2")) [ Pp.text "Hello Error1" ];
     ());
   [%expect
     {|
@@ -509,9 +509,9 @@ let%expect_test "reset separator" =
   (* However, this behavior can be tweaked from companion libraries in certain
      context. They are using [reset_separator] for this. *)
   Err.For_test.protect (fun () ->
-    Err.error ~loc:(Loc.in_file ~path:(Fpath.v "my/file1")) [ Pp.text "Hello Error1" ];
+    Err.error ~loc:(Loc.of_file ~path:(Fpath.v "my/file1")) [ Pp.text "Hello Error1" ];
     Err.Private.reset_separator ();
-    Err.error ~loc:(Loc.in_file ~path:(Fpath.v "my/file2")) [ Pp.text "Hello Error1" ];
+    Err.error ~loc:(Loc.of_file ~path:(Fpath.v "my/file2")) [ Pp.text "Hello Error1" ];
     ());
   [%expect
     {|
