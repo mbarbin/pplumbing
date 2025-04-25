@@ -190,6 +190,8 @@ val pp_of_sexp : Sexplib0.Sexp.t -> _ Pp.t
 (** Produces a "Did you mean ...?" hint *)
 val did_you_mean : string -> candidates:string list -> Pp_tty.t list
 
+(** {1 State Getters} *)
+
 (** Set by the {!val:For_test.wrap} when wrapping sections for tests, accessed
     by libraries if needed. *)
 val am_running_test : unit -> bool
@@ -212,6 +214,102 @@ val had_errors : unit -> bool
 (** Return the number of warnings that have been emitted via [Err.warning] since
     the last [reset_counts]. *)
 val warning_count : unit -> int
+
+(** {2 Color mode}
+
+    Inspired by the [git diff --color=<WHEN>] command line parameter, this
+    library allows to access the rendering mode that should be used to style the
+    output aimed for the user, in the terminal or perhaps using a pager.
+
+    If you use [Log_cli.set_config], your cli will also support the same
+    [--color] flag as [git diff]. You can access the value that was set via the
+    {!color_mode} getter. The default mode is [`Auto].
+
+    Even though it is traditionally called "color"-mode, this goes beyond simply
+    colors and controls all forms of style rendering construct, such as bold,
+    italic, and other ansi special characters. *)
+
+module Color_mode : sig
+  type t =
+    [ `Auto
+    | `Always
+    | `Never
+    ]
+
+  val all : t list
+  val to_string : t -> string
+end
+
+val color_mode : unit -> Color_mode.t
+
+(** {2 Log Level}
+
+    Inspired by logging conventions in many CLI tools, this library provides a
+    mechanism to control the verbosity of log messages based on their severity
+    level. This allows users to filter messages, ensuring that only relevant
+    information is displayed during program execution.
+
+    The log level can be set programmatically or via command-line flags using
+    [Log_cli]. The default log level is [Warning], meaning only warnings and
+    errors will be displayed unless a more verbose level is explicitly set.
+
+    The available log levels are:
+
+    - [Quiet]: Suppresses all log messages, including errors.
+    - [Error]: Displays only error messages.
+    - [Warning]: Displays warnings and errors (default).
+    - [Info]: Displays informational messages, warnings, and errors.
+    - [Debug]: Displays all messages, including debug information.
+
+    Programs can query the current log level using {!log_level} and check
+    whether a specific level is enabled using {!log_enables}. This is useful for
+    conditionally executing code that should only run at certain verbosity
+    levels.
+
+    Example usage:
+
+    {[
+      if Err.log_enables Debug
+      then (
+        (* Perform expensive debugging operations *)
+        let debug_data = compute_debug_data () in
+        Err.debug (lazy [ Pp.textf "Debug data: %s" debug_data ]))
+    ]}
+
+    Note: Functions such as {!Err.info}, {!Err.warning}, and {!Err.debug}
+    automatically check the log level before emitting messages. You do not need
+    to call {!log_enables} before using them.
+
+    When using [Log_cli], the log level can be set via a command-line flag
+    (e.g., [--verbosity=debug]). This ensures consistent behavior across
+    applications using this library.
+
+    Note: A level named [App] has been added to ensure compatibility with the
+    [Logs] library, as this constructor is part of [Logs.level]. However, this
+    module does not differentiate between the [Quiet] and [App] levels. The
+    [App] level is primarily included to facilitate interoperability with
+    third-party libraries that rely on [Logs]. *)
+
+module Log_level : sig
+  type t =
+    | Quiet
+    | App
+    | Error
+    | Warning
+    | Info
+    | Debug
+
+  val all : t list
+  val compare : t -> t -> int
+  val to_string : t -> string
+end
+
+(** Access the current log level. *)
+val log_level : unit -> Log_level.t
+
+(** Tell whether the current log level enables the output of messages of the
+    supplied level. *)
+val log_enables : Log_level.t -> bool
 
 (** {1 Printing messages} *)
 
@@ -284,45 +382,24 @@ end
 (** {1 Private} *)
 
 module Private : sig
-  (** [Private] is used by [Err_config]. We mean both libraries to work as
+  (** [Private] is used by [Log_cli]. We mean both libraries to work as
       companion libs. Note any of this can change without notice and without
       requiring a semver bump, so use at your own risk (or don't). *)
 
   val am_running_test : bool ref
   val reset_counts : unit -> unit
   val reset_separator : unit -> unit
-
-  module Style_renderer : sig
-    (** Compatibility with [Fmt]. *)
-
-    type t =
-      [ `Auto
-      | `None
-      ]
-  end
-
-  val style_renderer : Style_renderer.t ref
-
-  module Logs_level : sig
-    (** Compatibility with [Logs]. *)
-
-    type t =
-      | Quiet
-      | Error
-      | Warning
-      | Info
-      | Debug
-  end
+  val color_mode : Color_mode.t ref
 
   (** Since [Err] does not depend on [Logs], the [Err] and [Logs] levels must be
       set independently. However, this is done for you consistently if you are
-      using [Err_cli]. *)
-  val set_logs_level : get:(unit -> Logs_level.t) -> set:(Logs_level.t -> unit) -> unit
+      using [Log_cli]. *)
+  val set_log_level : get:(unit -> Log_level.t) -> set:(Log_level.t -> unit) -> unit
 
   val warn_error : bool ref
 
   (** To avoid making this library depend on [Logs] we inject the dependency
       into the functions we need instead. To be called with [Logs.err_count]
       and [Logs.warn_count]. *)
-  val set_logs_counts : err_count:(unit -> int) -> warn_count:(unit -> int) -> unit
+  val set_log_counts : err_count:(unit -> int) -> warn_count:(unit -> int) -> unit
 end

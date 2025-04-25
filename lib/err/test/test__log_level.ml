@@ -44,10 +44,11 @@ let%expect_test "log levels" =
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
   (* In this section we set both levels consistently ourselves. *)
-  Err.Private.set_logs_level
+  Err.Private.set_log_level
     ~get:(fun () ->
       match Logs.level () with
-      | None | Some App -> Quiet
+      | None -> Quiet
+      | Some App -> App
       | Some Error -> Error
       | Some Warning -> Warning
       | Some Info -> Info
@@ -56,6 +57,7 @@ let%expect_test "log levels" =
       (Logs.set_level
          (match level with
           | Quiet -> None
+          | App -> Some App
           | Error -> Some Error
           | Warning -> Some Warning
           | Info -> Some Info
@@ -116,21 +118,21 @@ let%expect_test "log levels" =
   (* In this section we go through [Log_cli]. *)
   let test level =
     Err.For_test.protect (fun () ->
-      Log_cli.setup_config ~config:(Log_cli.Config.create ~logs_level:level ());
+      Log_cli.setup_config ~config:(Log_cli.Config.create ~log_level:level ());
       Err.error [ Pp.text "Hello Error1" ];
       Err.warning [ Pp.text "Hello Warning1" ];
       Err.info [ Pp.text "Hello Info1" ];
       Err.debug (lazy [ Pp.text "Hello Debug1" ]))
   in
-  test None;
+  test Quiet;
   [%expect {||}];
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| false |}];
-  test (Some App);
+  test App;
   [%expect {| |}];
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| false |}];
-  test (Some Error);
+  test Error;
   [%expect
     {|
     Error: Hello Error1
@@ -138,7 +140,7 @@ let%expect_test "log levels" =
     |}];
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
-  test (Some Warning);
+  test Warning;
   [%expect
     {|
     Error: Hello Error1
@@ -148,7 +150,7 @@ let%expect_test "log levels" =
     |}];
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
-  test (Some Info);
+  test Info;
   [%expect
     {|
     Error: Hello Error1
@@ -160,7 +162,7 @@ let%expect_test "log levels" =
     |}];
   print_s [%sexp (Err.had_errors () : bool)];
   [%expect {| true |}];
-  test (Some Debug);
+  test Debug;
   [%expect
     {|
     Error: Hello Error1
@@ -181,10 +183,10 @@ let%expect_test "error when quiet" =
   (* When the logs level is set to [quiet] errors are not shown, and not
      accounted for in the [error_count] and [had_errors]. *)
   Err.For_test.protect (fun () ->
-    let set_logs_level logs_level =
-      Log_cli.setup_config ~config:(Log_cli.Config.create ~logs_level ())
+    let set_log_level log_level =
+      Log_cli.setup_config ~config:(Log_cli.Config.create ~log_level ())
     in
-    set_logs_level None;
+    set_log_level Quiet;
     Err.error [ Pp.text "Hello Exn1" ]);
   [%expect {||}];
   print_s [%sexp (Err.had_errors () : bool)];
@@ -196,10 +198,10 @@ let%expect_test "raise when quiet" =
   (* When the logs level is set to [quiet], raising errors will be non impacted
      and behaves as usual. *)
   Err.For_test.protect (fun () ->
-    let set_logs_level logs_level =
-      Log_cli.setup_config ~config:(Log_cli.Config.create ~logs_level ())
+    let set_log_level log_level =
+      Log_cli.setup_config ~config:(Log_cli.Config.create ~log_level ())
     in
-    set_logs_level None;
+    set_log_level Quiet;
     Err.raise [ Pp.text "Hello Exn1" ]);
   [%expect
     {|

@@ -6,28 +6,51 @@
 
 (** {1 Configuration} *)
 
+module Color_mode : sig
+  include module type of struct
+    include Err.Color_mode
+  end
+end
+
+module Log_level : sig
+  include module type of struct
+    include Err.Log_level
+  end
+
+  val of_logs_level : Logs.level option -> t
+  val to_logs_level : t -> Logs.level option
+end
+
 module Config : sig
   type t
 
   val create
-    :  ?logs_level:Logs.level option
-    -> ?fmt_style_renderer:Fmt.style_renderer option
+    :  ?log_level:Log_level.t
+    -> ?color_mode:Color_mode.t
     -> ?warn_error:bool
     -> unit
     -> t
 
   (** {1 Getters} *)
 
-  val logs_level : t -> Logs.level option
-  val fmt_style_renderer : t -> Fmt.style_renderer option
+  val log_level : t -> Log_level.t
+  val color_mode : t -> Color_mode.t
   val warn_error : t -> bool
 
   (** {1 Arg builders} *)
 
-  val logs_level_arg : Logs.level option Command.Arg.t
-  val fmt_style_renderer_arg : Fmt.style_renderer option Command.Arg.t
+  val log_level_arg : Log_level.t Command.Arg.t
+  val color_mode_arg : Color_mode.t Command.Arg.t
   val arg : t Command.Arg.t
   val to_args : t -> string list
+
+  (** {1 Deprecated API}
+
+      The following getters are meant to be marked for deprecation in
+      a future version. *)
+
+  val logs_level : t -> Logs.level option
+  val fmt_style_renderer : t -> Fmt.style_renderer option
 end
 
 (** Perform global side effects to modules such as [Err], [Logs] & [Fmt] to
