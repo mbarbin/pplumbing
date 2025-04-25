@@ -1,30 +1,37 @@
-module Log_level = struct
-  type t = Logs.level option
+module Color_mode = struct
+  include Err.Color_mode
 
-  let all : t list =
-    [ None
-    ; Some Logs.App
-    ; Some Logs.Error
-    ; Some Logs.Warning
-    ; Some Logs.Info
-    ; Some Logs.Debug
-    ]
+  let to_fmt_style_renderer = function
+    | `Auto -> None
+    | `Always -> Some `Ansi_tty
+    | `Never -> Some `None
+  ;;
+end
+
+module Log_level = struct
+  include Err.Log_level
+
+  let of_logs_level : Logs.level option -> t = function
+    | None -> Quiet
+    | Some App -> App
+    | Some Error -> Error
+    | Some Warning -> Warning
+    | Some Info -> Info
+    | Some Debug -> Debug
   ;;
 
-  let to_string : t -> string = function
-    | None -> "quiet"
-    | Some level ->
-      (match level with
-       | App -> "app"
-       | Error -> "error"
-       | Warning -> "warning"
-       | Info -> "info"
-       | Debug -> "debug")
+  let to_logs_level : t -> Logs.level option = function
+    | Quiet -> None
+    | App -> Some App
+    | Error -> Some Error
+    | Warning -> Some Warning
+    | Info -> Some Info
+    | Debug -> Some Debug
   ;;
 end
 
 module Config = struct
-  let logs_level_arg =
+  let log_level_arg =
     let open Command.Std in
     let+ verbose_count =
       Arg.flag_count
@@ -40,73 +47,61 @@ module Config = struct
       Arg.flag [ "quiet"; "q" ] ~doc:"Be quiet. Takes over $(b,v) and $(b,--verbosity)"
     in
     if quiet
-    then None
+    then Log_level.Quiet
     else (
       match verbosity with
       | Some verbosity -> verbosity
       | None ->
         (match verbose_count with
-         | 0 -> Some Logs.Warning
-         | 1 -> Some Logs.Info
-         | _ -> Some Logs.Debug))
+         | 0 -> Log_level.Warning
+         | 1 -> Log_level.Info
+         | _ -> Log_level.Debug))
   ;;
 
-  module Fmt_style_renderer = struct
-    type t = Fmt.style_renderer option
-
-    let all = [ None; Some `Ansi_tty; Some `None ]
-
-    let to_string = function
-      | None -> "auto"
-      | Some `Ansi_tty -> "always"
-      | Some `None -> "never"
-    ;;
-  end
-
-  let fmt_style_renderer_arg =
+  let color_mode_arg =
     let open Command.Std in
     Arg.named_with_default
       [ "color" ]
-      (Param.enumerated (module Fmt_style_renderer))
-      ~default:None
+      (Param.enumerated (module Color_mode))
+      ~default:`Auto
       ~docv:"WHEN"
       ~doc:"Colorize the output"
   ;;
 
   type t =
-    { logs_level : Logs.level option
-    ; fmt_style_renderer : Fmt.style_renderer option
+    { log_level : Log_level.t
+    ; color_mode : Color_mode.t
     ; warn_error : bool
     }
 
-  let default =
-    { logs_level = Some Logs.Warning; fmt_style_renderer = None; warn_error = false }
-  ;;
+  let default = { log_level = Log_level.Warning; color_mode = `Auto; warn_error = false }
 
   let create
-        ?(logs_level = default.logs_level)
-        ?(fmt_style_renderer = default.fmt_style_renderer)
+        ?(log_level = default.log_level)
+        ?(color_mode = default.color_mode)
         ?(warn_error = default.warn_error)
         ()
     =
-    { logs_level; fmt_style_renderer; warn_error }
+    { log_level; color_mode; warn_error }
   ;;
 
-  let logs_level t = t.logs_level
-  let fmt_style_renderer t = t.fmt_style_renderer
+  let log_level t = t.log_level
+  let logs_level t = Log_level.to_logs_level t.log_level
+  let color_mode t = t.color_mode
+  let fmt_style_renderer t = Color_mode.to_fmt_style_renderer t.color_mode
   let warn_error t = t.warn_error
 
   let arg =
     let open Command.Std in
     let+ warn_error = Arg.flag [ "warn-error" ] ~doc:"treat warnings as errors"
-    and+ logs_level = logs_level_arg
-    and+ fmt_style_renderer = fmt_style_renderer_arg in
-    { logs_level; fmt_style_renderer; warn_error }
+    and+ log_level = log_level_arg
+    and+ color_mode = color_mode_arg in
+    { log_level; color_mode; warn_error }
   ;;
 
-  let to_args { logs_level; fmt_style_renderer; warn_error } =
+  let to_args { log_level; color_mode; warn_error } =
     List.concat
-      [ (match logs_level with
+      [ (match Log_level.to_logs_level log_level with
          | None -> [ "--quiet" ]
          | Some level ->
            (match level with
@@ -115,41 +110,25 @@ module Config = struct
             | Warning -> []
             | Info -> [ "--verbosity"; "info" ]
             | Debug -> [ "--verbosity"; "debug" ]))
-      ; (match fmt_style_renderer with
-         | None -> []
-         | Some `Ansi_tty -> [ "--color"; "always" ]
-         | Some `None -> [ "--color"; "never" ])
+      ; (match color_mode with
+         | `Auto -> []
+         | `Always -> [ "--color"; "always" ]
+         | `Never -> [ "--color"; "never" ])
       ; (if warn_error then [ "--warn-error" ] else [])
       ]
   ;;
 end
 
 let setup_log ~(config : Config.t) =
-  Fmt_tty.setup_std_outputs ?style_renderer:config.fmt_style_renderer ();
+  Fmt_tty.setup_std_outputs
+    ?style_renderer:(Color_mode.to_fmt_style_renderer config.color_mode)
+    ();
+  let () = Err.Private.color_mode := config.color_mode in
+  Logs.set_level (Log_level.to_logs_level config.log_level);
   let () =
-    Err.Private.style_renderer
-    := match config.fmt_style_renderer with
-       | Some `None -> `None
-       | None | Some `Ansi_tty -> `Auto
-  in
-  Logs.set_level config.logs_level;
-  let () =
-    Err.Private.set_logs_level
-      ~get:(fun () ->
-        match Logs.level () with
-        | None | Some App -> Quiet
-        | Some Error -> Error
-        | Some Warning -> Warning
-        | Some Info -> Info
-        | Some Debug -> Debug)
-      ~set:(fun level ->
-        (Logs.set_level
-           (match level with
-            | Quiet -> None
-            | Error -> Some Error
-            | Warning -> Some Warning
-            | Info -> Some Info
-            | Debug -> Some Debug) [@coverage off]))
+    Err.Private.set_log_level
+      ~get:(fun () -> Log_level.of_logs_level (Logs.level ()))
+      ~set:(fun level -> (Logs.set_level (Log_level.to_logs_level level) [@coverage off]))
   in
   Logs.set_reporter (Logs_fmt.reporter ())
 ;;
@@ -157,7 +136,7 @@ let setup_log ~(config : Config.t) =
 let setup_config ~config =
   setup_log ~config;
   Err.Private.warn_error := config.warn_error;
-  Err.Private.set_logs_counts ~err_count:Logs.err_count ~warn_count:Logs.warn_count;
+  Err.Private.set_log_counts ~err_count:Logs.err_count ~warn_count:Logs.warn_count;
   ()
 ;;
 

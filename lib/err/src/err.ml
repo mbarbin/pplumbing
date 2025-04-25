@@ -112,14 +112,24 @@ let reraise_s bt e ?loc ?hints ?exit_code desc sexp =
   reraise bt e ?loc ?hints ?exit_code [ Pp.text desc; pp_of_sexp sexp ]
 ;;
 
-module Style_renderer = struct
+module Color_mode = struct
   type t =
     [ `Auto
-    | `None
+    | `Always
+    | `Never
     ]
+
+  let all : t list = [ `Auto; `Always; `Never ]
+
+  let to_string : t -> string = function
+    | `Auto -> "auto"
+    | `Always -> "always"
+    | `Never -> "never"
+  ;;
 end
 
-let style_renderer_value : Style_renderer.t ref = ref `Auto
+let color_mode_value : Color_mode.t ref = ref `Auto
+let color_mode () = !color_mode_value
 
 (* I've tried testing the following, which doesn't work as expected:
 
@@ -136,11 +146,25 @@ let style_renderer_value : Style_renderer.t ref = ref `Auto
 *)
 let am_running_test_value = ref false
 let am_running_test () = !am_running_test_value
+let log_err_count_value = ref (fun () -> (0 [@coverage off]))
+let log_warn_count_value = ref (fun () -> (0 [@coverage off]))
 let error_count_value = ref 0
 let warning_count_value = ref 0
-let error_count () = !error_count_value
+
+let error_count () =
+  if am_running_test ()
+  then !error_count_value
+  else !error_count_value + log_err_count_value.contents ()
+;;
+
 let had_errors () = error_count () > 0
-let warning_count () = !warning_count_value
+
+let warning_count () =
+  if am_running_test ()
+  then !warning_count_value
+  else !warning_count_value + log_warn_count_value.contents ()
+;;
+
 let no_style_printer pp = Stdlib.prerr_string (Format.asprintf "%a" Pp.to_fmt pp)
 let include_separator = ref false
 
@@ -155,9 +179,9 @@ let prerr_message (t : Stdune.User_message.t) =
   let use_no_style_printer =
     !am_running_test_value
     ||
-    match !style_renderer_value with
-    | `None -> true
-    | `Auto -> false
+    match !color_mode_value with
+    | `Never -> true
+    | `Always | `Auto -> false
   in
   let () =
     if !include_separator then Stdlib.prerr_newline () else include_separator := true
@@ -187,36 +211,50 @@ let make_message ~style ~prefix ?loc ?hints paragraphs =
     paragraphs
 ;;
 
-module Logs_level = struct
+module Log_level = struct
   type t =
     | Quiet
+    | App
     | Error
     | Warning
     | Info
     | Debug
 
+  let all = [ Quiet; App; Error; Warning; Info; Debug ]
+
   let to_index = function
     | Quiet -> 0
-    | Error -> 1
-    | Warning -> 2
-    | Info -> 3
-    | Debug -> 4
+    | App -> 1
+    | Error -> 2
+    | Warning -> 3
+    | Info -> 4
+    | Debug -> 5
   ;;
 
   let compare l1 l2 = Int.compare (to_index l1) (to_index l2)
+
+  let to_string = function
+    | Quiet -> "quiet"
+    | App -> "app"
+    | Error -> "error"
+    | Warning -> "warning"
+    | Info -> "info"
+    | Debug -> "debug"
+  ;;
 end
 
 let warn_error_value = ref false
 
-let logs_level_get_value, logs_level_set_value =
-  let value = ref Logs_level.Warning in
+let log_level_get_value, log_level_set_value =
+  let value = ref Log_level.Warning in
   ref (fun () -> (!value [@coverage off])), ref (fun v -> value := (v [@coverage off]))
 ;;
 
-let logs_enable level = Logs_level.compare (logs_level_get_value.contents ()) level >= 0
+let log_level () = log_level_get_value.contents ()
+let log_enables level = Log_level.compare (log_level ()) level >= 0
 
 let error ?loc ?hints paragraphs =
-  if logs_enable Error
+  if log_enables Error
   then (
     let message = make_message ~style:Error ~prefix:"Error" ?loc ?hints paragraphs in
     incr error_count_value;
@@ -224,7 +262,7 @@ let error ?loc ?hints paragraphs =
 ;;
 
 let warning ?loc ?hints paragraphs =
-  if logs_enable Warning
+  if log_enables Warning
   then (
     let message = make_message ~style:Warning ~prefix:"Warning" ?loc ?hints paragraphs in
     incr warning_count_value;
@@ -232,14 +270,14 @@ let warning ?loc ?hints paragraphs =
 ;;
 
 let info ?loc ?hints paragraphs =
-  if logs_enable Info
+  if log_enables Info
   then (
     let message = make_message ~style:Kwd ~prefix:"Info" ?loc ?hints paragraphs in
     prerr_message message)
 ;;
 
 let debug ?loc ?hints paragraphs =
-  if logs_enable Debug
+  if log_enables Debug
   then (
     let message =
       make_message ~style:Debug ~prefix:"Debug" ?loc ?hints (Lazy.force paragraphs)
@@ -270,16 +308,8 @@ let handle_messages_and_exit ~err:{ messages; exit_code } ~backtrace =
   Error exit_code
 ;;
 
-let logs_err_count_value = ref (fun () -> (0 [@coverage off]))
-let logs_warn_count_value = ref (fun () -> (0 [@coverage off]))
-
 let had_errors_or_warn_errors () =
-  let warn_error = !warn_error_value in
-  if am_running_test ()
-  then error_count () > 0 || (warn_error && warning_count () > 0)
-  else
-    error_count () + logs_err_count_value.contents () > 0
-    || (warn_error && warning_count () + logs_warn_count_value.contents () > 0)
+  error_count () > 0 || (!warn_error_value && warning_count () > 0)
 ;;
 
 let protect ?(exn_handler = Fun.const None) f =
@@ -316,12 +346,12 @@ module For_test = struct
   let wrap f =
     let init = am_running_test () in
     am_running_test_value := true;
-    let init_level = logs_level_get_value.contents () in
-    logs_level_set_value.contents Logs_level.Warning;
+    let init_level = log_level_get_value.contents () in
+    log_level_set_value.contents Log_level.Warning;
     Fun.protect
       ~finally:(fun () ->
         am_running_test_value := init;
-        logs_level_set_value.contents init_level)
+        log_level_set_value.contents init_level)
       f
   ;;
 
@@ -341,24 +371,19 @@ module Private = struct
   ;;
 
   let reset_separator () = include_separator := false
+  let color_mode = color_mode_value
 
-  module Style_renderer = Style_renderer
-
-  let style_renderer = style_renderer_value
-
-  module Logs_level = Logs_level
-
-  let set_logs_level ~get ~set =
-    logs_level_get_value := get;
-    logs_level_set_value := set;
+  let set_log_level ~get ~set =
+    log_level_get_value := get;
+    log_level_set_value := set;
     ()
   ;;
 
   let warn_error = warn_error_value
 
-  let set_logs_counts ~err_count ~warn_count =
-    logs_err_count_value := err_count;
-    logs_warn_count_value := warn_count;
+  let set_log_counts ~err_count ~warn_count =
+    log_err_count_value := err_count;
+    log_warn_count_value := warn_count;
     ()
   ;;
 end

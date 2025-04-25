@@ -8,6 +8,26 @@ module Logs_level = struct
   [@@deriving equal, sexp_of]
 end
 
+module Log_level = struct
+  type t = Log_cli.Log_level.t =
+    | Quiet
+    | App
+    | Error
+    | Warning
+    | Info
+    | Debug
+  [@@deriving equal, sexp_of]
+end
+
+module Color_mode = struct
+  type t =
+    [ `Always
+    | `Auto
+    | `Never
+    ]
+  [@@deriving equal, sexp_of]
+end
+
 module Fmt_style_renderer = struct
   type t =
     [ `Ansi_tty
@@ -19,7 +39,9 @@ end
 module Config_with_sexp = struct
   module Internal = struct
     type t =
-      { logs_level : Logs_level.t option
+      { log_level : Log_level.t
+      ; logs_level : Logs_level.t option
+      ; color_mode : Color_mode.t
       ; fmt_style_renderer : Fmt_style_renderer.t option
       ; warn_error : bool
       }
@@ -29,7 +51,9 @@ module Config_with_sexp = struct
   type t = Log_cli.Config.t
 
   let to_internal t =
-    { Internal.logs_level = Log_cli.Config.logs_level t
+    { Internal.log_level = Log_cli.Config.log_level t
+    ; logs_level = Log_cli.Config.logs_level t
+    ; color_mode = Log_cli.Config.color_mode t
     ; fmt_style_renderer = Log_cli.Config.fmt_style_renderer t
     ; warn_error = Log_cli.Config.warn_error t
     }
@@ -68,68 +92,109 @@ let%expect_test "roundtrip" =
   [%expect
     {|
     ((args ())
-     (config ((logs_level (Warning)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Warning)
+       (logs_level (Warning))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~logs_level:None ());
+  roundtrip_test (Log_cli.Config.create ~log_level:Quiet ());
   [%expect
     {|
     ((args (--quiet))
      (config (
-       (logs_level         ())
+       (log_level Quiet)
+       (logs_level ())
+       (color_mode Auto)
        (fmt_style_renderer ())
        (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~logs_level:(Some App) ());
+  roundtrip_test (Log_cli.Config.create ~log_level:App ());
   [%expect
     {|
     ((args (--verbosity app))
-     (config ((logs_level (App)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level App)
+       (logs_level (App))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~logs_level:(Some Error) ());
+  roundtrip_test (Log_cli.Config.create ~log_level:Error ());
   [%expect
     {|
     ((args (--verbosity error))
-     (config ((logs_level (Error)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Error)
+       (logs_level (Error))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~logs_level:(Some Warning) ());
+  roundtrip_test (Log_cli.Config.create ~log_level:Warning ());
   [%expect
     {|
     ((args ())
-     (config ((logs_level (Warning)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Warning)
+       (logs_level (Warning))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~logs_level:(Some Info) ());
+  roundtrip_test (Log_cli.Config.create ~log_level:Info ());
   [%expect
     {|
     ((args (--verbosity info))
-     (config ((logs_level (Info)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Info)
+       (logs_level (Info))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~logs_level:(Some Debug) ());
+  roundtrip_test (Log_cli.Config.create ~log_level:Debug ());
   [%expect
     {|
     ((args (--verbosity debug))
-     (config ((logs_level (Debug)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Debug)
+       (logs_level (Debug))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~fmt_style_renderer:None ());
+  roundtrip_test (Log_cli.Config.create ~color_mode:`Auto ());
   [%expect
     {|
     ((args ())
-     (config ((logs_level (Warning)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Warning)
+       (logs_level (Warning))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~fmt_style_renderer:(Some `Ansi_tty) ());
+  roundtrip_test (Log_cli.Config.create ~color_mode:`Always ());
   [%expect
     {|
     ((args (--color always))
      (config (
-       (logs_level         (Warning))
+       (log_level Warning)
+       (logs_level (Warning))
+       (color_mode Always)
        (fmt_style_renderer (Ansi_tty))
        (warn_error false))))
     |}];
-  roundtrip_test (Log_cli.Config.create ~fmt_style_renderer:(Some `None) ());
+  roundtrip_test (Log_cli.Config.create ~color_mode:`Never ());
   [%expect
     {|
     ((args (--color never))
      (config (
-       (logs_level         (Warning))
+       (log_level Warning)
+       (logs_level (Warning))
+       (color_mode Never)
        (fmt_style_renderer (None))
        (warn_error false))))
     |}];
@@ -137,7 +202,12 @@ let%expect_test "roundtrip" =
   [%expect
     {|
     ((args (--warn-error))
-     (config ((logs_level (Warning)) (fmt_style_renderer ()) (warn_error true))))
+     (config (
+       (log_level Warning)
+       (logs_level (Warning))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error true))))
     |}];
   ()
 ;;
@@ -164,25 +234,45 @@ let%expect_test "parse verbose count" =
   [%expect
     {|
     ((args ())
-     (config ((logs_level (Warning)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Warning)
+       (logs_level (Warning))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
   parse [ "-v" ];
   [%expect
     {|
     ((args (-v))
-     (config ((logs_level (Info)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Info)
+       (logs_level (Info))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
   parse [ "-v"; "-v" ];
   [%expect
     {|
     ((args (-v -v))
-     (config ((logs_level (Debug)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Debug)
+       (logs_level (Debug))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
   parse [ "-v"; "-v"; "-v" ];
   [%expect
     {|
     ((args (-v -v -v))
-     (config ((logs_level (Debug)) (fmt_style_renderer ()) (warn_error false))))
+     (config (
+       (log_level Debug)
+       (logs_level (Debug))
+       (color_mode Auto)
+       (fmt_style_renderer ())
+       (warn_error false))))
     |}];
   ()
 ;;

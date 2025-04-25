@@ -1,3 +1,23 @@
+## 0.0.11 (2025-04-25)
+
+### Added
+
+- Add `Err.Color_mode` to access value of cli arg `--color=(auto|always|never)` (#3, @mbarbin).
+- Add `Err.Log_level` getters related to current log level (#3, @mbarbin).
+
+### Changed
+
+- Add `Err.Log_level.App` for better compatibility with `Logs` (#3, @mbarbin).
+
+### Deprecated
+
+- In `Log_cli.Config` depreate `logs_level` and `fmt_style_renderer` (#3, @mbarbin).
+
+### Fixed
+
+- Make `Err.error_count` include errors emitted via `Logs.err` - same for warnings (#3, @mbarbin).
+- Make `Err.had_errors` include errors emitted via `Logs.err` (#3, @marbin).
+
 ## 0.0.10 (2025-03-09)
 
 ### Fixed
