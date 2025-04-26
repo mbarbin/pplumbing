@@ -16,7 +16,7 @@
 ### Fixed
 
 - Make `Err.error_count` include errors emitted via `Logs.err` - same for warnings (#3, @mbarbin).
-- Make `Err.had_errors` include errors emitted via `Logs.err` (#3, @marbin).
+- Make `Err.had_errors` include errors emitted via `Logs.err` (#3, @mbarbin).
 
 ## 0.0.10 (2025-03-09)
 
