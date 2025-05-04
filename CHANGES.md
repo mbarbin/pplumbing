@@ -4,11 +4,11 @@
 
 ### Changed
 
-- Rename `Err.pp_of_sexp` to `Err.sexp` to make it shorter (@mbarbin).
+- Rename `Err.pp_of_sexp` to `Err.sexp` to make it shorter (#4, @mbarbin).
 
 ### Deprecated
 
-- Prepare the deprecation of sexp based err constructors (@mbarbin).
+- Prepare the deprecation of sexp based err constructors (#4, @mbarbin).
 
 ### Fixed
 
