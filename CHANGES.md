@@ -1,3 +1,17 @@
+## 0.0.12 (unreleased)
+
+### Added
+
+### Changed
+
+- Rename `Err.pp_of_sexp` to `Err.sexp` to make it shorter (@mbarbin).
+
+### Deprecated
+
+- Prepare the deprecation of sexp based err constructors (@mbarbin).
+
+### Fixed
+
 ## 0.0.11 (2025-04-25)
 
 ### Added
