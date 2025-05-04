@@ -140,50 +140,10 @@ val of_stdune_user_message : ?exit_code:Exit_code.t -> Stdune.User_message.t -> 
     - [ok_exn (Error msg)] is [Stdlib.raise (E msg)] *)
 val ok_exn : ('a, t) result -> 'a
 
-(** {1 Other styles}
-
-    Whether that is during a migration, or to keep experimenting, we
-    are currently exploring other ways to build and raise errors, using
-    things like sexp, json or dyn. *)
-
-val create_s
-  :  ?loc:Loc.t
-  -> ?hints:Pp_tty.t list
-  -> ?exit_code:Exit_code.t
-  -> string
-  -> Sexplib0.Sexp.t
-  -> t
-
-val raise_s
-  :  ?loc:Loc.t
-  -> ?hints:Pp_tty.t list
-  -> ?exit_code:Exit_code.t
-  -> string
-  -> Sexplib0.Sexp.t
-  -> _
-
-(** Reraise with added context. Usage:
-
-    {[
-      match do_x x with
-      | exception Err.E e ->
-        let bt = Printexc.get_raw_backtrace () in
-        Err.reraise_s bt e "Trying to do x with y" [%sexp { y : Y.t }]
-    ]} *)
-val reraise_s
-  :  Printexc.raw_backtrace
-  -> t
-  -> ?loc:Loc.t
-  -> ?hints:Pp_tty.t list
-  -> ?exit_code:Exit_code.t
-  -> string
-  -> Sexplib0.Sexp.t
-  -> _
-
 (** When you need to render a [Sexp.t] into a [_ Pp.t] paragraph, things may
     become tricky - newlines inserted in surprising places, etc. This
     functions attempts to do an OK job at it. *)
-val pp_of_sexp : Sexplib0.Sexp.t -> _ Pp.t
+val sexp : Sexplib0.Sexp.t -> _ Pp.t
 
 (** {1 Hints} *)
 
@@ -403,3 +363,60 @@ module Private : sig
       and [Logs.warn_count]. *)
   val set_log_counts : err_count:(unit -> int) -> warn_count:(unit -> int) -> unit
 end
+
+(** {1 Deprecated}
+
+    This part of the API is, or will be soon, deprecated. We have
+    added [ocamlmig] annotations to help with migrating existing
+    code. *)
+
+(** This is deprecated - use [Err.create] instead. *)
+val create_s
+  :  ?loc:Loc.t
+  -> ?hints:Pp_tty.t list
+  -> ?exit_code:Exit_code.t
+  -> string
+  -> Sexplib0.Sexp.t
+  -> t
+[@@migrate
+  { repl =
+      (fun ?loc ?hints ?exit_code msg sexp ->
+        Rel.create ?loc ?hints ?exit_code [ Pp.text msg; Rel.sexp sexp ])
+  ; libraries = [ "pp" ]
+  }]
+
+(** This is deprecated - use [Err.raise] instead. *)
+val raise_s
+  :  ?loc:Loc.t
+  -> ?hints:Pp_tty.t list
+  -> ?exit_code:Exit_code.t
+  -> string
+  -> Sexplib0.Sexp.t
+  -> _
+[@@migrate
+  { repl =
+      (fun ?loc ?hints ?exit_code msg sexp ->
+        Rel.raise ?loc ?hints ?exit_code [ Pp.text msg; Rel.sexp sexp ])
+  ; libraries = [ "pp" ]
+  }]
+
+(** This is deprecated - use [Err.reraise] instead. *)
+val reraise_s
+  :  Printexc.raw_backtrace
+  -> t
+  -> ?loc:Loc.t
+  -> ?hints:Pp_tty.t list
+  -> ?exit_code:Exit_code.t
+  -> string
+  -> Sexplib0.Sexp.t
+  -> _
+[@@migrate
+  { repl =
+      (fun bt e ?loc ?hints ?exit_code msg sexp ->
+        Rel.reraise bt e ?loc ?hints ?exit_code [ Pp.text msg; Rel.sexp sexp ])
+  ; libraries = [ "pp" ]
+  }]
+
+(** This was renamed [Err.sexp]. *)
+val pp_of_sexp : Sexplib0.Sexp.t -> _ Pp.t
+[@@migrate { repl = Rel.sexp }]
