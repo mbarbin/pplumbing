@@ -366,9 +366,8 @@ end
 
 (** {1 Deprecated}
 
-    This part of the API is, or will be soon, deprecated. We have
-    added [ocamlmig] annotations to help with migrating existing
-    code. *)
+    This part of the API is, or will be soon, deprecated. We have added
+    [ocamlmig] annotations to help with migrating existing code. *)
 
 (** This is deprecated - use [Err.create] instead. *)
 val create_s
