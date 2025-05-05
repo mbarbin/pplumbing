@@ -380,7 +380,11 @@ val create_s
 [@@migrate
   { repl =
       (fun ?loc ?hints ?exit_code msg sexp ->
-        Rel.create ?loc ?hints ?exit_code [ Pp.text msg; Rel.sexp sexp ])
+        Rel.create
+          ?loc
+          ?hints
+          ?exit_code
+          [ (Pp.text msg [@commutes]); (Rel.sexp sexp [@commutes]) ])
   ; libraries = [ "pp" ]
   }]
 
@@ -395,7 +399,11 @@ val raise_s
 [@@migrate
   { repl =
       (fun ?loc ?hints ?exit_code msg sexp ->
-        Rel.raise ?loc ?hints ?exit_code [ Pp.text msg; Rel.sexp sexp ])
+        Rel.raise
+          ?loc
+          ?hints
+          ?exit_code
+          [ (Pp.text msg [@commutes]); (Rel.sexp sexp [@commutes]) ])
   ; libraries = [ "pp" ]
   }]
 
@@ -412,7 +420,13 @@ val reraise_s
 [@@migrate
   { repl =
       (fun bt e ?loc ?hints ?exit_code msg sexp ->
-        Rel.reraise bt e ?loc ?hints ?exit_code [ Pp.text msg; Rel.sexp sexp ])
+        Rel.reraise
+          bt
+          e
+          ?loc
+          ?hints
+          ?exit_code
+          [ (Pp.text msg [@commutes]); (Rel.sexp sexp [@commutes]) ])
   ; libraries = [ "pp" ]
   }]
 
