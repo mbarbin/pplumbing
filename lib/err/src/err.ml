@@ -377,15 +377,15 @@ module Private = struct
 end
 
 let create_s ?loc ?hints ?exit_code desc s =
-  create ?loc ?hints ?exit_code [ Pp.text desc; sexp s ]
+  create ?loc ?hints ?exit_code [ Pp.text desc; sexp s ] [@coverage off]
 ;;
 
 let raise_s ?loc ?hints ?exit_code desc s =
-  raise ?loc ?hints ?exit_code [ Pp.text desc; sexp s ]
+  raise ?loc ?hints ?exit_code [ Pp.text desc; sexp s ] [@coverage off]
 ;;
 
 let reraise_s bt e ?loc ?hints ?exit_code desc s =
-  reraise bt e ?loc ?hints ?exit_code [ Pp.text desc; sexp s ]
+  reraise bt e ?loc ?hints ?exit_code [ Pp.text desc; sexp s ] [@coverage off]
 ;;
 
 let pp_of_sexp = sexp
