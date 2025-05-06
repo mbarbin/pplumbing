@@ -21,8 +21,7 @@
   loc
   logs
   pp
-  pplumbing.log-cli
-  stdune)
+  pplumbing.log-cli)
  (instrumentation
   (backend bisect_ppx))
  (lint

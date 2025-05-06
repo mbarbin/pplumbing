@@ -130,9 +130,6 @@ val create
     be that of [t2]. *)
 val append : ?exit_code:Exit_code.t -> t -> t -> t
 
-(** This is exposed to help with libraries compatibility if needed. *)
-val of_stdune_user_message : ?exit_code:Exit_code.t -> Stdune.User_message.t -> t
-
 (** {1 Result} *)
 
 (** Helper to raise a user error from a result type.

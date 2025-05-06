@@ -128,28 +128,6 @@ let%expect_test "append" =
   ()
 ;;
 
-let%expect_test "of_stdune_message" =
-  let err =
-    Stdune.User_message.make
-      ~loc:
-        (Stdune.Loc.in_file
-           (Stdune.Path.external_
-              (Stdune.Path.External.of_string "/path/to/other-file.txt")))
-      ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      [ Pp.text "Hello Stdune" ]
-    |> Err.of_stdune_user_message ~exit_code:2
-  in
-  Err.For_test.protect (fun () -> raise (Err.E err));
-  [%expect
-    {|
-    File "/path/to/other-file.txt", line 1, characters 0-0:
-    Hello Stdune
-    Hint: did you mean bar?
-    [2]
-    |}];
-  ()
-;;
-
 let%expect_test "ok_exn" =
   let err =
     Err.create
