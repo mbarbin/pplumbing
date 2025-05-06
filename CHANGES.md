@@ -16,6 +16,10 @@ To automatically apply the migration changes, first upgrade your `pplumbing` dep
 
 ### Fixed
 
+### Removed
+
+- Removed `Stdune.User_message.t -> Err.t` helper (#5, @mbarbin).
+
 ## 0.0.11 (2025-04-25)
 
 ### Added
