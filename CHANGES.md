@@ -1,12 +1,8 @@
 ## 0.0.12 (unreleased)
 
-This releases prepares the deprecation of a few functions and contains `ocamlmig` annotations to help users with the migration.
+This release prepares the deprecation of a few functions and contains `ocamlmig` annotations to help users with the migration.
 
-To automatically apply the migration changes, first upgrade your `pplumbing` dependency and re-build your project. Then run the following command, from the root of your project:
-
-```sh
-$ ocamlmig migrate
-```
+To automatically apply the migration changes, first upgrade your `pplumbing` dependency and re-build your project. Then run the command `ocamlmig migrate` from the root of your project.
 
 ### Added
 
