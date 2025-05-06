@@ -1,4 +1,4 @@
-## 0.0.12 (unreleased)
+## 0.0.12 (2025-05-06)
 
 This release prepares the deprecation of a few functions and contains `ocamlmig` annotations to help users with the migration.
 
@@ -18,8 +18,6 @@ To automatically apply the migration changes, first upgrade your `pplumbing` dep
 ### Deprecated
 
 - Prepare the deprecation of sexp based err constructors (#4, @mbarbin).
-
-### Fixed
 
 ### Removed
 
