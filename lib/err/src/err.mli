@@ -157,8 +157,9 @@ val reraise_with_context : t -> Printexc.raw_backtrace -> Pp_tty.t list -> _
     - [ok_exn (Error msg)] is [Stdlib.raise (E msg)] *)
 val ok_exn : ('a, t) result -> 'a
 
-(** Build an error from an exception. This uses the sexp of the exception under
-    the hood. *)
+(** Build an error from an exception. This retrieves [e] if the exception is
+    [Err.E e], otherwise this creates a new error using the sexp of the
+    supplied exception. *)
 val of_exn : exn -> t
 
 (** {1 Hints} *)

@@ -33,6 +33,20 @@ let%expect_test "raise" =
   ()
 ;;
 
+let%expect_test "of_exn" =
+  let e = Err.create [ Pp.text "Hello of_exn" ] in
+  let e' = Err.of_exn (Err.E e) in
+  require [%here] (phys_equal e e');
+  [%expect {||}];
+  let e =
+    try failwith "Hello Exn!" with
+    | e -> Err.of_exn e
+  in
+  print_s [%sexp (e : Err.t)];
+  [%expect {| (Failure "Hello Exn!") |}];
+  ()
+;;
+
 let%expect_test "exit" =
   Err.For_test.protect (fun () -> Err.exit 0);
   [%expect {||}];

@@ -155,7 +155,7 @@ let sexp_of_t_internal ~include_exit_code t =
   in
   match list with
   | [ sexp ] -> sexp
-  | [] | _ :: _ :: _ -> Sexplib0.Sexp.List list
+  | _ -> Sexplib0.Sexp.List list
 ;;
 
 let sexp_of_t t = sexp_of_t_internal ~include_exit_code:false t
@@ -204,7 +204,12 @@ let ok_exn = function
   | Error e -> Stdlib.raise (E e)
 ;;
 
-let of_exn exn = create [ sexp (Sexplib0.Sexp_conv.sexp_of_exn exn) ]
+let of_exn exn =
+  match (exn : exn) with
+  | E e -> e
+  | _ -> create [ sexp (Sexplib0.Sexp_conv.sexp_of_exn exn) ]
+;;
+
 let did_you_mean = Stdune.User_message.did_you_mean
 
 module Color_mode = struct

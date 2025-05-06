@@ -57,3 +57,14 @@ let%expect_test "exit without handler" =
   [%expect {| (exit_code 123) |}];
   ()
 ;;
+
+let%expect_test "exit_code in sexp" =
+  let e = Err.create [ Pp.text "Hello Exit Code" ] in
+  print_s [%sexp (e : Err.t)];
+  [%expect {| "Hello Exit Code" |}];
+  require_does_raise [%here] (fun () -> raise (Err.E e));
+  [%expect {| "Hello Exit Code" |}];
+  print_s [%sexp (e : Err.With_exit_code.t)];
+  [%expect {| ("Hello Exit Code" (exit_code 123)) |}];
+  ()
+;;
