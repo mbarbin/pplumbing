@@ -27,7 +27,7 @@ let had_errors () =
 let%expect_test "catch" =
   Err.Private.reset_counts ();
   require_does_raise [%here] (fun () -> Lib.raise ());
-  [%expect {| ("Hello from raising library" (Exit 123)) |}];
+  [%expect {| "Hello from raising library" |}];
   had_errors ();
   [%expect {| ((had_errors false)) |}];
   Err.For_test.protect (fun () ->

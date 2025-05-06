@@ -52,8 +52,8 @@ let%expect_test "exit" =
 
 let%expect_test "exit without handler" =
   require_does_raise [%here] (fun () -> Err.exit Err.Exit_code.ok);
-  [%expect {| ((Exit 0)) |}];
+  [%expect {| (exit_code 0) |}];
   require_does_raise [%here] (fun () -> Err.exit Err.Exit_code.some_error);
-  [%expect {| ((Exit 123)) |}];
+  [%expect {| (exit_code 123) |}];
   ()
 ;;

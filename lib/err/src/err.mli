@@ -49,11 +49,14 @@ type t
     re-raising backtraces, etc). *)
 exception E of t
 
-(** Return a [Sexp] to inspect what inside [t]. Note the sexp is incomplete and
-    it is not meant for supporting any kind of round trip serialization (there
-    is no [t_of_sexp]). Rather, this is for quick inspection of what's inside
-    [t]. We think exposing this can help accommodating some use cases, making
-    it easier to write expect tests involving [Err], etc. *)
+(** Return a [Sexp] to inspect what inside [t]. Note the sexp is not meant for
+    supporting any kind of round trip serialization (there is no [t_of_sexp]).
+    Rather, this is for interoperability with other error handling mechanisms
+    based on sexps. We think exposing this can help accommodating some use
+    cases, making it easier to write expect tests involving [Err], etc.
+
+    Note that the exit code contained in [t] is not shown by {!sexp_of_t}. See
+    {!With_exit_code.sexp_of_t} if needed. *)
 val sexp_of_t : t -> Sexplib0.Sexp.t
 
 (** {1 Exit codes}
@@ -79,6 +82,13 @@ end
     by existing CLIs built with cmdliner. Raises {!exception:E}. *)
 val exit : Exit_code.t -> _
 
+module With_exit_code : sig
+  type nonrec t = t
+
+  (** Same as [sexp_of_t] but augmented with the requested exit code. *)
+  val sexp_of_t : t -> Sexplib0.Sexp.t
+end
+
 (** {1 Raising errors} *)
 
 (** Raise a user error. You may override [exit_code] with the requested exit
@@ -100,35 +110,45 @@ val raise
   -> Pp_tty.t list
   -> _
 
-(** Reraise with added context. Usage:
+(** Create a err and return it, instead of raising it right away. *)
+val create
+  :  ?loc:Loc.t
+  -> ?context:Pp_tty.t list
+  -> ?hints:Pp_tty.t list
+  -> ?exit_code:Exit_code.t
+  -> Pp_tty.t list
+  -> t
+
+(** [sexp s] is the preferred way to embed some context of type [Sexp.t] into a
+    [_ Pp.t] paragraph as part of a error input. *)
+val sexp : Sexplib0.Sexp.t -> _ Pp.t
+
+(** {1 Context} *)
+
+(** [add_context t items] prepends the supplied items to the context of [t].
+    This approach reflects the idea of a stack: new context items are added to
+    the front, representing the most recent layer of context.
+
+    When rendered in the console, context items are displayed before the main
+    error paragraphs, with the most recently added context item appearing first.
+    This mirrors the reverse navigation of the program's call stack, as context
+    is typically added at the point where an error is caught and additional
+    information is provided.
+
+    This mechanism is useful for incrementally building a high-level "stack
+    trace" of user-defined context, helping to clarify the sequence of events
+    leading to the error. See also {!reraise_with_context}. *)
+val add_context : t -> Pp_tty.t list -> t
+
+(** Reraise with added context. See also {!add_context}. Usage:
 
     {[
       match do_x (Y.to_x y) with
       | exception Err.E e ->
         let bt = Printexc.get_raw_backtrace () in
-        Err.reraise bt e [ Pp.text "Trying to do x with y"; Y.pp y ]
+        Err.reraise_with_context e bt [ Pp.text "Trying to do x with y"; Y.pp y ]
     ]} *)
-val reraise
-  :  Printexc.raw_backtrace
-  -> t
-  -> ?loc:Loc.t
-  -> ?hints:Pp_tty.t list
-  -> ?exit_code:Exit_code.t
-  -> Pp_tty.t list
-  -> _
-
-(** Create a err and return it, instead of raising it right away. *)
-val create
-  :  ?loc:Loc.t
-  -> ?hints:Pp_tty.t list
-  -> ?exit_code:Exit_code.t
-  -> Pp_tty.t list
-  -> t
-
-(** [append ?exit_code t1 t2] creates a new err that contains all messages of t1
-    and t2. The exit_code of this new [t] may be specified, otherwise it will
-    be that of [t2]. *)
-val append : ?exit_code:Exit_code.t -> t -> t -> t
+val reraise_with_context : t -> Printexc.raw_backtrace -> Pp_tty.t list -> _
 
 (** {1 Result} *)
 
@@ -137,10 +157,9 @@ val append : ?exit_code:Exit_code.t -> t -> t -> t
     - [ok_exn (Error msg)] is [Stdlib.raise (E msg)] *)
 val ok_exn : ('a, t) result -> 'a
 
-(** When you need to render a [Sexp.t] into a [_ Pp.t] paragraph, things may
-    become tricky - newlines inserted in surprising places, etc. This
-    functions attempts to do an OK job at it. *)
-val sexp : Sexplib0.Sexp.t -> _ Pp.t
+(** Build an error from an exception. This uses the sexp of the exception under
+    the hood. *)
+val of_exn : exn -> t
 
 (** {1 Hints} *)
 
@@ -280,6 +299,12 @@ val log_enables : Log_level.t -> bool
     printed directly without a leading blank line. *)
 val prerr : ?reset_separator:bool -> t -> unit
 
+(** [to_string_hum t] is shorthand to [Sexp.to_string_hum (sexp_of_t t)]. This
+    may be used if you want to embed [t] as a string. Note you'll lose all
+    colors and other style formatting. For pretty printing of errors to the
+    console, see {!prerr}. *)
+val to_string_hum : t -> string
+
 (** {1 Non-raising user errors}
 
     This part of the library allows the production of messages that do not
@@ -404,7 +429,7 @@ val raise_s
   ; libraries = [ "pp" ]
   }]
 
-(** This is deprecated - use [Err.reraise] instead. *)
+(** This is deprecated - use [Err.reraise_with_context] instead. *)
 val reraise_s
   :  Printexc.raw_backtrace
   -> t
@@ -417,12 +442,9 @@ val reraise_s
 [@@migrate
   { repl =
       (fun bt e ?loc ?hints ?exit_code msg sexp ->
-        Rel.reraise
-          bt
+        Rel.reraise_with_context
           e
-          ?loc
-          ?hints
-          ?exit_code
+          bt
           [ (Pp.text msg [@commutes]); (Rel.sexp sexp [@commutes]) ])
   ; libraries = [ "pp" ]
   }]
