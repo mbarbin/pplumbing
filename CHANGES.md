@@ -6,8 +6,13 @@ To automatically apply the migration changes, first upgrade your `pplumbing` dep
 
 ### Added
 
+- Add concept of error "context" that can be augmented (#6, @mbarbin).
+- Better support and rendering of errors built with `Err.sexp` (#6, @mbarbin).
+
 ### Changed
 
+- Tweak some details in format of `Err.sexp_of_t` (#6, @mbarbin).
+- Do not include exit code in `Err.sexp_of_t` by default (#6, @mbarbin).
 - Rename `Err.pp_of_sexp` to `Err.sexp` to make it shorter (#4, @mbarbin).
 
 ### Deprecated
@@ -18,6 +23,7 @@ To automatically apply the migration changes, first upgrade your `pplumbing` dep
 
 ### Removed
 
+- Replaced `Err.append` by `Err.add_context` (#6, @mbarbin).
 - Removed `Stdune.User_message.t -> Err.t` helper (#5, @mbarbin).
 
 ## 0.0.11 (2025-04-25)

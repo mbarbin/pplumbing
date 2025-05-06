@@ -7,28 +7,165 @@ module Exit_code = struct
   let internal_error = 125
 end
 
-module Appendable_list = struct
-  include Stdune.Appendable_list
+let sexp sexp = Pp.verbatim (Sexplib0.Sexp.to_string_hum sexp)
 
-  let append = ( @ )
-  let iter t ~f = List.iter f (to_list t)
+module Paragraph = struct
+  type t = Pp_tty.t
+
+  let recognize_sexp t =
+    match Pp.to_ast t with
+    | Verbatim str ->
+      (match Parsexp.Single.parse_string str with
+       | Ok sexp -> Some sexp
+       | Error _ -> None)
+    | _ -> None
+  ;;
+
+  let sexp_of_t t =
+    match recognize_sexp t with
+    | Some sexp -> sexp
+    | None ->
+      let str = Format.asprintf "%a" Pp.to_fmt (Pp.hbox t) in
+      Sexplib0.Sexp.Atom str
+  ;;
+
+  let rec simplify_sexp sexp =
+    match (sexp : Sexplib0.Sexp.t) with
+    | (Atom _ | List []) as sexp -> sexp
+    | List [ sexp ] -> simplify_sexp sexp
+    | List [ (Atom str as atom); List (List _ :: _ as sexps) ]
+      when not (String.contains str ' ') -> List (atom :: List.map simplify_sexp sexps)
+    | List sexps -> List (List.map simplify_sexp sexps)
+  ;;
+
+  let default_sexp_rendering = sexp
+
+  (* Future plans involve coloring the sexps when rendering to the console. *)
+  let pp_sexp sexp =
+    let sexp = simplify_sexp sexp in
+    let pp =
+      (* This is an heuristic to improve the rendering of errors built with the
+         [%sexp] extension, such as:
+
+         {[
+           [%sexp "Error message", { fields }]
+         }]
+      *)
+      match (sexp : Sexplib0.Sexp.t) with
+      | List (Atom atom :: (List _ :: _ as sexps)) when String.contains atom ' ' ->
+        Pp.O.(
+          Pp.verbatim atom ++ Pp.space ++ Pp.concat_map sexps ~f:default_sexp_rendering)
+      | sexp -> default_sexp_rendering sexp
+    in
+    Pp.box pp
+  ;;
+
+  let pp t =
+    match recognize_sexp t with
+    | Some sexp -> pp_sexp sexp
+    | None -> t
+  ;;
 end
 
-(* The messages are sorted and printed in the order they were raised. For
-   example, in [reraise], we insert the new message to the right most position
-   of [t.messages]. *)
+module Prefix = struct
+  type t =
+    | Error
+    | Warning
+    | Info
+    | Debug
+
+  let to_string = function
+    | Error -> "Error"
+    | Warning -> "Warning"
+    | Info -> "Info"
+    | Debug -> "Debug"
+  ;;
+
+  let style : t -> Pp_tty.Style.t = function
+    | Error -> Error
+    | Warning -> Warning
+    | Info -> Kwd
+    | Debug -> Debug
+  ;;
+end
+
+let stdune_loc (loc : Loc.t) =
+  let { Loc.Lexbuf_loc.start; stop } = Loc.to_lexbuf_loc loc in
+  Stdune.Loc.of_lexbuf_loc { start; stop }
+;;
+
+let make_message ~prefix ?loc ?(context = []) ?(hints = []) paragraphs =
+  Stdune.User_message.make
+    ?loc:(Option.map stdune_loc loc)
+    ~hints
+    ~prefix:
+      (Pp.seq
+         (Pp.tag (Prefix.style prefix) (Pp.verbatim (Prefix.to_string prefix)))
+         (Pp.char ':'))
+    (List.map Paragraph.pp (List.concat [ context; paragraphs ]))
+;;
+
 type t =
-  { messages : Stdune.User_message.t Appendable_list.t
+  { loc : Loc.t option
+  ; context : Paragraph.t list
+  ; paragraphs : Paragraph.t list
+  ; hints : Pp_tty.t list
   ; exit_code : Exit_code.t
   }
 
-let sexp_of_t { messages; exit_code } =
-  Sexplib0.Sexp.List
-    (List.map
-       (fun message -> Sexplib0.Sexp.Atom (Stdune.User_message.to_string message))
-       (Appendable_list.to_list messages)
-     @ [ List [ Atom "Exit"; Atom (Int.to_string exit_code) ] ])
+let to_sexps { loc; context; paragraphs; hints; exit_code = _ } =
+  List.concat
+    [ (match loc with
+       | None -> []
+       | Some loc ->
+         if Loc.include_sexp_of_locs.contents
+         then [ Sexplib0.Sexp.Atom (Loc.to_string loc) ]
+         else [])
+    ; (if List.is_empty context
+       then List.map Paragraph.sexp_of_t paragraphs
+       else
+         [ List (Atom "context" :: List.map Paragraph.sexp_of_t context)
+         ; List (Atom "error" :: List.map Paragraph.sexp_of_t paragraphs)
+         ])
+    ; (match hints with
+       | [] -> []
+       | _ :: _ -> [ List (Atom "hints" :: List.map Paragraph.sexp_of_t hints) ])
+    ]
 ;;
+
+let to_stdune_user_message ~prefix { loc; context; paragraphs; hints; exit_code = _ } =
+  if
+    List.is_empty paragraphs
+    && Option.is_none loc
+    && List.is_empty context
+    && List.is_empty hints
+  then None
+  else Some (make_message ~prefix ?loc ~context ~hints paragraphs)
+;;
+
+let sexp_of_t_internal ~include_exit_code t =
+  let sexps = to_sexps t in
+  let list =
+    List.concat
+      [ sexps
+      ; (if include_exit_code || List.is_empty sexps
+         then [ List [ Atom "exit_code"; Atom (Int.to_string t.exit_code) ] ]
+         else [])
+      ]
+  in
+  match list with
+  | [ sexp ] -> sexp
+  | _ -> Sexplib0.Sexp.List list
+;;
+
+let sexp_of_t t = sexp_of_t_internal ~include_exit_code:false t
+let to_string_hum t = Sexplib0.Sexp.to_string_hum (sexp_of_t t)
+
+module With_exit_code = struct
+  type nonrec t = t
+
+  let sexp_of_t t = sexp_of_t_internal ~include_exit_code:true t
+end
 
 exception E of t
 
@@ -38,67 +175,42 @@ let () =
     | _ -> assert false)
 ;;
 
-let of_stdune_user_message ?(exit_code = Exit_code.some_error) t =
-  { messages = Appendable_list.singleton t; exit_code }
+let create
+      ?loc
+      ?(context = [])
+      ?(hints = [])
+      ?(exit_code = Exit_code.some_error)
+      paragraphs
+  =
+  { loc; context; paragraphs; hints; exit_code }
 ;;
 
-let stdune_loc (loc : Loc.t) =
-  let { Loc.Lexbuf_loc.start; stop } = Loc.to_lexbuf_loc loc in
-  Stdune.Loc.of_lexbuf_loc { start; stop }
-;;
-
-let create_error ?loc ?hints paragraphs =
-  Stdune.User_error.make ?loc:(Option.map stdune_loc loc) ?hints paragraphs
-;;
-
-let create ?loc ?hints ?exit_code paragraphs =
-  create_error ?loc ?hints paragraphs |> of_stdune_user_message ?exit_code
-;;
-
-let append ?exit_code t1 t2 =
-  let exit_code =
-    match exit_code with
-    | Some e -> e
-    | None -> t2.exit_code
-  in
-  { messages = Appendable_list.append t1.messages t2.messages; exit_code }
-;;
+let add_context t context = { t with context = context @ t.context }
 
 let raise ?loc ?hints ?exit_code paragraphs =
   Stdlib.raise (E (create ?loc ?hints ?exit_code paragraphs))
 ;;
 
-let reraise bt e ?loc ?hints ?(exit_code = Exit_code.some_error) paragraphs =
-  let message = create_error ?loc ?hints paragraphs in
-  Printexc.raise_with_backtrace
-    (E
-       { messages = Appendable_list.append e.messages (Appendable_list.singleton message)
-       ; exit_code
-       })
-    bt
+let reraise_with_context t bt context =
+  Printexc.raise_with_backtrace (E (add_context t context)) bt
 ;;
 
-let exit exit_code = Stdlib.raise (E { messages = Appendable_list.empty; exit_code })
+let exit exit_code =
+  Stdlib.raise (E { loc = None; context = []; paragraphs = []; hints = []; exit_code })
+;;
 
 let ok_exn = function
   | Ok x -> x
   | Error e -> Stdlib.raise (E e)
 ;;
 
-let did_you_mean = Stdune.User_message.did_you_mean
-
-let sexp sexp =
-  let rec aux sexp =
-    match (sexp : Sexplib0.Sexp.t) with
-    | Atom s -> Pp.verbatim s
-    | List [ sexp ] -> aux sexp
-    | List _ -> Pp.verbatim (Sexplib0.Sexp.to_string_hum sexp)
-  in
-  match (sexp : Sexplib0.Sexp.t) with
-  | List (Atom atom :: sexps) ->
-    Pp.O.(Pp.verbatim atom ++ Pp.space ++ Pp.concat_map sexps ~f:aux)
-  | sexp -> aux sexp
+let of_exn exn =
+  match (exn : exn) with
+  | E e -> e
+  | _ -> create [ sexp (Sexplib0.Sexp_conv.sexp_of_exn exn) ]
 ;;
+
+let did_you_mean = Stdune.User_message.did_you_mean
 
 module Color_mode = struct
   type t =
@@ -188,15 +300,7 @@ let prerr_message (t : Stdune.User_message.t) =
 
 let prerr ?(reset_separator = false) (t : t) =
   if reset_separator then include_separator := false;
-  Appendable_list.iter t.messages ~f:prerr_message
-;;
-
-let make_message ~style ~prefix ?loc ?hints paragraphs =
-  Stdune.User_message.make
-    ?loc:(Option.map stdune_loc loc)
-    ?hints
-    ~prefix:(Pp.seq (Pp.tag style (Pp.verbatim prefix)) (Pp.char ':'))
-    paragraphs
+  Option.iter prerr_message (to_stdune_user_message ~prefix:Error t)
 ;;
 
 module Log_level = struct
@@ -244,7 +348,7 @@ let log_enables level = Log_level.compare (log_level ()) level >= 0
 let error ?loc ?hints paragraphs =
   if log_enables Error
   then (
-    let message = make_message ~style:Error ~prefix:"Error" ?loc ?hints paragraphs in
+    let message = make_message ~prefix:Error ?loc ?hints paragraphs in
     incr error_count_value;
     prerr_message message)
 ;;
@@ -252,7 +356,7 @@ let error ?loc ?hints paragraphs =
 let warning ?loc ?hints paragraphs =
   if log_enables Warning
   then (
-    let message = make_message ~style:Warning ~prefix:"Warning" ?loc ?hints paragraphs in
+    let message = make_message ~prefix:Warning ?loc ?hints paragraphs in
     incr warning_count_value;
     prerr_message message)
 ;;
@@ -260,16 +364,14 @@ let warning ?loc ?hints paragraphs =
 let info ?loc ?hints paragraphs =
   if log_enables Info
   then (
-    let message = make_message ~style:Kwd ~prefix:"Info" ?loc ?hints paragraphs in
+    let message = make_message ~prefix:Info ?loc ?hints paragraphs in
     prerr_message message)
 ;;
 
 let debug ?loc ?hints paragraphs =
   if log_enables Debug
   then (
-    let message =
-      make_message ~style:Debug ~prefix:"Debug" ?loc ?hints (Lazy.force paragraphs)
-    in
+    let message = make_message ~prefix:Debug ?loc ?hints (Lazy.force paragraphs) in
     prerr_message message)
 ;;
 
@@ -281,8 +383,8 @@ let pp_backtrace backtrace =
     |> List.filter (fun s -> not (String.length s = 0))
 ;;
 
-let handle_messages_and_exit ~err:{ messages; exit_code } ~backtrace =
-  Appendable_list.iter messages ~f:prerr_message;
+let handle_messages_and_exit ~err:({ exit_code; _ } as t) ~backtrace =
+  Option.iter prerr_message (to_stdune_user_message ~prefix:Error t);
   if Int.equal exit_code Exit_code.internal_error
   then (
     let message =
@@ -384,8 +486,8 @@ let raise_s ?loc ?hints ?exit_code desc s =
   raise ?loc ?hints ?exit_code [ Pp.text desc; sexp s ] [@coverage off]
 ;;
 
-let reraise_s bt e ?loc ?hints ?exit_code desc s =
-  reraise bt e ?loc ?hints ?exit_code [ Pp.text desc; sexp s ] [@coverage off]
+let reraise_s bt e ?loc:_ ?hints:_ ?exit_code:_ desc s =
+  reraise_with_context e bt [ Pp.text desc; sexp s ] [@coverage off]
 ;;
 
 let pp_of_sexp = sexp

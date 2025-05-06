@@ -33,6 +33,20 @@ let%expect_test "raise" =
   ()
 ;;
 
+let%expect_test "of_exn" =
+  let e = Err.create [ Pp.text "Hello of_exn" ] in
+  let e' = Err.of_exn (Err.E e) in
+  require [%here] (phys_equal e e');
+  [%expect {||}];
+  let e =
+    try failwith "Hello Exn!" with
+    | e -> Err.of_exn e
+  in
+  print_s [%sexp (e : Err.t)];
+  [%expect {| (Failure "Hello Exn!") |}];
+  ()
+;;
+
 let%expect_test "exit" =
   Err.For_test.protect (fun () -> Err.exit 0);
   [%expect {||}];
@@ -52,24 +66,15 @@ let%expect_test "reraise" =
     | _ -> assert false
     | exception Err.E e ->
       let bt = Stdlib.Printexc.get_raw_backtrace () in
-      Err.reraise
-        bt
-        e
-        ~loc:(Loc.of_file ~path:(Fpath.v "path/to/other-file.txt"))
-        ~exit_code:Err.Exit_code.internal_error
-        [ Pp.text "Re raised with context"; Pp.verbatim "x" ]);
+      Err.reraise_with_context e bt [ Pp.text "Re raised with context"; Pp.verbatim "x" ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
-    Error: Hello Raise
-    Hint: did you mean bar?
-
-    File "path/to/other-file.txt", line 1, characters 0-0:
     Error: Re raised with context
     x
-
-    Backtrace: <backtrace disabled in tests>
-    [125]
+    Hello Raise
+    Hint: did you mean bar?
+    [123]
     |}];
   ()
 ;;
@@ -92,38 +97,54 @@ let%expect_test "create" =
   ()
 ;;
 
-let%expect_test "append" =
+let%expect_test "sexp_of_t" =
+  let err =
+    Err.create
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
+      [ Pp.text "Hello Sexp"; Err.sexp [%sexp { a = Hello; b = 42 }] ]
+  in
+  print_s [%sexp (err : Err.t)];
+  [%expect
+    {|
+    ("Hello Sexp"
+      ((a Hello)
+       (b 42))
+      (hints "did you mean bar?"))
+    |}];
+  print_endline (Err.to_string_hum err);
+  [%expect {| ("Hello Sexp" ((a Hello) (b 42)) (hints "did you mean bar?")) |}];
+  ()
+;;
+
+let%expect_test "add_context" =
   let err1 =
     Err.create
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file-1.txt"))
       ~exit_code:41
       [ Pp.text "Hello Error 1" ]
   in
-  let err2 =
-    Err.create
-      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file-2.txt"))
-      ~exit_code:42
-      [ Pp.text "Hello Error 2" ]
-  in
-  Err.For_test.protect (fun () -> raise (Err.E (Err.append err1 err2)));
+  let err2 = Err.add_context err1 [ Pp.text "Hello Context 1" ] in
+  Err.For_test.protect (fun () -> raise (Err.E err2));
   [%expect
     {|
     File "path/to/my-file-1.txt", line 1, characters 0-0:
-    Error: Hello Error 1
-
-    File "path/to/my-file-2.txt", line 1, characters 0-0:
-    Error: Hello Error 2
-    [42]
+    Error: Hello Context 1
+    Hello Error 1
+    [41]
     |}];
-  Err.For_test.protect (fun () -> raise (Err.E (Err.append err1 err2 ~exit_code:2)));
+  let err3 =
+    Err.add_context err2 [ Pp.text "Hello Context 2"; Err.sexp [%sexp Hello Sexp] ]
+  in
+  Err.For_test.protect (fun () -> raise (Err.E err3));
   [%expect
     {|
     File "path/to/my-file-1.txt", line 1, characters 0-0:
-    Error: Hello Error 1
-
-    File "path/to/my-file-2.txt", line 1, characters 0-0:
-    Error: Hello Error 2
-    [2]
+    Error: Hello Context 2
+    (Hello Sexp)
+    Hello Context 1
+    Hello Error 1
+    [41]
     |}];
   ()
 ;;
@@ -153,7 +174,7 @@ let%expect_test "create_s" =
     Err.create
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      [ Pp.text "The summary of the error"
+      [ Pp.text "The summary of the error."
       ; Err.sexp [%sexp { x = 42; y = Some "msg"; var = "bah" }]
       ]
   in
@@ -161,7 +182,7 @@ let%expect_test "create_s" =
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
-    Error: The summary of the error
+    Error: The summary of the error.
     ((x 42) (y (Some msg)) (var bah))
     Hint: did you mean bar?
     [123]
@@ -169,7 +190,7 @@ let%expect_test "create_s" =
   ()
 ;;
 
-let%expect_test "raise_s" =
+let%expect_test "raise with sexp" =
   Err.For_test.protect (fun () ->
     Err.raise
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
@@ -183,10 +204,22 @@ let%expect_test "raise_s" =
     Hint: did you mean bar?
     [123]
     |}];
+  Err.For_test.protect (fun () ->
+    Err.raise
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
+      Pp.O.[ Pp.text "Hello Raise " ++ Err.sexp [%sexp { hello = 42 }] ]);
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error: Hello Raise ((hello 42))
+    Hint: did you mean bar?
+    [123]
+    |}];
   ()
 ;;
 
-let%expect_test "reraise_s" =
+let%expect_test "reraise_with_context" =
   Err.For_test.protect (fun () ->
     match
       Err.raise
@@ -197,21 +230,18 @@ let%expect_test "reraise_s" =
     | _ -> assert false
     | exception Err.E e ->
       let bt = Stdlib.Printexc.get_raw_backtrace () in
-      Err.reraise
-        bt
+      Err.reraise_with_context
         e
-        ~loc:(Loc.of_file ~path:(Fpath.v "path/to/other-file.txt"))
+        bt
         [ Pp.text "Re raised with context"; Err.sexp [%sexp { x = 42 }] ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
-    Error: Hello Raise
-    (hello 42)
-    Hint: did you mean bar?
-
-    File "path/to/other-file.txt", line 1, characters 0-0:
     Error: Re raised with context
     (x 42)
+    Hello Raise
+    (hello 42)
+    Hint: did you mean bar?
     [123]
     |}];
   ()
@@ -230,7 +260,9 @@ let%expect_test "prerr" =
       ~exit_code:42
       [ Pp.text "Hello Error 2" ]
   in
-  Err.For_test.protect (fun () -> Err.prerr (Err.append err1 err2));
+  Err.For_test.protect (fun () ->
+    Err.prerr err1;
+    Err.prerr err2);
   [%expect
     {|
     File "path/to/my-file-1.txt", line 1, characters 0-0:
@@ -241,21 +273,13 @@ let%expect_test "prerr" =
     |}];
   (* The fact is that [%expect _] strips the output to compare, so the leading
      blank line is not visible here. *)
-  Err.For_test.protect (fun () -> Err.prerr (Err.append err1 err2));
+  Err.For_test.protect (fun () ->
+    Err.prerr err1;
+    Err.prerr err2 ~reset_separator:true);
   [%expect
     {|
     File "path/to/my-file-1.txt", line 1, characters 0-0:
     Error: Hello Error 1
-
-    File "path/to/my-file-2.txt", line 1, characters 0-0:
-    Error: Hello Error 2
-    |}];
-  Err.For_test.protect (fun () -> Err.prerr (Err.append err1 err2) ~reset_separator:true);
-  [%expect
-    {|
-    File "path/to/my-file-1.txt", line 1, characters 0-0:
-    Error: Hello Error 1
-
     File "path/to/my-file-2.txt", line 1, characters 0-0:
     Error: Hello Error 2
     |}];
@@ -463,7 +487,7 @@ let%expect_test "non-test handler" =
 
 let%expect_test "raise without handler" =
   require_does_raise [%here] (fun () -> Err.raise [ Pp.text "Hello" ]);
-  [%expect {| (Hello (Exit 123)) |}];
+  [%expect {| Hello |}];
   ()
 ;;
 
