@@ -36,6 +36,22 @@ module Prefix = struct
   ;;
 end
 
+let stdune_loc (loc : Loc.t) =
+  let { Loc.Lexbuf_loc.start; stop } = Loc.to_lexbuf_loc loc in
+  Stdune.Loc.of_lexbuf_loc { start; stop }
+;;
+
+let make_message ~prefix ?loc ?hints paragraphs =
+  Stdune.User_message.make
+    ?loc:(Option.map stdune_loc loc)
+    ?hints
+    ~prefix:
+      (Pp.seq
+         (Pp.tag (Prefix.style prefix) (Pp.verbatim (Prefix.to_string prefix)))
+         (Pp.char ':'))
+    paragraphs
+;;
+
 (* The messages are sorted and printed in the order they were raised. For
    example, in [reraise], we insert the new message to the right most position
    of [t.messages]. *)
@@ -62,11 +78,6 @@ let () =
 
 let of_stdune_user_message ?(exit_code = Exit_code.some_error) t =
   { messages = Appendable_list.singleton t; exit_code }
-;;
-
-let stdune_loc (loc : Loc.t) =
-  let { Loc.Lexbuf_loc.start; stop } = Loc.to_lexbuf_loc loc in
-  Stdune.Loc.of_lexbuf_loc { start; stop }
 ;;
 
 let create_error ?loc ?hints paragraphs =
@@ -211,17 +222,6 @@ let prerr_message (t : Stdune.User_message.t) =
 let prerr ?(reset_separator = false) (t : t) =
   if reset_separator then include_separator := false;
   Appendable_list.iter t.messages ~f:prerr_message
-;;
-
-let make_message ~prefix ?loc ?hints paragraphs =
-  Stdune.User_message.make
-    ?loc:(Option.map stdune_loc loc)
-    ?hints
-    ~prefix:
-      (Pp.seq
-         (Pp.tag (Prefix.style prefix) (Pp.verbatim (Prefix.to_string prefix)))
-         (Pp.char ':'))
-    paragraphs
 ;;
 
 module Log_level = struct
