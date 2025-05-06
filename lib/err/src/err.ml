@@ -14,6 +14,28 @@ module Appendable_list = struct
   let iter t ~f = List.iter f (to_list t)
 end
 
+module Prefix = struct
+  type t =
+    | Error
+    | Warning
+    | Info
+    | Debug
+
+  let to_string = function
+    | Error -> "Error"
+    | Warning -> "Warning"
+    | Info -> "Info"
+    | Debug -> "Debug"
+  ;;
+
+  let style : t -> Pp_tty.Style.t = function
+    | Error -> Error
+    | Warning -> Warning
+    | Info -> Kwd
+    | Debug -> Debug
+  ;;
+end
+
 (* The messages are sorted and printed in the order they were raised. For
    example, in [reraise], we insert the new message to the right most position
    of [t.messages]. *)
@@ -191,11 +213,14 @@ let prerr ?(reset_separator = false) (t : t) =
   Appendable_list.iter t.messages ~f:prerr_message
 ;;
 
-let make_message ~style ~prefix ?loc ?hints paragraphs =
+let make_message ~prefix ?loc ?hints paragraphs =
   Stdune.User_message.make
     ?loc:(Option.map stdune_loc loc)
     ?hints
-    ~prefix:(Pp.seq (Pp.tag style (Pp.verbatim prefix)) (Pp.char ':'))
+    ~prefix:
+      (Pp.seq
+         (Pp.tag (Prefix.style prefix) (Pp.verbatim (Prefix.to_string prefix)))
+         (Pp.char ':'))
     paragraphs
 ;;
 
@@ -244,7 +269,7 @@ let log_enables level = Log_level.compare (log_level ()) level >= 0
 let error ?loc ?hints paragraphs =
   if log_enables Error
   then (
-    let message = make_message ~style:Error ~prefix:"Error" ?loc ?hints paragraphs in
+    let message = make_message ~prefix:Error ?loc ?hints paragraphs in
     incr error_count_value;
     prerr_message message)
 ;;
@@ -252,7 +277,7 @@ let error ?loc ?hints paragraphs =
 let warning ?loc ?hints paragraphs =
   if log_enables Warning
   then (
-    let message = make_message ~style:Warning ~prefix:"Warning" ?loc ?hints paragraphs in
+    let message = make_message ~prefix:Warning ?loc ?hints paragraphs in
     incr warning_count_value;
     prerr_message message)
 ;;
@@ -260,16 +285,14 @@ let warning ?loc ?hints paragraphs =
 let info ?loc ?hints paragraphs =
   if log_enables Info
   then (
-    let message = make_message ~style:Kwd ~prefix:"Info" ?loc ?hints paragraphs in
+    let message = make_message ~prefix:Info ?loc ?hints paragraphs in
     prerr_message message)
 ;;
 
 let debug ?loc ?hints paragraphs =
   if log_enables Debug
   then (
-    let message =
-      make_message ~style:Debug ~prefix:"Debug" ?loc ?hints (Lazy.force paragraphs)
-    in
+    let message = make_message ~prefix:Debug ?loc ?hints (Lazy.force paragraphs) in
     prerr_message message)
 ;;
 
