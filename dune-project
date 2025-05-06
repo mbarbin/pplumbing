@@ -41,6 +41,10 @@
    (>= 0.7.0))
   (ordering
    (>= 3.17))
+  (parsexp
+   (and
+    (>= v0.17)
+    (< v0.18)))
   (pp
    (>= 2.0.0))
   (sexplib0
@@ -88,6 +92,10 @@
    (>= 2.4))
   (ordering
    (>= 3.17))
+  (parsexp
+   (and
+    (>= v0.17)
+    (< v0.18)))
   (pp
    (>= 2.0.0))
   (pplumbing
@@ -190,6 +198,10 @@
    (>= 2.4))
   (ordering
    (>= 3.17))
+  (parsexp
+   (and
+    (>= v0.17)
+    (< v0.18)))
   (pp
    (>= 2.0.0))
   (pplumbing
