@@ -172,11 +172,12 @@ let%expect_test "ok_exn" =
 
 let%expect_test "create_s" =
   let err =
-    Err.create_s
+    Err.create
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      "The summary of the error"
-      [%sexp { x = 42; y = Some "msg"; var = "bah" }]
+      [ Pp.text "The summary of the error"
+      ; Err.sexp [%sexp { x = 42; y = Some "msg"; var = "bah" }]
+      ]
   in
   Err.For_test.protect (fun () -> raise (Err.E err));
   [%expect
@@ -192,11 +193,10 @@ let%expect_test "create_s" =
 
 let%expect_test "raise_s" =
   Err.For_test.protect (fun () ->
-    Err.raise_s
+    Err.raise
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      "Hello Raise"
-      [%sexp { hello = 42 }]);
+      [ Pp.text "Hello Raise"; Err.sexp [%sexp { hello = 42 }] ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
@@ -211,21 +211,19 @@ let%expect_test "raise_s" =
 let%expect_test "reraise_s" =
   Err.For_test.protect (fun () ->
     match
-      Err.raise_s
+      Err.raise
         ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
         ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-        "Hello Raise"
-        [%sexp { hello = 42 }]
+        [ Pp.text "Hello Raise"; Err.sexp [%sexp { hello = 42 }] ]
     with
     | _ -> assert false
     | exception Err.E e ->
       let bt = Stdlib.Printexc.get_raw_backtrace () in
-      Err.reraise_s
+      Err.reraise
         bt
         e
         ~loc:(Loc.of_file ~path:(Fpath.v "path/to/other-file.txt"))
-        "Re raised with context"
-        [%sexp { x = 42 }]);
+        [ Pp.text "Re raised with context"; Err.sexp [%sexp { x = 42 }] ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:

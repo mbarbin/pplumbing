@@ -87,7 +87,7 @@ let ok_exn = function
 
 let did_you_mean = Stdune.User_message.did_you_mean
 
-let pp_of_sexp sexp =
+let sexp sexp =
   let rec aux sexp =
     match (sexp : Sexplib0.Sexp.t) with
     | Atom s -> Pp.verbatim s
@@ -98,18 +98,6 @@ let pp_of_sexp sexp =
   | List (Atom atom :: sexps) ->
     Pp.O.(Pp.verbatim atom ++ Pp.space ++ Pp.concat_map sexps ~f:aux)
   | sexp -> aux sexp
-;;
-
-let create_s ?loc ?hints ?exit_code desc sexp =
-  create ?loc ?hints ?exit_code [ Pp.text desc; pp_of_sexp sexp ]
-;;
-
-let raise_s ?loc ?hints ?exit_code desc sexp =
-  raise ?loc ?hints ?exit_code [ Pp.text desc; pp_of_sexp sexp ]
-;;
-
-let reraise_s bt e ?loc ?hints ?exit_code desc sexp =
-  reraise bt e ?loc ?hints ?exit_code [ Pp.text desc; pp_of_sexp sexp ]
 ;;
 
 module Color_mode = struct
@@ -387,3 +375,17 @@ module Private = struct
     ()
   ;;
 end
+
+let create_s ?loc ?hints ?exit_code desc s =
+  create ?loc ?hints ?exit_code [ Pp.text desc; sexp s ] [@coverage off]
+;;
+
+let raise_s ?loc ?hints ?exit_code desc s =
+  raise ?loc ?hints ?exit_code [ Pp.text desc; sexp s ] [@coverage off]
+;;
+
+let reraise_s bt e ?loc ?hints ?exit_code desc s =
+  reraise bt e ?loc ?hints ?exit_code [ Pp.text desc; sexp s ] [@coverage off]
+;;
+
+let pp_of_sexp = sexp

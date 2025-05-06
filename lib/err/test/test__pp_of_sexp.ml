@@ -1,5 +1,5 @@
 let%expect_test "pp_of_sexp" =
-  let test sexp = Err.For_test.protect (fun () -> Err.raise [ Err.pp_of_sexp sexp ]) in
+  let test sexp = Err.For_test.protect (fun () -> Err.raise [ Err.sexp sexp ]) in
   test [%sexp ()];
   [%expect
     {|
