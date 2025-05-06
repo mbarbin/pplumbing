@@ -1,4 +1,6 @@
 let%expect_test "pp_of_sexp" =
+  Err.For_test.wrap
+  @@ fun () ->
   let test sexp =
     let err = Err.create [ Err.sexp sexp ] in
     print_endline "========= sexp ==========";
@@ -81,6 +83,8 @@ let sexp_vs_prerr err =
 ;;
 
 let%expect_test "sexp vs prerr" =
+  Err.For_test.wrap
+  @@ fun () ->
   let test = sexp_vs_prerr in
   let err = Err.create [ Pp.verbatim "Hello World" ] in
   test err;
@@ -126,6 +130,8 @@ let%expect_test "sexp vs prerr" =
 ;;
 
 let%expect_test "with positions" =
+  Err.For_test.wrap
+  @@ fun () ->
   let file_cache =
     Loc.File_cache.create
       ~path:(Fpath.v "foo.txt")
