@@ -120,8 +120,12 @@ val create
   -> t
 
 (** [sexp s] is the preferred way to embed some context of type [Sexp.t] into a
-    [_ Pp.t] paragraph as part of a error input. *)
+    [_ Pp.t] paragraph as part of a error. *)
 val sexp : Sexplib0.Sexp.t -> _ Pp.t
+
+(** [exn e] is the preferred way to embed an exception into a [_ Pp.t] paragraph
+    as part of an error. *)
+val exn : exn -> _ Pp.t
 
 (** {1 Context} *)
 

@@ -8,6 +8,7 @@ module Exit_code = struct
 end
 
 let sexp sexp = Pp.verbatim (Sexplib0.Sexp.to_string_hum sexp)
+let exn e = sexp (Sexplib0.Sexp_conv.sexp_of_exn e)
 
 module Paragraph = struct
   type t = Pp_tty.t
@@ -204,10 +205,10 @@ let ok_exn = function
   | Error e -> Stdlib.raise (E e)
 ;;
 
-let of_exn exn =
-  match (exn : exn) with
+let of_exn e =
+  match (e : exn) with
   | E e -> e
-  | _ -> create [ sexp (Sexplib0.Sexp_conv.sexp_of_exn exn) ]
+  | e -> create [ exn e ]
 ;;
 
 let did_you_mean = Stdune.User_message.did_you_mean
