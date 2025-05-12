@@ -2,6 +2,7 @@
 
 ### Added
 
+- Rename `--verbosity` flag into `--log-level`. Keep former as alias (@mbarbin).
 - Add a type for message levels and add new `Err.emit t ~level` function (#7, @mbarbin).
 
 ### Changed
