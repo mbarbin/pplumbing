@@ -452,7 +452,7 @@ val reraise_s
   -> _
 [@@migrate
   { repl =
-      (fun bt e ?loc ?hints ?exit_code msg sexp ->
+      (fun bt e ?loc:_ ?hints:_ ?exit_code:_ msg sexp ->
         Rel.reraise_with_context
           e
           bt
