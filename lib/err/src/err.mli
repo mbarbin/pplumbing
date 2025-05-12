@@ -35,7 +35,7 @@ type t
     {ul
      {- When reporting an error:
         {[
-          if had_error then Err.raise [ Pp.text "An error occurred" ]
+          if had_error then Err.raise [ Pp.text "An error occurred." ]
         ]}
      }
     }
@@ -183,11 +183,11 @@ val did_you_mean : string -> candidates:string list -> Pp_tty.t list
     by libraries if needed. *)
 val am_running_test : unit -> bool
 
-(** This return the number of errors that have been emitted via [Err.error]
-    since the last [reset_counts]. Beware, note that errors raised as
-    exceptions via functions such as [Err.raise] do not affect the error
-    count. The motivation is to allow exceptions to be caught without
-    impacting the overall exit code. *)
+(** This return the number of errors that have been emitted via {!val:Err.error}
+    since the last [reset_counts] (in practice that is the start of the
+    program). Beware, note that errors raised as exceptions via functions such
+    as {!val:Err.raise} do not affect the error count. The motivation is to
+    allow exceptions to be caught without impacting the overall exit code. *)
 val error_count : unit -> int
 
 (** A convenient wrapper for [Err.error_count () > 0].
@@ -198,8 +198,8 @@ val error_count : unit -> int
     given point rather than returning meaningless data. *)
 val had_errors : unit -> bool
 
-(** Return the number of warnings that have been emitted via [Err.warning] since
-    the last [reset_counts]. *)
+(** Return the number of warnings that have been emitted via {!val:Err.warning}
+    since the last [reset_counts]. *)
 val warning_count : unit -> int
 
 (** {2 Color mode}
@@ -462,7 +462,7 @@ end
     This part of the API is, or will be soon, deprecated. We have added
     [ocamlmig] annotations to help with migrating existing code. *)
 
-(** This is deprecated - use [Err.create] instead. *)
+(** This is deprecated - use {!val:Err.create} instead. *)
 val create_s
   :  ?loc:Loc.t
   -> ?hints:Pp_tty.t list
@@ -481,7 +481,7 @@ val create_s
   ; libraries = [ "pp" ]
   }]
 
-(** This is deprecated - use [Err.raise] instead. *)
+(** This is deprecated - use {!val:Err.raise} instead. *)
 val raise_s
   :  ?loc:Loc.t
   -> ?hints:Pp_tty.t list
@@ -500,7 +500,7 @@ val raise_s
   ; libraries = [ "pp" ]
   }]
 
-(** This is deprecated - use [Err.reraise_with_context] instead. *)
+(** This is deprecated - use {!Err.reraise_with_context} instead. *)
 val reraise_s
   :  Printexc.raw_backtrace
   -> t
@@ -520,6 +520,6 @@ val reraise_s
   ; libraries = [ "pp" ]
   }]
 
-(** This was renamed [Err.sexp]. *)
+(** This was renamed {!val:Err.sexp}. *)
 val pp_of_sexp : Sexplib0.Sexp.t -> _ Pp.t
 [@@migrate { repl = Rel.sexp }]
