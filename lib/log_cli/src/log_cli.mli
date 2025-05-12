@@ -1,3 +1,9 @@
+(*_********************************************************************************)
+(*_  pplumbing - Utility libraries to use with [pp]                               *)
+(*_  SPDX-FileCopyrightText: 2024-2025 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*_  SPDX-License-Identifier: MIT                                                 *)
+(*_********************************************************************************)
+
 (** [Log_cli] contains functions to work with [Err] on the side of end
     programs (such as a command line tool, as opposed to libraries).
 

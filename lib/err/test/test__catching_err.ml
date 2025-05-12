@@ -1,3 +1,9 @@
+(*********************************************************************************)
+(*  pplumbing - Utility libraries to use with [pp]                               *)
+(*  SPDX-FileCopyrightText: 2024-2025 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*  SPDX-License-Identifier: MIT                                                 *)
+(*********************************************************************************)
+
 (* In this test we characterize the behavior of [Err] when we are interested in
    catching errors from the user land of an upstream library that produces
    errors with [Err]. *)

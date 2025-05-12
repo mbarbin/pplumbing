@@ -1,3 +1,9 @@
+(*********************************************************************************)
+(*  pplumbing - Utility libraries to use with [pp]                               *)
+(*  SPDX-FileCopyrightText: 2024-2025 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*  SPDX-License-Identifier: MIT                                                 *)
+(*********************************************************************************)
+
 module Ansi_color = Ansi_color
 module Style = Stdune.User_message.Style
 module Print_config = Stdune.User_message.Print_config

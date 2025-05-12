@@ -1,3 +1,9 @@
+(*********************************************************************************)
+(*  pplumbing - Utility libraries to use with [pp]                               *)
+(*  SPDX-FileCopyrightText: 2024-2025 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*  SPDX-License-Identifier: MIT                                                 *)
+(*********************************************************************************)
+
 let%expect_test "exit codes" =
   print_s [%sexp (Err.Exit_code.ok : int)];
   require [%here] (Cmdliner.Cmd.Exit.ok = Err.Exit_code.ok);

@@ -1,3 +1,9 @@
+(*********************************************************************************)
+(*  pplumbing - Utility libraries to use with [pp]                               *)
+(*  SPDX-FileCopyrightText: 2024-2025 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*  SPDX-License-Identifier: MIT                                                 *)
+(*********************************************************************************)
+
 let%expect_test "pp_of_sexp" =
   Err.For_test.wrap
   @@ fun () ->

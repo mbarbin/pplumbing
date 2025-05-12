@@ -1,3 +1,9 @@
+(*_********************************************************************************)
+(*_  pplumbing - Utility libraries to use with [pp]                               *)
+(*_  SPDX-FileCopyrightText: 2024-2025 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*_  SPDX-License-Identifier: MIT                                                 *)
+(*_********************************************************************************)
+
 (** Err is an abstraction to report located errors and warnings to the user.
 
     The canonical syntax for an error produced by this lib is:
