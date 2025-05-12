@@ -45,6 +45,15 @@ let%expect_test "compare" =
   ()
 ;;
 
+let print_err_state () =
+  print_s
+    [%sexp
+      { had_errors = (Err.had_errors () : bool)
+      ; error_count = (Err.error_count () : int)
+      ; warning_count = (Err.warning_count () : int)
+      }]
+;;
+
 let%expect_test "log levels" =
   Err.Private.reset_counts ();
   Err.For_test.wrap
@@ -68,8 +77,13 @@ let%expect_test "log levels" =
     Warning: Hello Warning1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test (Some Info);
   [%expect
     {|
@@ -78,8 +92,13 @@ let%expect_test "log levels" =
     Warning: Hello Warning1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test (Some Debug);
   [%expect
     {|
@@ -88,8 +107,13 @@ let%expect_test "log levels" =
     Warning: Hello Warning1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   (* In this section we set both levels consistently ourselves. *)
   Err.Private.set_log_level
     ~get:(fun () ->
@@ -112,20 +136,35 @@ let%expect_test "log levels" =
   test None;
   [%expect {| [123] |}];
   (* Note that the error is accounted for even though it is not printed. *)
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test (Some App);
   [%expect {| [123] |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test (Some Error);
   [%expect
     {|
     Error: Hello Error1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test (Some Warning);
   [%expect
     {|
@@ -134,8 +173,13 @@ let%expect_test "log levels" =
     Warning: Hello Warning1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test (Some Info);
   [%expect
     {|
@@ -146,8 +190,13 @@ let%expect_test "log levels" =
     Info: Hello Info1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test (Some Debug);
   [%expect
     {|
@@ -160,8 +209,13 @@ let%expect_test "log levels" =
     Debug: Hello Debug1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   (* In this section we go through [Log_cli]. *)
   let test level =
     Err.For_test.protect (fun () ->
@@ -173,20 +227,35 @@ let%expect_test "log levels" =
   in
   test Quiet;
   [%expect {| [123] |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test App;
   [%expect {| [123] |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test Error;
   [%expect
     {|
     Error: Hello Error1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test Warning;
   [%expect
     {|
@@ -195,8 +264,13 @@ let%expect_test "log levels" =
     Warning: Hello Warning1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test Info;
   [%expect
     {|
@@ -207,8 +281,13 @@ let%expect_test "log levels" =
     Info: Hello Info1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   test Debug;
   [%expect
     {|
@@ -221,8 +300,13 @@ let%expect_test "log levels" =
     Debug: Hello Debug1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 1))
+    |}];
   ()
 ;;
 
@@ -236,8 +320,13 @@ let%expect_test "error when quiet" =
     set_log_level Quiet;
     Err.error [ Pp.text "Hello Exn1" ]);
   [%expect {| [123] |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| true |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    true)
+     (error_count   1)
+     (warning_count 0))
+    |}];
   ()
 ;;
 
@@ -254,7 +343,12 @@ let%expect_test "raise when quiet" =
     {|
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| false |}];
+  print_err_state ();
+  [%expect
+    {|
+    ((had_errors    false)
+     (error_count   0)
+     (warning_count 0))
+    |}];
   ()
 ;;
