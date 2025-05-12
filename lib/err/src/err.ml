@@ -453,17 +453,19 @@ let pp_backtrace backtrace =
 ;;
 
 let handle_messages_and_exit ~err:({ exit_code; _ } as t) ~backtrace =
-  Option.iter prerr_message (to_stdune_user_message ~level:Error t);
-  if Int.equal exit_code Exit_code.internal_error
+  if log_enables ~level:Error
   then (
-    let message =
-      let prefix = Pp.seq (Pp_tty.tag Error (Pp.verbatim "Backtrace")) (Pp.char ':') in
-      let backtrace = pp_backtrace backtrace in
-      Stdune.User_message.make
-        ~prefix
-        [ Pp.concat_map ~sep:(Pp.break ~nspaces:1 ~shift:0) backtrace ~f:Pp.verbatim ]
-    in
-    prerr_message message);
+    Option.iter prerr_message (to_stdune_user_message ~level:Error t);
+    if Int.equal exit_code Exit_code.internal_error
+    then (
+      let message =
+        let prefix = Pp.seq (Pp_tty.tag Error (Pp.verbatim "Backtrace")) (Pp.char ':') in
+        let backtrace = pp_backtrace backtrace in
+        Stdune.User_message.make
+          ~prefix
+          [ Pp.concat_map ~sep:(Pp.break ~nspaces:1 ~shift:0) backtrace ~f:Pp.verbatim ]
+      in
+      prerr_message message));
   Error exit_code
 ;;
 
@@ -484,20 +486,22 @@ let protect ?(exn_handler = Fun.const None) f =
     (match exn_handler exn with
      | Some err -> handle_messages_and_exit ~err ~backtrace
      | None ->
-       let message =
-         let prefix =
-           Pp.seq (Pp_tty.tag Error (Pp.verbatim "Internal Error")) (Pp.char ':')
+       if log_enables ~level:Error
+       then (
+         let message =
+           let prefix =
+             Pp.seq (Pp_tty.tag Error (Pp.verbatim "Internal Error")) (Pp.char ':')
+           in
+           let backtrace = pp_backtrace backtrace in
+           Stdune.User_message.make
+             ~prefix
+             [ Pp.concat_map
+                 ~sep:(Pp.break ~nspaces:1 ~shift:0)
+                 (Printexc.to_string exn :: backtrace)
+                 ~f:Pp.verbatim
+             ]
          in
-         let backtrace = pp_backtrace backtrace in
-         Stdune.User_message.make
-           ~prefix
-           [ Pp.concat_map
-               ~sep:(Pp.break ~nspaces:1 ~shift:0)
-               (Printexc.to_string exn :: backtrace)
-               ~f:Pp.verbatim
-           ]
-       in
-       prerr_message message;
+         prerr_message message);
        Error Exit_code.internal_error)
 ;;
 

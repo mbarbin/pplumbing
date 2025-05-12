@@ -12,6 +12,8 @@
 
 ### Fixed
 
+- Do not print raised errors and exceptions when in quiet mode (#9, @mbarbin).
+
 ### Removed
 
 ## 0.0.12 (2025-05-06)

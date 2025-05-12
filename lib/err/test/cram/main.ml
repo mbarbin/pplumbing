@@ -35,12 +35,15 @@ let write_cmd =
          ~default:Error
          ~docv:"LEVEL"
          ~doc:"The level of the message to emit."
-     and+ raise = Arg.flag [ "raise" ] ~doc:"raise an exception" in
+     and+ uncaught_exception =
+       Arg.flag [ "uncaught-exception" ] ~doc:"Raise an uncaught exception."
+     and+ err_raise = Arg.flag [ "err-raise" ] ~doc:"Raise an error with [Err.raise]." in
      let loc =
        let p = { Lexing.pos_fname = file; pos_lnum = line; pos_cnum; pos_bol } in
        Loc.create (p, { p with pos_cnum = pos_cnum + length })
      in
-     if raise then failwith "Raising an exception!";
+     if uncaught_exception then failwith "Raising an exception!";
+     if err_raise then Err.raise ~loc [ Pp.text "Hello [Err.raise]!" ];
      let msg = Err.create ~loc [ Pp.textf "%s message" (Err.Level.to_string level) ] in
      Err.emit msg ~level)
 ;;

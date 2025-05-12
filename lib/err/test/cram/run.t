@@ -60,8 +60,17 @@ Exercising the error handling from the command line.
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 0 --length 5 \
-  > --raise 2>&1 | head -n 1
+  > --uncaught-exception 2>&1 | head -n 1
   Internal Error: Failure("Raising an exception!")
+
+  $ ./main.exe write --file file --line 1 --pos-bol 0 \
+  > --pos-cnum 0 --length 5 \
+  > --err-raise
+  File "file", line 1, characters 0-5:
+  1 | Hello World
+      ^^^^^
+  Error: Hello [Err.raise]!
+  [123]
 
 Logs and Fmt options.
 
@@ -94,3 +103,19 @@ correctly accounted for in the error count.
   > --level=error \
   > --verbosity=quiet
   [123]
+
+The same must be true for errors that are raised via `Err.raise`.
+
+  $ ./main.exe write --file file --line 1 --pos-bol 0 \
+  > --pos-cnum 0 --length 5 \
+  > --verbosity=quiet \
+  > --err-raise
+  [123]
+
+And internal errors too.
+
+  $ ./main.exe write --file file --line 1 --pos-bol 0 \
+  > --pos-cnum 0 --length 5 \
+  > --verbosity=quiet \
+  > --uncaught-exception
+  [125]

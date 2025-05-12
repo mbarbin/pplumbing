@@ -227,8 +227,8 @@ let%expect_test "log levels" =
 ;;
 
 let%expect_test "error when quiet" =
-  (* When the logs level is set to [quiet] errors are not shown, and not
-     accounted for in the [error_count] and [had_errors]. *)
+  (* When the logs level is set to [quiet] errors are not shown, but they are
+     accounted for by [error_count] and [had_errors]. *)
   Err.For_test.protect (fun () ->
     let set_log_level log_level =
       Log_cli.setup_config ~config:(Log_cli.Config.create ~log_level ())
@@ -242,8 +242,8 @@ let%expect_test "error when quiet" =
 ;;
 
 let%expect_test "raise when quiet" =
-  (* When the logs level is set to [quiet], raising errors will be non impacted
-     and behaves as usual. *)
+  (* When the logs level is set to [quiet], raised errors will not be shown, but
+     this does not impact the exit code, nor the exception raised. *)
   Err.For_test.protect (fun () ->
     let set_log_level log_level =
       Log_cli.setup_config ~config:(Log_cli.Config.create ~log_level ())
@@ -252,7 +252,6 @@ let%expect_test "raise when quiet" =
     Err.raise [ Pp.text "Hello Exn1" ]);
   [%expect
     {|
-    Error: Hello Exn1
     [123]
     |}];
   print_s [%sexp (Err.had_errors () : bool)];
