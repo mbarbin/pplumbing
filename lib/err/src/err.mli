@@ -362,15 +362,17 @@ val to_string_hum : t -> string
     [warning_count]), which is going to be used by {!val:protect} to impact the
     exit code of the application. Use with care. *)
 
-(** Emit an error on stderr and increase the global error count. Requires a log
-    level of [Error] or more, enabled by default. *)
+(** Emit an error on stderr if the log level is [Error] or more (enabled by
+    default). Note that this function increments the error count regardless of
+    the log level (even when the message is not displayed that is). *)
 val error : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
 
-(** Emit a warning on stderr and increase the global warning count. Requires a
-    log level of [Warning] or more, enabled by default. *)
+(** Emit a warning on stderr if the log level is [Warning] or more (enabled by
+    default). Note that this function increments the warning count regardless of
+    the log level (even when the message is not displayed that is). *)
 val warning : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
 
-(** Emit a information message on stderr. Required verbosity level of [Info] or
+(** Emit a information message on stderr. Requires a log level of [Info] or
     more, disabled by default. *)
 val info : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
 
@@ -396,7 +398,11 @@ val debug : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list Lazy.t -> unit
 
     The emit functions does check the current log level, and only emit the message
     if permitted it - for example, [emit t ~level:Warning] actually emits a warning
-    only when [log_enables ~level:Warning = true]. *)
+    only when [log_enables ~level:Warning = true].
+
+    Emitting with level [Error] (resp. [Warning]) increments the global error
+    count (resp. warning count), even when the log level is such that the
+    message is not actually printed (such as in [Quiet] mode, for example). *)
 val emit : t -> level:Level.t -> unit
 
 (** {1 Handler}
