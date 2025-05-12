@@ -35,6 +35,10 @@ These libraries are meant to combine nicely into a small ecosystem of useful hel
 - [logs](https://github.com/dbuenzli/logs)
 - [pp](https://github.com/ocaml-dune/pp)
 
+## Experimental Status
+
+:construction: `pplumbing` is currently under construction. During this initial `0.0.X` experimental phase, the interfaces and behavior are subject to breaking changes.
+
 ## Acknowledgements
 
 - We are thankful to the authors and contributors of the projects we use as dependencies.
