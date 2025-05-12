@@ -407,18 +407,18 @@ let log_level () = log_level_get_value.contents ()
 let log_enables ~level = Log_level.compare (log_level ()) (Log_level.of_level level) >= 0
 
 let error ?loc ?hints paragraphs =
+  incr error_count_value;
   if log_enables ~level:Error
   then (
     let message = make_message ~level:Error ?loc ?hints paragraphs in
-    incr error_count_value;
     prerr_message message)
 ;;
 
 let warning ?loc ?hints paragraphs =
+  incr warning_count_value;
   if log_enables ~level:Warning
   then (
     let message = make_message ~level:Warning ?loc ?hints paragraphs in
-    incr warning_count_value;
     prerr_message message)
 ;;
 
@@ -437,15 +437,11 @@ let debug ?loc ?hints paragraphs =
 ;;
 
 let emit t ~level =
-  if log_enables ~level
-  then
-    to_stdune_user_message t ~level
-    |> Option.iter (fun message ->
-      (match level with
-       | Error -> incr error_count_value
-       | Warning -> incr warning_count_value
-       | Info | Debug -> ());
-      prerr_message message)
+  (match (level : Level.t) with
+   | Error -> incr error_count_value
+   | Warning -> incr warning_count_value
+   | Info | Debug -> ());
+  if log_enables ~level then Option.iter prerr_message (to_stdune_user_message t ~level)
 ;;
 
 let pp_backtrace backtrace =

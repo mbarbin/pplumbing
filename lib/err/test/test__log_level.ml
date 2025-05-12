@@ -110,14 +110,14 @@ let%expect_test "log levels" =
           | Info -> Some Info
           | Debug -> Some Debug) [@coverage off]));
   test None;
-  [%expect {||}];
-  (* Note how disabling the errors causes [had_errors] to return [false]. *)
+  [%expect {| [123] |}];
+  (* Note that the error is accounted for even though it is not printed. *)
   print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| false |}];
+  [%expect {| true |}];
   test (Some App);
-  [%expect {| |}];
+  [%expect {| [123] |}];
   print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| false |}];
+  [%expect {| true |}];
   test (Some Error);
   [%expect
     {|
@@ -172,13 +172,13 @@ let%expect_test "log levels" =
       Err.debug (lazy [ Pp.text "Hello Debug1" ]))
   in
   test Quiet;
-  [%expect {||}];
+  [%expect {| [123] |}];
   print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| false |}];
+  [%expect {| true |}];
   test App;
-  [%expect {| |}];
+  [%expect {| [123] |}];
   print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| false |}];
+  [%expect {| true |}];
   test Error;
   [%expect
     {|
@@ -235,9 +235,9 @@ let%expect_test "error when quiet" =
     in
     set_log_level Quiet;
     Err.error [ Pp.text "Hello Exn1" ]);
-  [%expect {||}];
+  [%expect {| [123] |}];
   print_s [%sexp (Err.had_errors () : bool)];
-  [%expect {| false |}];
+  [%expect {| true |}];
   ()
 ;;
 

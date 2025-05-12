@@ -85,16 +85,12 @@ Logs and Fmt options.
   Error: error message
   [123]
 
-When the log level is 'quiet', even errors should not be shown.
+When the log level is 'quiet', even errors should not be shown. We note however
+that the exit code stayed the same : even if the message is not shown, it is
+correctly accounted for in the error count.
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 0 --length 5 \
   > --level=error \
   > --verbosity=quiet
-
-The rendering part works as expected for emitted errors, however currently we
-note a potential source of confusion: since errors are disabled due to the quiet
-log level, they are not accounted for at all in the exit code.
-
-We are keeping this as characterization here, however this may be subject to
-change in future versions.
+  [123]
