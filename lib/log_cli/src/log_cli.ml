@@ -42,7 +42,7 @@ module Config = struct
     let+ verbose_count =
       Arg.flag_count
         [ "verbose"; "v" ]
-        ~doc:"Increase verbosity. Repeatable, but more than twice does not bring more"
+        ~doc:"Increase verbosity. Repeatable, but more than twice does not bring more."
     and+ verbosity =
       Arg.named_opt
         [ "log-level"; "verbosity" ]
@@ -50,7 +50,7 @@ module Config = struct
         ~docv:"LEVEL"
         ~doc:"Be more or less verbose. Takes over $(b,v)."
     and+ quiet =
-      Arg.flag [ "quiet"; "q" ] ~doc:"Be quiet. Takes over $(b,v) and $(b,--verbosity)"
+      Arg.flag [ "quiet"; "q" ] ~doc:"Be quiet. Takes over $(b,v) and $(b,--verbosity)."
     in
     if quiet
     then Log_level.Quiet
@@ -71,7 +71,7 @@ module Config = struct
       (Param.enumerated (module Color_mode))
       ~default:`Auto
       ~docv:"WHEN"
-      ~doc:"Colorize the output"
+      ~doc:"Colorize the output."
   ;;
 
   type t =
@@ -99,7 +99,7 @@ module Config = struct
 
   let arg =
     let open Command.Std in
-    let+ warn_error = Arg.flag [ "warn-error" ] ~doc:"treat warnings as errors"
+    let+ warn_error = Arg.flag [ "warn-error" ] ~doc:"Treat warnings as errors."
     and+ log_level = log_level_arg
     and+ color_mode = color_mode_arg in
     { log_level; color_mode; warn_error }
