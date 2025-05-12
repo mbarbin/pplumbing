@@ -1,3 +1,19 @@
+## 0.0.13 (unreleased)
+
+### Added
+
+- Add a type for message levels and add new `Err.emit t ~level` function (#7, @mbarbin).
+
+### Changed
+
+- Increment errors and warning counts even when the message is not shown (#8, @mbarbin).
+
+### Deprecated
+
+### Fixed
+
+### Removed
+
 ## 0.0.12 (2025-05-06)
 
 This release prepares the deprecation of a few functions and contains `ocamlmig` annotations to help users with the migration.
