@@ -111,3 +111,11 @@ The same must be true for errors that are raised via `Err.raise`.
   > --verbosity=quiet \
   > --err-raise
   [123]
+
+And internal errors too.
+
+  $ ./main.exe write --file file --line 1 --pos-bol 0 \
+  > --pos-cnum 0 --length 5 \
+  > --verbosity=quiet \
+  > --uncaught-exception
+  [125]
