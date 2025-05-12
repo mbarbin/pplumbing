@@ -4,6 +4,47 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
+let%expect_test "sexp_of_t" =
+  List.iter Err.Log_level.all ~f:(fun log_level ->
+    print_s [%sexp (log_level : Err.Log_level.t)]);
+  [%expect
+    {|
+    Quiet
+    App
+    Error
+    Warning
+    Info
+    Debug
+    |}];
+  ()
+;;
+
+let%expect_test "to_string" =
+  List.iter Err.Log_level.all ~f:(fun log_level ->
+    print_endline (Err.Log_level.to_string log_level));
+  [%expect
+    {|
+    quiet
+    app
+    error
+    warning
+    info
+    debug
+    |}];
+  ()
+;;
+
+let%expect_test "compare" =
+  List.iter Err.Log_level.all ~f:(fun log_level ->
+    require [%here] (Err.Log_level.equal log_level log_level);
+    require [%here] (0 = Err.Log_level.compare log_level log_level));
+  require [%here] (not (Err.Log_level.equal Error Warning));
+  require [%here] (Err.Log_level.compare Error Warning < 0);
+  require [%here] (Err.Log_level.compare Debug Error > 0);
+  [%expect {||}];
+  ()
+;;
+
 let%expect_test "log levels" =
   Err.Private.reset_counts ();
   Err.For_test.wrap

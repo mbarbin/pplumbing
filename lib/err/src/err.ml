@@ -74,18 +74,37 @@ module Paragraph = struct
   ;;
 end
 
-module Prefix = struct
+module Level = struct
   type t =
     | Error
     | Warning
     | Info
     | Debug
 
+  let sexp_of_t : t -> Sexplib0.Sexp.t = function
+    | Error -> Atom "Error"
+    | Warning -> Atom "Warning"
+    | Info -> Atom "Info"
+    | Debug -> Atom "Debug"
+  ;;
+
+  let all = [ Error; Warning; Info; Debug ]
+
+  let to_index = function
+    | Error -> 0
+    | Warning -> 1
+    | Info -> 2
+    | Debug -> 3
+  ;;
+
+  let compare l1 l2 = Int.compare (to_index l1) (to_index l2)
+  let equal l1 l2 = Int.equal (to_index l1) (to_index l2)
+
   let to_string = function
-    | Error -> "Error"
-    | Warning -> "Warning"
-    | Info -> "Info"
-    | Debug -> "Debug"
+    | Error -> "error"
+    | Warning -> "warning"
+    | Info -> "info"
+    | Debug -> "debug"
   ;;
 
   let style : t -> Pp_tty.Style.t = function
@@ -101,13 +120,15 @@ let stdune_loc (loc : Loc.t) =
   Stdune.Loc.of_lexbuf_loc { start; stop }
 ;;
 
-let make_message ~prefix ?loc ?(context = []) ?(hints = []) paragraphs =
+let make_message ~level ?loc ?(context = []) ?(hints = []) paragraphs =
   Stdune.User_message.make
     ?loc:(Option.map stdune_loc loc)
     ~hints
     ~prefix:
       (Pp.seq
-         (Pp.tag (Prefix.style prefix) (Pp.verbatim (Prefix.to_string prefix)))
+         (Pp.tag
+            (Level.style level)
+            (Pp.verbatim (Level.to_string level |> String.capitalize_ascii)))
          (Pp.char ':'))
     (List.map Paragraph.pp (List.concat [ context; paragraphs ]))
 ;;
@@ -140,14 +161,14 @@ let to_sexps { loc; context; paragraphs; hints; exit_code = _ } =
     ]
 ;;
 
-let to_stdune_user_message ~prefix { loc; context; paragraphs; hints; exit_code = _ } =
+let to_stdune_user_message ~level { loc; context; paragraphs; hints; exit_code = _ } =
   if
     List.is_empty paragraphs
     && Option.is_none loc
     && List.is_empty context
     && List.is_empty hints
   then None
-  else Some (make_message ~prefix ?loc ~context ~hints paragraphs)
+  else Some (make_message ~level ?loc ~context ~hints paragraphs)
 ;;
 
 let sexp_of_t_internal ~include_exit_code t =
@@ -226,7 +247,22 @@ module Color_mode = struct
     | `Never
     ]
 
+  let sexp_of_t : t -> Sexplib0.Sexp.t = function
+    | `Auto -> Atom "Auto"
+    | `Always -> Atom "Always"
+    | `Never -> Atom "Never"
+  ;;
+
   let all : t list = [ `Auto; `Always; `Never ]
+
+  let to_index = function
+    | `Auto -> 0
+    | `Always -> 1
+    | `Never -> 2
+  ;;
+
+  let compare l1 l2 = Int.compare (to_index l1) (to_index l2)
+  let equal l1 l2 = Int.equal (to_index l1) (to_index l2)
 
   let to_string : t -> string = function
     | `Auto -> "auto"
@@ -307,7 +343,7 @@ let prerr_message (t : Stdune.User_message.t) =
 
 let prerr ?(reset_separator = false) (t : t) =
   if reset_separator then include_separator := false;
-  Option.iter prerr_message (to_stdune_user_message ~prefix:Error t)
+  Option.iter prerr_message (to_stdune_user_message ~level:Error t)
 ;;
 
 module Log_level = struct
@@ -318,6 +354,15 @@ module Log_level = struct
     | Warning
     | Info
     | Debug
+
+  let sexp_of_t : t -> Sexplib0.Sexp.t = function
+    | Quiet -> Atom "Quiet"
+    | App -> Atom "App"
+    | Error -> Atom "Error"
+    | Warning -> Atom "Warning"
+    | Info -> Atom "Info"
+    | Debug -> Atom "Debug"
+  ;;
 
   let all = [ Quiet; App; Error; Warning; Info; Debug ]
 
@@ -331,6 +376,15 @@ module Log_level = struct
   ;;
 
   let compare l1 l2 = Int.compare (to_index l1) (to_index l2)
+  let equal l1 l2 = Int.equal (to_index l1) (to_index l2)
+
+  let of_level (level : Level.t) : t =
+    match level with
+    | Error -> Error
+    | Warning -> Warning
+    | Info -> Info
+    | Debug -> Debug
+  ;;
 
   let to_string = function
     | Quiet -> "quiet"
@@ -350,36 +404,48 @@ let log_level_get_value, log_level_set_value =
 ;;
 
 let log_level () = log_level_get_value.contents ()
-let log_enables level = Log_level.compare (log_level ()) level >= 0
+let log_enables ~level = Log_level.compare (log_level ()) (Log_level.of_level level) >= 0
 
 let error ?loc ?hints paragraphs =
-  if log_enables Error
+  if log_enables ~level:Error
   then (
-    let message = make_message ~prefix:Error ?loc ?hints paragraphs in
+    let message = make_message ~level:Error ?loc ?hints paragraphs in
     incr error_count_value;
     prerr_message message)
 ;;
 
 let warning ?loc ?hints paragraphs =
-  if log_enables Warning
+  if log_enables ~level:Warning
   then (
-    let message = make_message ~prefix:Warning ?loc ?hints paragraphs in
+    let message = make_message ~level:Warning ?loc ?hints paragraphs in
     incr warning_count_value;
     prerr_message message)
 ;;
 
 let info ?loc ?hints paragraphs =
-  if log_enables Info
+  if log_enables ~level:Info
   then (
-    let message = make_message ~prefix:Info ?loc ?hints paragraphs in
+    let message = make_message ~level:Info ?loc ?hints paragraphs in
     prerr_message message)
 ;;
 
 let debug ?loc ?hints paragraphs =
-  if log_enables Debug
+  if log_enables ~level:Debug
   then (
-    let message = make_message ~prefix:Debug ?loc ?hints (Lazy.force paragraphs) in
+    let message = make_message ~level:Debug ?loc ?hints (Lazy.force paragraphs) in
     prerr_message message)
+;;
+
+let emit t ~level =
+  if log_enables ~level
+  then
+    to_stdune_user_message t ~level
+    |> Option.iter (fun message ->
+      (match level with
+       | Error -> incr error_count_value
+       | Warning -> incr warning_count_value
+       | Info | Debug -> ());
+      prerr_message message)
 ;;
 
 let pp_backtrace backtrace =
@@ -391,7 +457,7 @@ let pp_backtrace backtrace =
 ;;
 
 let handle_messages_and_exit ~err:({ exit_code; _ } as t) ~backtrace =
-  Option.iter prerr_message (to_stdune_user_message ~prefix:Error t);
+  Option.iter prerr_message (to_stdune_user_message ~level:Error t);
   if Int.equal exit_code Exit_code.internal_error
   then (
     let message =

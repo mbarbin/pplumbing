@@ -4,49 +4,51 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
-module Message_kind = struct
-  type t =
-    | Error
-    | Warning
-    | Info
-    | Debug
-  [@@deriving enumerate, sexp_of]
+open Command.Std
 
-  let to_string t =
-    match sexp_of_t t with
-    | Atom s -> String.uncapitalize s
-    | _ -> assert false
-  ;;
-end
+let logs_cmd =
+  Command.make
+    ~summary:"use the logs library"
+    (let+ () = Log_cli.set_config () in
+     Logs.app (fun m -> m "Hello app");
+     Logs.err (fun m -> m "Hello err");
+     Logs.warn (fun m -> m "Hello warn");
+     Logs.info (fun m -> m "Hello info");
+     Logs.debug (fun m -> m "Hello debug");
+     Err.exit (if Logs.err_count () > 0 then 1 else 0))
+;;
 
 let write_cmd =
   Command.make
     ~summary:"write to an error-log"
-    (let%map_open.Command () = Log_cli.set_config ()
-     and file = Arg.named [ "file" ] Param.string ~docv:"FILE" ~doc:"file"
-     and line = Arg.named [ "line" ] Param.int ~docv:"N" ~doc:"line number"
-     and pos_cnum = Arg.named [ "pos-cnum" ] Param.int ~docv:"N" ~doc:"character position"
-     and pos_bol = Arg.named [ "pos-bol" ] Param.int ~docv:"N" ~doc:"beginning of line"
-     and length = Arg.named [ "length" ] Param.int ~docv:"N" ~doc:"length of range"
-     and message_kind =
+    (let+ () = Log_cli.set_config ()
+     and+ file = Arg.named [ "file" ] Param.string ~docv:"FILE" ~doc:"file"
+     and+ line = Arg.named [ "line" ] Param.int ~docv:"N" ~doc:"line number"
+     and+ pos_cnum =
+       Arg.named [ "pos-cnum" ] Param.int ~docv:"N" ~doc:"character position"
+     and+ pos_bol = Arg.named [ "pos-bol" ] Param.int ~docv:"N" ~doc:"beginning of line"
+     and+ length = Arg.named [ "length" ] Param.int ~docv:"N" ~doc:"length of range"
+     and+ level =
        Arg.named_with_default
-         [ "message-kind" ]
-         (Param.enumerated (module Message_kind))
+         [ "level" ]
+         (Param.enumerated (module Err.Level))
          ~default:Error
-         ~docv:"KIND"
-         ~doc:"message kind"
-     and raise = Arg.flag [ "raise" ] ~doc:"raise an exception" in
+         ~docv:"LEVEL"
+         ~doc:"The level of the message to emit."
+     and+ raise = Arg.flag [ "raise" ] ~doc:"raise an exception" in
      let loc =
        let p = { Lexing.pos_fname = file; pos_lnum = line; pos_cnum; pos_bol } in
        Loc.create (p, { p with pos_cnum = pos_cnum + length })
      in
      if raise then failwith "Raising an exception!";
-     match message_kind with
-     | Error -> Err.error ~loc [ Pp.text "error message" ]
-     | Warning -> Err.warning ~loc [ Pp.text "warning message" ]
-     | Info -> Err.info ~loc [ Pp.text "info message" ]
-     | Debug -> Err.debug ~loc (lazy [ Pp.text "debug message" ]))
+     let msg = Err.create ~loc [ Pp.textf "%s message" (Err.Level.to_string level) ] in
+     Err.emit msg ~level)
 ;;
 
-let main = Command.group ~summary:"test err from the command line" [ "write", write_cmd ]
+let main =
+  Command.group
+    ~summary:"test err from the command line"
+    [ "logs", logs_cmd; "write", write_cmd ]
+;;
+
 let () = Cmdlang_cmdliner_runner.run main ~name:"main" ~version:"%%VERSION%%"
