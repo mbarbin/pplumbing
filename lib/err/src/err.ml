@@ -226,7 +226,22 @@ module Color_mode = struct
     | `Never
     ]
 
+  let sexp_of_t : t -> Sexplib0.Sexp.t = function
+    | `Auto -> Atom "Auto"
+    | `Always -> Atom "Always"
+    | `Never -> Atom "Never"
+  ;;
+
   let all : t list = [ `Auto; `Always; `Never ]
+
+  let to_index = function
+    | `Auto -> 0
+    | `Always -> 1
+    | `Never -> 2
+  ;;
+
+  let compare l1 l2 = Int.compare (to_index l1) (to_index l2)
+  let equal l1 l2 = Int.equal (to_index l1) (to_index l2)
 
   let to_string : t -> string = function
     | `Auto -> "auto"
@@ -319,6 +334,15 @@ module Log_level = struct
     | Info
     | Debug
 
+  let sexp_of_t : t -> Sexplib0.Sexp.t = function
+    | Quiet -> Atom "Quiet"
+    | App -> Atom "App"
+    | Error -> Atom "Error"
+    | Warning -> Atom "Warning"
+    | Info -> Atom "Info"
+    | Debug -> Atom "Debug"
+  ;;
+
   let all = [ Quiet; App; Error; Warning; Info; Debug ]
 
   let to_index = function
@@ -331,6 +355,7 @@ module Log_level = struct
   ;;
 
   let compare l1 l2 = Int.compare (to_index l1) (to_index l2)
+  let equal l1 l2 = Int.equal (to_index l1) (to_index l2)
 
   let to_string = function
     | Quiet -> "quiet"

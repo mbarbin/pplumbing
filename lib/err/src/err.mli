@@ -223,7 +223,12 @@ module Color_mode : sig
     | `Never
     ]
 
+  val sexp_of_t : t -> Sexplib0.Sexp.t
   val all : t list
+  val compare : t -> t -> int
+  val equal : t -> t -> bool
+
+  (** Return an uncapitalized string representing the variant constructor. *)
   val to_string : t -> string
 end
 
@@ -271,9 +276,9 @@ val color_mode : unit -> Color_mode.t
     (e.g., [--verbosity=debug]). This ensures consistent behavior across
     applications using this library.
 
-    Note: A level named [App] has been added to ensure compatibility with the
-    [Logs] library, as this constructor is part of [Logs.level]. However, this
-    module does not differentiate between the [Quiet] and [App] levels. The
+    Note: A log level named [App] has been added to ensure compatibility with
+    the [Logs] library, as this constructor is part of [Logs.level]. However,
+    this module does not differentiate between the [Quiet] and [App] levels. The
     [App] level is primarily included to facilitate interoperability with
     third-party libraries that rely on [Logs]. *)
 
@@ -286,8 +291,12 @@ module Log_level : sig
     | Info
     | Debug
 
+  val sexp_of_t : t -> Sexplib0.Sexp.t
   val all : t list
   val compare : t -> t -> int
+  val equal : t -> t -> bool
+
+  (** Return an uncapitalized string representing the variant constructor. *)
   val to_string : t -> string
 end
 
