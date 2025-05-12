@@ -362,10 +362,12 @@ val to_string_hum : t -> string
     [warning_count]), which is going to be used by {!val:protect} to impact the
     exit code of the application. Use with care. *)
 
-(** Emit an error on stderr and increase the global error count. *)
+(** Emit an error on stderr and increase the global error count. Requires a log
+    level of [Error] or more, enabled by default. *)
 val error : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
 
-(** Emit a warning on stderr and increase the global warning count. *)
+(** Emit a warning on stderr and increase the global warning count. Requires a
+    log level of [Warning] or more, enabled by default. *)
 val warning : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
 
 (** Emit a information message on stderr. Required verbosity level of [Info] or
@@ -378,6 +380,24 @@ val info : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list -> unit
     impacts the program's performance, and using lazy causes added programming
     friction. *)
 val debug : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list Lazy.t -> unit
+
+(** Emit a message from an existing error.
+
+    Rather than building a new [Err.t], this part of the API allows you to emit
+    a message from a previously created err value. For example, you may catch an
+    error raised by some code, and make that a warning instead.
+
+    {[
+      let warn_on_error ~f =
+        try f () with
+        | Err e -> Err.emit t ~level:Warning
+      ;;
+    ]}
+
+    The emit functions does check the current log level, and only emit the message
+    if permitted it - for example, [emit t ~level:Warning] actually emits a warning
+    only when [log_enables ~level:Warning = true]. *)
+val emit : t -> level:Level.t -> unit
 
 (** {1 Handler}
 

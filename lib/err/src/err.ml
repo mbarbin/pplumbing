@@ -436,6 +436,18 @@ let debug ?loc ?hints paragraphs =
     prerr_message message)
 ;;
 
+let emit t ~level =
+  if log_enables ~level
+  then
+    to_stdune_user_message t ~level
+    |> Option.iter (fun message ->
+      (match level with
+       | Error -> incr error_count_value
+       | Warning -> incr warning_count_value
+       | Info | Debug -> ());
+      prerr_message message)
+;;
+
 let pp_backtrace backtrace =
   if am_running_test ()
   then [ "<backtrace disabled in tests>" ]
