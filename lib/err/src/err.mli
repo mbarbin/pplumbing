@@ -234,7 +234,7 @@ end
 
 val color_mode : unit -> Color_mode.t
 
-(** {2 Log Level}
+(** {2 Messages and Log Levels}
 
     Inspired by logging conventions in many CLI tools, this library provides a
     mechanism to control the verbosity of log messages based on their severity
@@ -261,7 +261,7 @@ val color_mode : unit -> Color_mode.t
     Example usage:
 
     {[
-      if Err.log_enables Debug
+      if Err.log_enables ~level:Debug
       then (
         (* Perform expensive debugging operations *)
         let debug_data = compute_debug_data () in
@@ -300,12 +300,37 @@ module Log_level : sig
   val to_string : t -> string
 end
 
+module Level : sig
+  (** A level for individual messages (by contrast to the current level of the
+      log).
+
+      Seeing how a message of level [Quiet] would not make sense, this module
+      distinguishes the two types.
+
+      Message of levels [App] are not supported by this library. Consider using
+      [Log] if interested. *)
+
+  type t =
+    | Error
+    | Warning
+    | Info
+    | Debug
+
+  val sexp_of_t : t -> Sexplib0.Sexp.t
+  val all : t list
+  val compare : t -> t -> int
+  val equal : t -> t -> bool
+
+  (** Return an uncapitalized string representing the variant constructor. *)
+  val to_string : t -> string
+end
+
 (** Access the current log level. *)
 val log_level : unit -> Log_level.t
 
 (** Tell whether the current log level enables the output of messages of the
     supplied level. *)
-val log_enables : Log_level.t -> bool
+val log_enables : level:Level.t -> bool
 
 (** {1 Printing messages} *)
 
