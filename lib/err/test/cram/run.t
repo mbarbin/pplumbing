@@ -52,7 +52,7 @@ Exercising the error handling from the command line.
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 6 --length 5 \
   > --level=debug \
-  > --verbosity=debug
+  > --log-level=debug
   File "file", line 1, characters 6-11:
   1 | Hello World
             ^^^^^
@@ -101,14 +101,14 @@ correctly accounted for in the error count.
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 0 --length 5 \
   > --level=error \
-  > --verbosity=quiet
+  > --log-level=quiet
   [123]
 
 The same must be true for errors that are raised via `Err.raise`.
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 0 --length 5 \
-  > --verbosity=quiet \
+  > --log-level=quiet \
   > --err-raise
   [123]
 
@@ -116,6 +116,6 @@ And internal errors too.
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 0 --length 5 \
-  > --verbosity=quiet \
+  > --log-level=quiet \
   > --uncaught-exception
   [125]

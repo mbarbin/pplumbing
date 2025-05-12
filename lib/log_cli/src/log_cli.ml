@@ -45,7 +45,7 @@ module Config = struct
         ~doc:"Increase verbosity. Repeatable, but more than twice does not bring more"
     and+ verbosity =
       Arg.named_opt
-        [ "verbosity" ]
+        [ "log-level"; "verbosity" ]
         (Param.enumerated (module Log_level))
         ~docv:"LEVEL"
         ~doc:"Be more or less verbose. Takes over $(b,v)."
