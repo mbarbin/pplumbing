@@ -4,6 +4,16 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
+module List = struct
+  include List
+
+  (* Not available with OCaml 4.14. *)
+  let is_empty = function
+    | [] -> true
+    | _ :: _ -> false
+  ;;
+end
+
 module Exit_code = struct
   type t = int
 
