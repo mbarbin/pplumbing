@@ -392,7 +392,7 @@ val debug : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list Lazy.t -> unit
     {[
       let warn_on_error ~f =
         try f () with
-        | Err e -> Err.emit t ~level:Warning
+        | Err.E e -> Err.emit e ~level:Warning
       ;;
     ]}
 
