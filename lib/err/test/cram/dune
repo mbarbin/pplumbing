@@ -1,5 +1,7 @@
 (executable
  (name main)
+ (package pplumbing-tests)
+ (public_name pplumbing-tests-err-cram-main)
  (flags
   :standard
   -w
@@ -18,7 +20,8 @@
   pp
   pplumbing.cmdlang-cmdliner-runner
   pplumbing.err
-  pplumbing.log-cli)
+  pplumbing.log-cli
+  pplumbing.pp-tty)
  (instrumentation
   (backend bisect_ppx))
  (lint

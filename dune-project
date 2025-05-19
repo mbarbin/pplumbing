@@ -24,7 +24,7 @@
  (synopsis "Utility libraries to use with [pp]")
  (depends
   (ocaml
-   (>= 5.2))
+   (>= 4.14))
   (cmdlang
    (>= 0.0.9))
   (cmdlang-to-cmdliner
@@ -42,15 +42,11 @@
   (ordering
    (>= 3.17))
   (parsexp
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.16))
   (pp
    (>= 2.0.0))
   (sexplib0
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.16))
   (stdune
    (>= 3.17))))
 
