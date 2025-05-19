@@ -1,5 +1,7 @@
 (executable
  (name main)
+ (package pplumbing-tests)
+ (public_name pplumbing-tests-err-cram-main)
  (flags
   :standard
   -w
