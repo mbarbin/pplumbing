@@ -18,7 +18,8 @@
   pp
   pplumbing.cmdlang-cmdliner-runner
   pplumbing.err
-  pplumbing.log-cli)
+  pplumbing.log-cli
+  pplumbing.pp-tty)
  (instrumentation
   (backend bisect_ppx))
  (lint
