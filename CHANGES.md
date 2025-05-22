@@ -7,7 +7,7 @@
 
 ### Changed
 
-- Improve rendering of err with context when printing to the console (@mbarbin).
+- Improve rendering of err with context when printing to the console (#11, @mbarbin).
 - Support build with OCaml 4.14 (#10, @mbarbin).
 - Increment errors and warning counts even when the message is not shown (#8, @mbarbin).
 
