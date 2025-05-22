@@ -76,9 +76,9 @@ let%expect_test "reraise" =
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
-    Error: Re raised with context
+    Context: Re raised with context
     x
-    Hello Raise
+    Error: Hello Raise
     Hint: did you mean bar?
     [123]
     |}];
@@ -135,8 +135,8 @@ let%expect_test "add_context" =
   [%expect
     {|
     File "path/to/my-file-1.txt", line 1, characters 0-0:
-    Error: Hello Context 1
-    Hello Error 1
+    Context: Hello Context 1
+    Error: Hello Error 1
     [41]
     |}];
   let err3 =
@@ -146,10 +146,10 @@ let%expect_test "add_context" =
   [%expect
     {|
     File "path/to/my-file-1.txt", line 1, characters 0-0:
-    Error: Hello Context 2
+    Context: Hello Context 2
     (Hello Sexp)
     Hello Context 1
-    Hello Error 1
+    Error: Hello Error 1
     [41]
     |}];
   ()
@@ -243,9 +243,9 @@ let%expect_test "reraise_with_context" =
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
-    Error: Re raised with context
+    Context: Re raised with context
     (x 42)
-    Hello Raise
+    Error: Hello Raise
     (hello 42)
     Hint: did you mean bar?
     [123]

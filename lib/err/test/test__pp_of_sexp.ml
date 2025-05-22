@@ -109,8 +109,8 @@ let%expect_test "sexp vs prerr" =
     ((context "Hello Context!")
      (error   "Hello World"))
     ======== console ========
-    Error: Hello Context!
-    Hello World
+    Context: Hello Context!
+    Error: Hello World
     |}];
   let err =
     Err.add_context
@@ -128,9 +128,9 @@ let%expect_test "sexp vs prerr" =
        "Hello Context!")
      (error "Hello World"))
     ======== console ========
-    Error: And even more context ((x 42) (y Foo))
+    Context: And even more context ((x 42) (y Foo))
     Hello Context!
-    Hello World
+    Error: Hello World
     |}];
   ()
 ;;
