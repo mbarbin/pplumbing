@@ -130,17 +130,27 @@ let stdune_loc (loc : Loc.t) =
   Stdune.Loc.of_lexbuf_loc { start; stop }
 ;;
 
+let with_prefix ~prefix ~(style : Pp_tty.Style.t) paragraphs =
+  let prefix = Pp.seq (Pp.tag style (Pp.verbatim prefix)) (Pp.char ':') in
+  match List.map Paragraph.pp paragraphs with
+  | [] -> [ prefix ]
+  | x :: tl -> Pp.concat ~sep:Pp.space [ prefix; x ] :: tl
+;;
+
 let make_message ~level ?loc ?(context = []) ?(hints = []) paragraphs =
   Stdune.User_message.make
     ?loc:(Option.map stdune_loc loc)
     ~hints
-    ~prefix:
-      (Pp.seq
-         (Pp.tag
-            (Level.style level)
-            (Pp.verbatim (Level.to_string level |> String.capitalize_ascii)))
-         (Pp.char ':'))
-    (List.map Paragraph.pp (List.concat [ context; paragraphs ]))
+    ?prefix:None
+    (List.concat
+       [ (match context with
+          | [] -> []
+          | _ :: _ as context -> with_prefix ~prefix:"Context" ~style:Kwd context)
+       ; with_prefix
+           ~prefix:(Level.to_string level |> String.capitalize_ascii)
+           ~style:(Level.style level)
+           paragraphs
+       ])
 ;;
 
 type t =

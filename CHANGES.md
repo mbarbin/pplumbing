@@ -1,21 +1,19 @@
-## 0.0.13 (unreleased)
+## 0.0.13 (2025-05-22)
 
 ### Added
 
-- Rename `--verbosity` flag into `--log-level`. Keep former as alias (@mbarbin).
+- Rename `--verbosity` flag into `--log-level`. Keep former as alias (5a88fb, @mbarbin).
 - Add a type for message levels and add new `Err.emit t ~level` function (#7, @mbarbin).
 
 ### Changed
 
+- Improve rendering of err with context when printing to the console (#11, @mbarbin).
+- Support build with OCaml 4.14 (#10, @mbarbin).
 - Increment errors and warning counts even when the message is not shown (#8, @mbarbin).
-
-### Deprecated
 
 ### Fixed
 
 - Do not print raised errors and exceptions when in quiet mode (#9, @mbarbin).
-
-### Removed
 
 ## 0.0.12 (2025-05-06)
 
