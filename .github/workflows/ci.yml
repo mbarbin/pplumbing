@@ -36,7 +36,7 @@ jobs:
 
       # Setting `(implicit_transitive_deps VALUE)` conditionally based on the compiler version.
       - name: Edit dune-project
-        run: opam exec -- ocaml .github/workflows/edit_dune_project.ml "${{ matrix.ocaml-compiler }}"
+        run: opam exec -- ocaml .github/workflows/edit_dune_project_dot_ml "${{ matrix.ocaml-compiler }}"
 
       - name: Install dependencies
         run: opam install . --deps-only --with-doc --with-test --with-dev-setup

@@ -1,4 +1,4 @@
-(* Usage: ocaml .github/workflows/edit_dune_project.ml <ocaml-version> *)
+(* Usage: ocaml .github/workflows/edit_dune_project_dot_ml <ocaml-version> *)
 
 let starts_with s prefix =
   let len_s = String.length s in
