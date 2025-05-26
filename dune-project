@@ -25,7 +25,7 @@
 ;; For packaging purposes with older ocaml, it is simpler atm if the option is
 ;; set to [true] in the main branch.
 ;;
-;; See: [.github/workflows/edit_dune_project.ml].
+;; See: [.github/workflows/edit_dune_project_dot_ml].
 
 (implicit_transitive_deps true)
 
