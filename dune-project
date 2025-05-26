@@ -17,7 +17,8 @@
 
 (using mdx 0.4)
 
-(implicit_transitive_deps false)
+;; CR mbarbin: Trying without this to see whether this impacts the warning.
+;; (implicit_transitive_deps false)
 
 (package
  (name pplumbing)
