@@ -1,3 +1,9 @@
+## 0.0.14 (2025-05-26)
+
+### Changed
+
+- Conditional set implicit transitive deps in CI depending on the compiler version (#12, @mbarbin).
+
 ## 0.0.13 (2025-05-22)
 
 ### Added
