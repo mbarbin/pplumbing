@@ -1,4 +1,6 @@
-(lang dune 3.17)
+(lang dune 3.20)
+;; CR mbarbin: I'm testing [https://github.com/ocaml/dune/pull/11866] which
+;; requires bumping the dune language.
 
 (name pplumbing)
 
@@ -17,8 +19,10 @@
 
 (using mdx 0.4)
 
+(implicit_transitive_deps false-if-hidden-includes-supported)
 ;; CR mbarbin: Trying without this to see whether this impacts the warning.
-;; (implicit_transitive_deps false)
+;;
+;; Edit: I'm testing with [https://github.com/ocaml/dune/pull/11866].
 
 (package
  (name pplumbing)
