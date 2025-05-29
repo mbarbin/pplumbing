@@ -2,40 +2,17 @@
  (name main)
  (package pplumbing-tests)
  (public_name pplumbing-tests-err-cram-main)
- (flags
-  :standard
-  -w
-  +a-4-40-41-42-44-45-48-66
-  -warn-error
-  +a
-  -open
-  Base
-  -open
-  Cmdlang)
- (libraries
-  base
-  cmdlang
-  loc
-  logs
-  pp
-  pplumbing.cmdlang-cmdliner-runner
-  pplumbing.err
-  pplumbing.log-cli
-  pplumbing.pp-tty)
+ (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a -open Base
+  -open Cmdlang)
+ (libraries base cmdlang loc logs pp pplumbing.cmdlang-cmdliner-runner
+  pplumbing.err pplumbing.log-cli pplumbing.pp-tty)
  (instrumentation
   (backend bisect_ppx))
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
  (preprocess
-  (pps
-   -unused-code-warnings=force
-   ppx_compare
-   ppx_enumerate
-   ppx_hash
-   ppx_here
-   ppx_let
-   ppx_sexp_conv
-   ppx_sexp_value)))
+  (pps -unused-code-warnings=force ppx_compare ppx_enumerate ppx_hash
+   ppx_here ppx_let ppx_sexp_conv ppx_sexp_value)))
 
 (cram
  (package pplumbing-tests)
