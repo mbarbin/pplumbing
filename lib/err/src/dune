@@ -2,7 +2,7 @@
  (name err)
  (public_name pplumbing.err)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries loc parsexp pp_tty sexplib0 stdune)
+ (libraries parsexp pp_tty sexplib0 stdune)
  (instrumentation
   (backend bisect_ppx))
  (lint
