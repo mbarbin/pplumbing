@@ -1,4 +1,5 @@
 (lang dune 3.20)
+
 ;; CR mbarbin: I'm testing [https://github.com/ocaml/dune/pull/11866] which
 ;; requires bumping the dune language.
 
@@ -19,7 +20,12 @@
 
 (using mdx 0.4)
 
-(implicit_transitive_deps false-if-hidden-includes-supported)
+;; (implicit_transitive_deps false-if-hidden-includes-supported)
+
+;; (implicit_transitive_deps true)
+
+(implicit_transitive_deps false)
+
 ;; CR mbarbin: Trying without this to see whether this impacts the warning.
 ;;
 ;; Edit: I'm testing with [https://github.com/ocaml/dune/pull/11866].
