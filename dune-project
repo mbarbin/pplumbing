@@ -71,9 +71,7 @@
     :with-dev-setup
     (= 0.27.0)))
   (base
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (cmdlang
    (>= 0.0.9))
   (cmdlang-to-cmdliner
@@ -83,9 +81,7 @@
   (dyn
    (>= 3.17))
   (expect_test_helpers_core
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (fmt
    (>= 0.9.0))
   (fpath
@@ -99,60 +95,37 @@
   (ordering
    (>= 3.17))
   (parsexp
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (pp
    (>= 2.0.0))
   (pplumbing
    (= :version))
   (ppx_compare
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_enumerate
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_expect
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_hash
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_here
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_js_style
    (and
     :with-dev-setup
-    (>= v0.17)
-    (< v0.18)))
+    (>= v0.17)))
   (ppx_let
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_sexp_conv
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_sexp_value
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppxlib
    (>= 0.33))
   (sexplib0
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (stdio
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (stdune
    (>= 3.17))
   (sherlodoc
@@ -173,9 +146,7 @@
     :with-dev-setup
     (= 0.27.0)))
   (base
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (bisect_ppx
    (and
     :with-dev-setup
@@ -189,9 +160,7 @@
   (dyn
    (>= 3.17))
   (expect_test_helpers_core
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (fmt
    (>= 0.9.0))
   (fpath
@@ -205,9 +174,7 @@
   (ordering
    (>= 3.17))
   (parsexp
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (pp
    (>= 2.0.0))
   (pplumbing
@@ -215,52 +182,31 @@
   (pplumbing-tests
    (= :version))
   (ppx_compare
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_enumerate
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_expect
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_hash
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_here
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_js_style
    (and
     :with-dev-setup
-    (>= v0.17)
-    (< v0.18)))
+    (>= v0.17)))
   (ppx_let
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_sexp_conv
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppx_sexp_value
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (ppxlib
    (>= 0.33))
   (sexplib0
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (stdio
-   (and
-    (>= v0.17)
-    (< v0.18)))
+   (>= v0.17))
   (stdune
    (>= 3.17))
   (sherlodoc
