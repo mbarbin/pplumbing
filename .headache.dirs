@@ -1,0 +1,13 @@
+# List of directories for headache.sh
+# Add new directories below. Lines starting with '#' are ignored.
+lib/cmdlang_cmdliner_runner/src
+lib/cmdlang_cmdliner_runner/test
+lib/pp_tty/src
+lib/pp_tty/test
+lib/log/src
+lib/log/test
+lib/err/src
+lib/err/test
+lib/err/test/cram
+lib/log_cli/src
+lib/log_cli/test
