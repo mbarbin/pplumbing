@@ -27,5 +27,7 @@ In app mode, the errors are silenced.
 When in quiet mode, all outputs are silenced.
 
   $ ./main.exe logs --verbosity=quiet
+  [1]
 
-And we note that the exit code is [0].
+We note that the exit code is still [1] to account for the error, even though it
+was not printed. This changed in `logs.0.9.0` - keeping as regression test.
