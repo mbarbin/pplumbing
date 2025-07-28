@@ -10,7 +10,7 @@ Exercising the error handling from the command line.
   File "file", line 1, characters 0-5:
   1 | Hello World
       ^^^^^
-  Error: error message
+  Error: error message.
   [123]
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
@@ -19,7 +19,7 @@ Exercising the error handling from the command line.
   File "file", line 1, characters 6-11:
   1 | Hello World
             ^^^^^
-  Warning: warning message
+  Warning: warning message.
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 6 --length 5 \
@@ -28,7 +28,7 @@ Exercising the error handling from the command line.
   File "file", line 1, characters 6-11:
   1 | Hello World
             ^^^^^
-  Warning: warning message
+  Warning: warning message.
   [123]
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
@@ -42,7 +42,7 @@ Exercising the error handling from the command line.
   File "file", line 1, characters 6-11:
   1 | Hello World
             ^^^^^
-  Info: info message
+  Info: info message.
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 6 --length 5 \
@@ -56,7 +56,7 @@ Exercising the error handling from the command line.
   File "file", line 1, characters 6-11:
   1 | Hello World
             ^^^^^
-  Debug: debug message
+  Debug: debug message.
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
   > --pos-cnum 0 --length 5 \
@@ -81,7 +81,7 @@ Logs and Fmt options.
   File "file", line 1, characters 0-5:
   1 | Hello World
       ^^^^^
-  Error: error message
+  Error: error message.
   [123]
 
   $ ./main.exe write --file file --line 1 --pos-bol 0 \
@@ -91,7 +91,7 @@ Logs and Fmt options.
   File "file", line 1, characters 0-5:
   1 | Hello World
       ^^^^^
-  Error: error message
+  Error: error message.
   [123]
 
 When the log level is 'quiet', even errors should not be shown. We note however

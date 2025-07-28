@@ -8,7 +8,7 @@ open Command.Std
 
 let logs_cmd =
   Command.make
-    ~summary:"use the logs library"
+    ~summary:"Use the logs library."
     (let+ () = Log_cli.set_config () in
      Logs.app (fun m -> m "Hello app");
      Logs.err (fun m -> m "Hello err");
@@ -20,14 +20,14 @@ let logs_cmd =
 
 let write_cmd =
   Command.make
-    ~summary:"write to an error-log"
+    ~summary:"Write to an error-log."
     (let+ () = Log_cli.set_config ()
-     and+ file = Arg.named [ "file" ] Param.string ~docv:"FILE" ~doc:"file"
-     and+ line = Arg.named [ "line" ] Param.int ~docv:"N" ~doc:"line number"
+     and+ file = Arg.named [ "file" ] Param.string ~docv:"FILE" ~doc:"File."
+     and+ line = Arg.named [ "line" ] Param.int ~docv:"N" ~doc:"Line number."
      and+ pos_cnum =
-       Arg.named [ "pos-cnum" ] Param.int ~docv:"N" ~doc:"character position"
-     and+ pos_bol = Arg.named [ "pos-bol" ] Param.int ~docv:"N" ~doc:"beginning of line"
-     and+ length = Arg.named [ "length" ] Param.int ~docv:"N" ~doc:"length of range"
+       Arg.named [ "pos-cnum" ] Param.int ~docv:"N" ~doc:"Character position."
+     and+ pos_bol = Arg.named [ "pos-bol" ] Param.int ~docv:"N" ~doc:"Beginning of line."
+     and+ length = Arg.named [ "length" ] Param.int ~docv:"N" ~doc:"Length of range."
      and+ level =
        Arg.named_with_default
          [ "level" ]
@@ -44,13 +44,13 @@ let write_cmd =
      in
      if uncaught_exception then failwith "Raising an exception!";
      if err_raise then Err.raise ~loc [ Pp.text "Hello [Err.raise]!" ];
-     let msg = Err.create ~loc [ Pp.textf "%s message" (Err.Level.to_string level) ] in
+     let msg = Err.create ~loc [ Pp.textf "%s message." (Err.Level.to_string level) ] in
      Err.emit msg ~level)
 ;;
 
 let main =
   Command.group
-    ~summary:"test err from the command line"
+    ~summary:"Test err from the command line."
     [ "logs", logs_cmd; "write", write_cmd ]
 ;;
 
