@@ -37,6 +37,8 @@
    (>= 4.14))
   (cmdlang
    (>= 0.0.9))
+  (cmdlang-cmdliner-err-runner
+   (= :version))
   (cmdlang-to-cmdliner
    (>= 0.0.9))
   (cmdliner
@@ -55,8 +57,6 @@
    (>= v0.16))
   (pp
    (>= 2.0.0))
-  (cmdlang-cmdliner-err-runner
-   (= :version))
   (pplumbing-err
    (= :version))
   (pplumbing-pp-tty
@@ -119,12 +119,12 @@
  (depends
   (ocaml
    (>= 4.14))
+  (climate
+   (>= 0.8.0))
   (cmdlang
    (>= 0.0.10))
   (cmdlang-to-climate
    (>= 0.0.10))
-  (climate
-   (>= 0.8.0))
   (pplumbing-err
    (= :version))))
 
@@ -142,6 +142,10 @@
    (>= v0.17))
   (cmdlang
    (>= 0.0.9))
+  (cmdlang-climate-err-runner
+   (= :version))
+  (cmdlang-cmdliner-err-runner
+   (= :version))
   (cmdlang-to-cmdliner
    (>= 0.0.9))
   (cmdliner
@@ -167,10 +171,6 @@
   (pp
    (>= 2.0.0))
   (pplumbing
-   (= :version))
-  (cmdlang-climate-err-runner
-   (= :version))
-  (cmdlang-cmdliner-err-runner
    (= :version))
   (pplumbing-err
    (= :version))
@@ -229,6 +229,10 @@
     (>= 2.8.3)))
   (cmdlang
    (>= 0.0.9))
+  (cmdlang-climate-err-runner
+   (= :version))
+  (cmdlang-cmdliner-err-runner
+   (= :version))
   (cmdlang-to-cmdliner
    (>= 0.0.9))
   (cmdliner
@@ -254,10 +258,6 @@
   (pp
    (>= 2.0.0))
   (pplumbing
-   (= :version))
-  (cmdlang-climate-err-runner
-   (= :version))
-  (cmdlang-cmdliner-err-runner
    (= :version))
   (pplumbing-err
    (= :version))
