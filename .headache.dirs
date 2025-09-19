@@ -8,6 +8,7 @@ lib/pp_tty/test
 lib/log/src
 lib/log/test
 lib/err/src
+lib/err/sub-pkg
 lib/err/test
 lib/err/test/cram
 lib/log_cli/src

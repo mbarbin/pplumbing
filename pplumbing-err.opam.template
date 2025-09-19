@@ -1,0 +1,14 @@
+description: """\
+
+[pplumbing] defines a set of utility libraries to use with [pp]. It
+is inspired by design choices used by [dune] for user messages:
+
+[Err] is an abstraction to report located errors and warnings to
+the user.
+
+[dune]: https://github.com/ocaml/dune
+[pp]: https://github.com/ocaml-dune/pp
+
+"""
+tags: [ "cli" "pp" ]
+x-maintenance-intent: [ "(latest)" ]
