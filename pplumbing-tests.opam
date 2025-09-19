@@ -27,6 +27,7 @@ depends: [
   "pp" {>= "2.0.0"}
   "pplumbing" {= version}
   "pplumbing-cmdlang-cmdliner-runner" {= version}
+  "pplumbing-cmdlang-climate-runner" {= version}
   "pplumbing-err" {= version}
   "pplumbing-pp-tty" {= version}
   "ppx_compare" {>= "v0.17"}

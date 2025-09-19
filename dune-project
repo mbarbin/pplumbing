@@ -114,6 +114,21 @@
    (= :version))))
 
 (package
+ (name pplumbing-cmdlang-climate-runner)
+ (synopsis "Cmdlang runner for programs using [Err] with a climate backend")
+ (depends
+  (ocaml
+   (>= 4.14))
+  (cmdlang
+   (>= 0.0.10))
+  (cmdlang-to-climate
+   (>= 0.0.10))
+  (climate
+   (>= 0.8.0))
+  (pplumbing-err
+   (= :version))))
+
+(package
  (name pplumbing-tests)
  (synopsis "Tests for pplumbing")
  (depends
@@ -154,6 +169,8 @@
   (pplumbing
    (= :version))
   (pplumbing-cmdlang-cmdliner-runner
+   (= :version))
+  (pplumbing-cmdlang-climate-runner
    (= :version))
   (pplumbing-err
    (= :version))
@@ -239,6 +256,8 @@
   (pplumbing
    (= :version))
   (pplumbing-cmdlang-cmdliner-runner
+   (= :version))
+  (pplumbing-cmdlang-climate-runner
    (= :version))
   (pplumbing-err
    (= :version))
