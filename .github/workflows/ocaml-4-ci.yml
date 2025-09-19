@@ -46,7 +46,7 @@ jobs:
       # the development workflow and as part of the main CI job. These are the
       # tests that are checked for every combination of os and ocaml-compiler.
       - name: Install dependencies
-        run: opam install ./pplumbing-pp-tty.opam ./pplumbing-err.opam ./pplumbing-cmdlang-cmdliner-runner.opam ./pplumbing-cmdlang-climate-runner.opam ./pplumbing.opam --deps-only --with-test
+        run: opam install ./pplumbing-pp-tty.opam ./pplumbing-err.opam ./cmdlang-cmdliner-err-runner.opam ./cmdlang-climate-err-runner.opam ./pplumbing.opam --deps-only --with-test
 
       - name: Build & Run tests
-        run: opam exec -- dune build @all @runtest -p pplumbing-pp-tty,pplumbing-err,pplumbing-cmdlang-cmdliner-runner,pplumbing-cmdlang-climate-runner,pplumbing
+        run: opam exec -- dune build @all @runtest -p pplumbing-pp-tty,pplumbing-err,cmdlang-cmdliner-err-runner,cmdlang-climate-err-runner,pplumbing
