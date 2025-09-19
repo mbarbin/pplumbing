@@ -1,0 +1,14 @@
+description: """\
+
+[pplumbing] defines a set of utility libraries to use with [pp]. It
+is inspired by design choices used by [dune] for user messages.
+
+[pplumbing.Pp_tty] extends [pp] to build colored documents in the
+user's terminal using ansi escape codes.
+
+[dune]: https://github.com/ocaml/dune
+[pp]: https://github.com/ocaml-dune/pp
+
+"""
+tags: [ "cli" "pp" ]
+x-maintenance-intent: [ "(latest)" ]

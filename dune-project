@@ -55,8 +55,23 @@
    (>= v0.16))
   (pp
    (>= 2.0.0))
+  (pplumbing-pp-tty
+   (= :version))
   (sexplib0
    (>= v0.16))
+  (stdune
+   (>= 3.17))))
+
+(package
+ (name pplumbing-pp-tty)
+ (synopsis "Build pretty printed documents for the user with [pp]")
+ (depends
+  (ocaml
+   (>= 4.14))
+  (loc
+   (>= 0.2.2))
+  (pp
+   (>= 2.0.0))
   (stdune
    (>= 3.17))))
 
@@ -99,6 +114,8 @@
   (pp
    (>= 2.0.0))
   (pplumbing
+   (= :version))
+  (pplumbing-pp-tty
    (= :version))
   (ppx_compare
    (>= v0.17))
@@ -178,6 +195,8 @@
   (pp
    (>= 2.0.0))
   (pplumbing
+   (= :version))
+  (pplumbing-pp-tty
    (= :version))
   (pplumbing-tests
    (= :version))
