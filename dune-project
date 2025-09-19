@@ -55,6 +55,10 @@
    (>= v0.16))
   (pp
    (>= 2.0.0))
+  (pplumbing-cmdlang-cmdliner-runner
+   (= :version))
+  (pplumbing-err
+   (= :version))
   (pplumbing-pp-tty
    (= :version))
   (sexplib0
@@ -95,6 +99,21 @@
    (>= 3.17))))
 
 (package
+ (name pplumbing-cmdlang-cmdliner-runner)
+ (synopsis "Cmdlang runner for programs using [Err] with a cmdliner backend")
+ (depends
+  (ocaml
+   (>= 4.14))
+  (cmdlang
+   (>= 0.0.9))
+  (cmdlang-to-cmdliner
+   (>= 0.0.9))
+  (cmdliner
+   (>= 1.3.0))
+  (pplumbing-err
+   (= :version))))
+
+(package
  (name pplumbing-tests)
  (synopsis "Tests for pplumbing")
  (depends
@@ -133,6 +152,10 @@
   (pp
    (>= 2.0.0))
   (pplumbing
+   (= :version))
+  (pplumbing-cmdlang-cmdliner-runner
+   (= :version))
+  (pplumbing-err
    (= :version))
   (pplumbing-pp-tty
    (= :version))
@@ -214,6 +237,10 @@
   (pp
    (>= 2.0.0))
   (pplumbing
+   (= :version))
+  (pplumbing-cmdlang-cmdliner-runner
+   (= :version))
+  (pplumbing-err
    (= :version))
   (pplumbing-pp-tty
    (= :version))
