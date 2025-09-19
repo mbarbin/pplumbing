@@ -168,9 +168,9 @@
    (>= 2.0.0))
   (pplumbing
    (= :version))
-  (pplumbing-cmdlang-cmdliner-runner
-   (= :version))
   (pplumbing-cmdlang-climate-runner
+   (= :version))
+  (pplumbing-cmdlang-cmdliner-runner
    (= :version))
   (pplumbing-err
    (= :version))
@@ -255,9 +255,9 @@
    (>= 2.0.0))
   (pplumbing
    (= :version))
-  (pplumbing-cmdlang-cmdliner-runner
-   (= :version))
   (pplumbing-cmdlang-climate-runner
+   (= :version))
+  (pplumbing-cmdlang-cmdliner-runner
    (= :version))
   (pplumbing-err
    (= :version))

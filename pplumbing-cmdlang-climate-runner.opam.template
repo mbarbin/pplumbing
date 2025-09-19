@@ -1,0 +1,20 @@
+description: """\
+
+[pplumbing] defines a set of utility libraries to use with [pp]. It
+is compatible with [logs] and inspired by design choices used by
+[dune] for user messages:
+
+[Cmdlang_climate_runner] is a library for running command line
+programs specified with [cmdlang] with [climate] as a backend and
+making opinionated choices, assuming your dependencies are using
+[Err].
+
+[cmdlang]: https://github.com/mbarbin/cmdlang
+[climate]: https://github.com/gridbugs/climate
+[dune]: https://github.com/ocaml/dune
+[logs]: https://github.com/dbuenzli/logs
+[pp]: https://github.com/ocaml-dune/pp
+
+"""
+tags: [ "cli" "cmdlang" "logs" "pp" ]
+x-maintenance-intent: [ "(latest)" ]
