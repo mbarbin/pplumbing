@@ -7,6 +7,8 @@ lib/log/test
 lib/err/src
 lib/log_cli/src
 lib/log_cli/test
+lib/pplumbing_cmdlang_climate_runner/src
+lib/pplumbing_cmdlang_climate_runner/test
 lib/pplumbing_cmdlang_cmdliner_runner/src
 lib/pplumbing_cmdlang_cmdliner_runner/test
 lib/pplumbing_err/src

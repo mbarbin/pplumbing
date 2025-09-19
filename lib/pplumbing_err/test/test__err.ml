@@ -103,6 +103,18 @@ let%expect_test "create" =
   ()
 ;;
 
+let%expect_test "empty" =
+  let err = Err.create ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt")) [] in
+  Err.For_test.protect (fun () -> raise (Err.E err));
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error:
+    [123]
+    |}];
+  ()
+;;
+
 let%expect_test "sexp_of_t" =
   let err =
     Err.create

@@ -1,5 +1,9 @@
 ## 0.0.15 (unreleased)
 
+### Added
+
+- Add a cmdlang runner based on climate for programs using `Err` (#22, @mbarbin).
+
 ### Changed
 
 - Split pakages to isolate dependencies (#18, #19, #20, #21, @mbarbin).

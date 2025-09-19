@@ -4,4 +4,4 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
-let () = Cmdlang_cmdliner_runner.run Test_command.main ~name:"main" ~version:"%%VERSION%%"
+module Cmdlang_climate_runner = Cmdlang_climate_runner

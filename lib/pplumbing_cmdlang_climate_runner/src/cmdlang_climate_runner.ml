@@ -4,4 +4,14 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
-let () = Cmdlang_cmdliner_runner.run Test_command.main ~name:"main" ~version:"%%VERSION%%"
+let run ?exn_handler cmd ~name ~version =
+  match
+    Err.protect ?exn_handler (fun () ->
+      Climate.Command.run
+        (Cmdlang_to_climate.Translate.command cmd)
+        ~program_name:(Literal name)
+        ~version)
+  with
+  | Ok () -> ()
+  | Error code -> exit code
+;;
