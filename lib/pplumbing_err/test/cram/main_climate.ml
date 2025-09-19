@@ -1,0 +1,12 @@
+(*********************************************************************************)
+(*  pplumbing - Utility libraries to use with [pp]                               *)
+(*  SPDX-FileCopyrightText: 2024-2025 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*  SPDX-License-Identifier: MIT                                                 *)
+(*********************************************************************************)
+
+let () =
+  Pplumbing_cmdlang_climate_runner.Cmdlang_climate_runner.run
+    Test_command.main
+    ~name:"main-climate"
+    ~version:"%%VERSION%%"
+;;

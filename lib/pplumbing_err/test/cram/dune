@@ -1,7 +1,6 @@
-(executable
- (name main)
- (package pplumbing-tests)
- (public_name pplumbing-tests-err-cram-main)
+(library
+ (name test_command)
+ (public_name pplumbing-tests.test_command)
  (flags
   :standard
   -w
@@ -18,10 +17,10 @@
   loc
   logs
   pp
-  pplumbing.cmdlang-cmdliner-runner
   pplumbing.err
   pplumbing.log-cli
   pplumbing.pp-tty)
+ (modules test_command)
  (instrumentation
   (backend bisect_ppx))
  (lint
@@ -37,6 +36,32 @@
    ppx_sexp_conv
    ppx_sexp_value)))
 
+(executable
+ (name main)
+ (package pplumbing-tests)
+ (public_name pplumbing-tests-err-cram-main)
+ (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
+ (libraries pplumbing.cmdlang-cmdliner-runner test_command)
+ (modules main)
+ (instrumentation
+  (backend bisect_ppx))
+ (lint
+  (pps ppx_js_style -allow-let-operators -check-doc-comments))
+ (preprocess no_preprocessing))
+
+(executable
+ (name main_climate)
+ (package pplumbing-tests)
+ (public_name pplumbing-tests-err-cram-main-climate)
+ (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
+ (libraries pplumbing-cmdlang-climate-runner test_command)
+ (modules main_climate)
+ (instrumentation
+  (backend bisect_ppx))
+ (lint
+  (pps ppx_js_style -allow-let-operators -check-doc-comments))
+ (preprocess no_preprocessing))
+
 (cram
  (package pplumbing-tests)
- (deps main.exe))
+ (deps main.exe main_climate.exe))
