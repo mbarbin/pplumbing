@@ -55,7 +55,7 @@
    (>= v0.16))
   (pp
    (>= 2.0.0))
-  (pplumbing-cmdlang-cmdliner-runner
+  (cmdlang-cmdliner-err-runner
    (= :version))
   (pplumbing-err
    (= :version))
@@ -99,7 +99,7 @@
    (>= 3.17))))
 
 (package
- (name pplumbing-cmdlang-cmdliner-runner)
+ (name cmdlang-cmdliner-err-runner)
  (synopsis "Cmdlang runner for programs using [Err] with a cmdliner backend")
  (depends
   (ocaml
@@ -114,7 +114,7 @@
    (= :version))))
 
 (package
- (name pplumbing-cmdlang-climate-runner)
+ (name cmdlang-climate-err-runner)
  (synopsis "Cmdlang runner for programs using [Err] with a climate backend")
  (depends
   (ocaml
@@ -168,9 +168,9 @@
    (>= 2.0.0))
   (pplumbing
    (= :version))
-  (pplumbing-cmdlang-climate-runner
+  (cmdlang-climate-err-runner
    (= :version))
-  (pplumbing-cmdlang-cmdliner-runner
+  (cmdlang-cmdliner-err-runner
    (= :version))
   (pplumbing-err
    (= :version))
@@ -255,9 +255,9 @@
    (>= 2.0.0))
   (pplumbing
    (= :version))
-  (pplumbing-cmdlang-climate-runner
+  (cmdlang-climate-err-runner
    (= :version))
-  (pplumbing-cmdlang-cmdliner-runner
+  (cmdlang-cmdliner-err-runner
    (= :version))
   (pplumbing-err
    (= :version))

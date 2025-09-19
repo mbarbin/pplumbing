@@ -41,7 +41,7 @@
  (package pplumbing-tests)
  (public_name pplumbing-tests-err-cram-main)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries pplumbing.cmdlang-cmdliner-runner test_command)
+ (libraries cmdlang-cmdliner-err-runner test_command)
  (modules main)
  (instrumentation
   (backend bisect_ppx))
@@ -54,7 +54,7 @@
  (package pplumbing-tests)
  (public_name pplumbing-tests-err-cram-main-climate)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries pplumbing-cmdlang-climate-runner test_command)
+ (libraries cmdlang-climate-err-runner test_command)
  (modules main_climate)
  (instrumentation
   (backend bisect_ppx))

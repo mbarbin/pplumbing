@@ -28,8 +28,8 @@ depends: [
   "parsexp" {>= "v0.17"}
   "pp" {>= "2.0.0"}
   "pplumbing" {= version}
-  "pplumbing-cmdlang-climate-runner" {= version}
-  "pplumbing-cmdlang-cmdliner-runner" {= version}
+  "cmdlang-climate-err-runner" {= version}
+  "cmdlang-cmdliner-err-runner" {= version}
   "pplumbing-err" {= version}
   "pplumbing-pp-tty" {= version}
   "pplumbing-tests" {= version}
