@@ -2,7 +2,7 @@
  (name cmdlang_cmdliner_runner)
  (public_name pplumbing.cmdlang-cmdliner-runner)
  (flags :standard -w +a-4-40-41-42-44-45-48-66-70 -warn-error +a)
- (libraries pplumbing-cmdlang-cmdliner-runner)
+ (libraries cmdlang-cmdliner-err-runner)
  (instrumentation
   (backend bisect_ppx))
  (lint

@@ -5,7 +5,7 @@
 (*********************************************************************************)
 
 let () =
-  Pplumbing_cmdlang_climate_runner.Cmdlang_climate_runner.run
+  Cmdlang_climate_err_runner.run
     Test_command.main
     ~name:"main-climate"
     ~version:"%%VERSION%%"

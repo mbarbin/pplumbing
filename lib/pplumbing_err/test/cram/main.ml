@@ -4,4 +4,6 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
-let () = Cmdlang_cmdliner_runner.run Test_command.main ~name:"main" ~version:"%%VERSION%%"
+let () =
+  Cmdlang_cmdliner_err_runner.run Test_command.main ~name:"main" ~version:"%%VERSION%%"
+;;

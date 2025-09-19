@@ -1,6 +1,6 @@
 (library
- (name pplumbing_cmdlang_cmdliner_runner)
- (public_name pplumbing-cmdlang-cmdliner-runner)
+ (name cmdlang_cmdliner_err_runner)
+ (public_name cmdlang-cmdliner-err-runner)
  (flags
   :standard
   -w

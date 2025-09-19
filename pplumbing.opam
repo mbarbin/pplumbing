@@ -20,7 +20,7 @@ depends: [
   "ordering" {>= "3.17"}
   "parsexp" {>= "v0.16"}
   "pp" {>= "2.0.0"}
-  "pplumbing-cmdlang-cmdliner-runner" {= version}
+  "cmdlang-cmdliner-err-runner" {= version}
   "pplumbing-err" {= version}
   "pplumbing-pp-tty" {= version}
   "sexplib0" {>= "v0.16"}

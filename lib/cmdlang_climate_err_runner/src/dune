@@ -1,6 +1,6 @@
 (library
- (name pplumbing_cmdlang_climate_runner)
- (public_name pplumbing-cmdlang-climate-runner)
+ (name cmdlang_climate_err_runner)
+ (public_name cmdlang-climate-err-runner)
  (flags
   :standard
   -w
