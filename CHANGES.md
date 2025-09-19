@@ -1,4 +1,4 @@
-## 0.0.15 (unreleased)
+## 0.0.15 (2025-09-19)
 
 ### Added
 
@@ -6,6 +6,7 @@
 
 ### Changed
 
+- Improve names `cmdlang-{backend}-err-runner` for cmd runners (#23, @mbarbin).
 - Split pakages to isolate dependencies (#18, #19, #20, #21, @mbarbin).
 
 ## 0.0.14 (2025-05-26)
