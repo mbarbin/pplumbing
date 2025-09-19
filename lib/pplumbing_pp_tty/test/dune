@@ -1,9 +1,9 @@
 (library
- (name pp_tty_test)
- (public_name pplumbing-tests.pp_tty_test)
+ (name pplumbing_pp_tty_test)
+ (public_name pplumbing-tests.pplumbing_pp_tty_test)
  (inline_tests)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries pp_tty)
+ (libraries pplumbing_pp_tty)
  (instrumentation
   (backend bisect_ppx))
  (lint

@@ -10,9 +10,9 @@ bug-reports: "https://github.com/mbarbin/pplumbing/issues"
 depends: [
   "dune" {>= "3.17"}
   "ocaml" {>= "4.14"}
+  "climate" {>= "0.8.0"}
   "cmdlang" {>= "0.0.10"}
   "cmdlang-to-climate" {>= "0.0.10"}
-  "climate" {>= "0.8.0"}
   "pplumbing-err" {= version}
   "odoc" {with-doc}
 ]

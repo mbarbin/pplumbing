@@ -1,6 +1,6 @@
 (library
- (name cmdlang_cmdliner_runner_test)
- (public_name pplumbing-tests.cmdlang_cmdliner_runner_test)
+ (name cmdlang_cmdliner_err_runner_test)
+ (public_name pplumbing-tests.cmdlang_cmdliner_err_runner_test)
  (inline_tests)
  (flags
   :standard
@@ -14,7 +14,7 @@
   Expect_test_helpers_base)
  (libraries
   base
-  cmdlang_cmdliner_runner
+  cmdlang_cmdliner_err_runner
   expect_test_helpers_core.expect_test_helpers_base)
  (instrumentation
   (backend bisect_ppx))

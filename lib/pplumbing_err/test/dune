@@ -1,6 +1,6 @@
 (library
- (name err_test)
- (public_name pplumbing-tests.err_test)
+ (name pplumbing_err_test)
+ (public_name pplumbing-tests.pplumbing_err_test)
  (inline_tests)
  (flags
   :standard
@@ -15,12 +15,12 @@
  (libraries
   base
   cmdliner
-  err
   expect_test_helpers_core.expect_test_helpers_base
   fpath
   loc
   logs
   pp
+  pplumbing.err
   pplumbing.log-cli)
  (instrumentation
   (backend bisect_ppx))
