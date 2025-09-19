@@ -3,6 +3,7 @@
 lib/cmdlang_cmdliner_runner/src
 lib/cmdlang_cmdliner_runner/test
 lib/pp_tty/src
+lib/pp_tty/sub-pkg
 lib/pp_tty/test
 lib/log/src
 lib/log/test

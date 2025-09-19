@@ -1,3 +1,9 @@
+## 0.0.15 (unreleased)
+
+### Changed
+
+- Split pakages to isolate dependencies (PR, @mbarbin).
+
 ## 0.0.14 (2025-05-26)
 
 ### Changed

@@ -20,6 +20,7 @@ depends: [
   "ordering" {>= "3.17"}
   "parsexp" {>= "v0.16"}
   "pp" {>= "2.0.0"}
+  "pplumbing-pp-tty" {= version}
   "sexplib0" {>= "v0.16"}
   "stdune" {>= "3.17"}
   "odoc" {with-doc}
