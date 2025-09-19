@@ -76,6 +76,25 @@
    (>= 3.17))))
 
 (package
+ (name pplumbing-err)
+ (synopsis "Report located errors and warnings to the user with [pp]")
+ (depends
+  (ocaml
+   (>= 4.14))
+  (loc
+   (>= 0.2.2))
+  (parsexp
+   (>= v0.16))
+  (pp
+   (>= 2.0.0))
+  (pplumbing-pp-tty
+   (= :version))
+  (sexplib0
+   (>= v0.16))
+  (stdune
+   (>= 3.17))))
+
+(package
  (name pplumbing-tests)
  (synopsis "Tests for pplumbing")
  (depends
