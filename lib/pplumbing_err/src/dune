@@ -1,0 +1,17 @@
+(library
+ (name pplumbing_err)
+ (public_name pplumbing-err)
+ (flags
+  :standard
+  -w
+  +a-4-40-41-42-44-45-48-66
+  -warn-error
+  +a
+  -open
+  Pplumbing_pp_tty)
+ (libraries loc parsexp pp pplumbing-pp-tty sexplib0 stdune)
+ (instrumentation
+  (backend bisect_ppx))
+ (lint
+  (pps ppx_js_style -allow-let-operators -check-doc-comments))
+ (preprocess no_preprocessing))

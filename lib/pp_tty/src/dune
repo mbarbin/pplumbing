@@ -1,8 +1,8 @@
 (library
- (name pplumbing_pp_tty)
- (public_name pplumbing-pp-tty)
- (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries loc pp stdune)
+ (name pp_tty)
+ (public_name pplumbing.pp-tty)
+ (flags :standard -w +a-4-40-41-42-44-45-48-66-70 -warn-error +a)
+ (libraries pplumbing-pp-tty)
  (instrumentation
   (backend bisect_ppx))
  (lint

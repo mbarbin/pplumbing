@@ -2,7 +2,7 @@
 
 ### Changed
 
-- Split pakages to isolate dependencies (#18, #19, #20, @mbarbin).
+- Split pakages to isolate dependencies (#18, #19, #20, #21, @mbarbin).
 
 ## 0.0.14 (2025-05-26)
 
