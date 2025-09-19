@@ -9,9 +9,10 @@ open Command.Std
 let logs_cmd =
   Command.make
     ~summary:"Use the logs library."
-    (let+ () = Log_cli.set_config () in
+    (let+ () = Log_cli.set_config ()
+     and+ no_error = Arg.flag [ "no-error" ] ~doc:"Do not produce an error." in
      Logs.app (fun m -> m "Hello app");
-     Logs.err (fun m -> m "Hello err");
+     if not no_error then Logs.err (fun m -> m "Hello err");
      Logs.warn (fun m -> m "Hello warn");
      Logs.info (fun m -> m "Hello info");
      Logs.debug (fun m -> m "Hello debug");
@@ -43,7 +44,10 @@ let write_cmd =
        Loc.create (p, { p with pos_cnum = pos_cnum + length })
      in
      if uncaught_exception then failwith "Raising an exception!";
-     if err_raise then Err.raise ~loc [ Pp.text "Hello [Err.raise]!" ];
+     if err_raise
+     then
+       Err.raise ~loc [ Pp.text "Hello [Err.raise]!" ] [@coverage off]
+       (* Out-edge bisect_ppx issue. *);
      let msg = Err.create ~loc [ Pp.textf "%s message." (Err.Level.to_string level) ] in
      Err.emit msg ~level)
 ;;

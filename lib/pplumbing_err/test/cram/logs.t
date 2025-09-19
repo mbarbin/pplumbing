@@ -8,6 +8,10 @@ By default app, err, and warn messages are enabled.
   main.exe: [WARNING] Hello warn
   [1]
 
+  $ ./main.exe logs --no-error
+  Hello app
+  main.exe: [WARNING] Hello warn
+
 All messages are enabled in debug mode.
 
   $ ./main.exe logs --verbosity=debug
