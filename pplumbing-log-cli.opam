@@ -37,9 +37,12 @@ build: [
 dev-repo: "git+https://github.com/mbarbin/pplumbing.git"
 description: """\
 
-[pplumbing] defines a set of utility libraries to use with [pp]. It
-is compatible with [logs] and inspired by design choices used by
-[dune] for user messages:
+[pplumbing] defines a set of utility libraries to use with [pp].
+It is compatible with [logs] and inspired by design choices used
+by [dune] for user messages.
+
+These libraries are meant to combine nicely into a small ecosystem
+of useful helpers to build CLIs in OCaml.
 
 [Pplumbing_log_cli] contains functions to work with [Err] on the
 side of end programs (such as a command line tool). It defines

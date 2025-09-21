@@ -1,8 +1,11 @@
 description: """\
 
-[pplumbing] defines a set of utility libraries to use with [pp]. It
-is compatible with [logs] and inspired by design choices used by
-[dune] for user messages:
+[pplumbing] defines a set of utility libraries to use with [pp].
+It is compatible with [logs] and inspired by design choices used
+by [dune] for user messages.
+
+These libraries are meant to combine nicely into a small ecosystem
+of useful helpers to build CLIs in OCaml.
 
 - [Pp_tty] extends [pp] to build colored documents in the user's
   terminal using ansi escape codes.
@@ -21,9 +24,6 @@ is compatible with [logs] and inspired by design choices used by
   programs specified with [cmdlang] with [cmdliner] as a backend and
   making opinionated choices, assuming your dependencies are using
   [Err].
-
-These libraries are meant to combine nicely into a small ecosystem of
-useful helpers to build CLIs in OCaml.
 
 [cmdlang]: https://github.com/mbarbin/cmdlang
 [cmdliner]: https://github.com/dbuenzli/cmdliner

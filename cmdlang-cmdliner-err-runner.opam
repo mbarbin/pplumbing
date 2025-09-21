@@ -33,9 +33,12 @@ build: [
 dev-repo: "git+https://github.com/mbarbin/pplumbing.git"
 description: """\
 
-[pplumbing] defines a set of utility libraries to use with [pp]. It
-is compatible with [logs] and inspired by design choices used by
-[dune] for user messages:
+[pplumbing] defines a set of utility libraries to use with [pp].
+It is compatible with [logs] and inspired by design choices used
+by [dune] for user messages.
+
+These libraries are meant to combine nicely into a small ecosystem
+of useful helpers to build CLIs in OCaml.
 
 [Cmdlang_cmdliner_err_runner] is a library for running command line
 programs specified with [cmdlang] with [cmdliner] as a backend and

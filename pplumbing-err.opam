@@ -35,8 +35,12 @@ build: [
 dev-repo: "git+https://github.com/mbarbin/pplumbing.git"
 description: """\
 
-[pplumbing] defines a set of utility libraries to use with [pp]. It
-is inspired by design choices used by [dune] for user messages:
+[pplumbing] defines a set of utility libraries to use with [pp].
+It is compatible with [logs] and inspired by design choices used
+by [dune] for user messages.
+
+These libraries are meant to combine nicely into a small ecosystem
+of useful helpers to build CLIs in OCaml.
 
 [Err] is an abstraction to report located errors and warnings to
 the user.
