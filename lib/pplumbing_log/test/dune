@@ -10,14 +10,16 @@
   -open
   Base
   -open
+  Pplumbing_log
+  -open
   Expect_test_helpers_base)
  (libraries
   base
   expect_test_helpers_core.expect_test_helpers_base
   fmt
-  log
   logs
-  logs.fmt)
+  logs.fmt
+  pplumbing_log)
  (inline_tests)
  (instrumentation
   (backend bisect_ppx))

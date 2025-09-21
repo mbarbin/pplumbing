@@ -11,6 +11,10 @@
   -open
   Base
   -open
+  Pplumbing_err
+  -open
+  Pplumbing_log_cli
+  -open
   Expect_test_helpers_base
   -open
   Cmdlang)
@@ -19,11 +23,11 @@
   cmdlang
   cmdlang-to-cmdliner
   cmdliner
-  err
   expect_test_helpers_core.expect_test_helpers_base
   loc
-  log_cli
   logs
+  pplumbing_err
+  pplumbing_log_cli
   stdune)
  (instrumentation
   (backend bisect_ppx))

@@ -10,6 +10,12 @@
   -open
   Base
   -open
+  Pplumbing_pp_tty
+  -open
+  Pplumbing_err
+  -open
+  Pplumbing_log_cli
+  -open
   Cmdlang)
  (libraries
   base
@@ -17,9 +23,9 @@
   loc
   logs
   pp
-  pplumbing.err
-  pplumbing.log-cli
-  pplumbing.pp-tty)
+  pplumbing-err
+  pplumbing-log-cli
+  pplumbing-pp-tty)
  (modules test_command)
  (instrumentation
   (backend bisect_ppx))
