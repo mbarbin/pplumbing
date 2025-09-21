@@ -1,4 +1,6 @@
 #require "logs" ;;
 #require "fmt" ;;
 #require "pp" ;;
-#require "pplumbing.log" ;;
+#require "pplumbing-log" ;;
+module Log = Pplumbing_log.Log
+module Pp_tty = Pplumbing_pp_tty.Pp_tty
