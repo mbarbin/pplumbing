@@ -12,7 +12,7 @@
   <a href="https://coveralls.io/github/mbarbin/pplumbing?branch=main"><img src="https://coveralls.io/repos/github/mbarbin/pplumbing/badge.svg?branch=main" alt="Coverage Status"/></a>
 </p>
 
-*pplumbing* defines a set of utility libraries to use with `pp`. It is compatible with `logs` and inspired by design choices used by *Dune* for user messages:
+*pplumbing* defines a set of utility libraries to use with `pp`. It is compatible with `logs` and inspired by design choices used by *Dune* for user messages. These libraries are meant to combine nicely into a small ecosystem of useful helpers to build CLIs in OCaml.
 
 - `Pp_tty` extends `pp` to build colored documents in the user's terminal using ANSI escape codes.
 
@@ -22,14 +22,15 @@
 
 - `Log_cli` contains functions to work with `Err` on the side of end programs (such as a command line tools). It defines command line helpers to configure the `Err` library, while taking care of setting the `logs` and `fmt` style rendering.
 
-- `Cmdlang_cmdliner_runner` is a library for running command line programs specified with `cmdlang` with `cmdliner` as a backend and making opinionated choices, assuming your dependencies are using `Err`.
+- `Cmdlang_cmdliner_err_runner` is a library for running command line programs specified with `cmdlang` with `cmdliner` as a backend and making opinionated choices, assuming your dependencies are using `Err`.
 
-These libraries are meant to combine nicely into a small ecosystem of useful helpers to build CLIs in OCaml.
+- `Cmdlang_climate_err_runner` is a library for running command line programs specified with `cmdlang` with `climate` as a backend and making opinionated choices, assuming your dependencies are using `Err`.
 
 ## Links to plumbed projects
 
 - [cmdlang](https://github.com/mbarbin/cmdlang)
 - [cmdliner](https://github.com/dbuenzli/cmdliner)
+- [climate](https://github.com/gridbugs/climate)
 - [dune](https://github.com/ocaml/dune)
 - [fmt](https://github.com/dbuenzli/fmt)
 - [logs](https://github.com/dbuenzli/logs)
