@@ -8,11 +8,11 @@
   -warn-error
   +a
   -open
-  Cmdlang
+  Pplumbing_pp_tty
   -open
   Pplumbing_err
   -open
-  Pplumbing_pp_tty)
+  Cmdlang)
  (libraries
   cmdlang
   fmt
