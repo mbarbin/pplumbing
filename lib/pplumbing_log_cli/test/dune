@@ -1,6 +1,6 @@
 (library
- (name log_cli_test)
- (public_name pplumbing-tests.log_cli_test)
+ (name pplumbing_log_cli_test)
+ (public_name pplumbing-tests.pplumbing_log_cli_test)
  (inline_tests)
  (flags
   :standard
