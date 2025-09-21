@@ -4,7 +4,7 @@ description: """\
 is compatible with [logs] and inspired by design choices used by
 [dune] for user messages:
 
-[Cmdlang_cmdliner_runner] is a library for running command line
+[Cmdlang_cmdliner_err_runner] is a library for running command line
 programs specified with [cmdlang] with [cmdliner] as a backend and
 making opinionated choices, assuming your dependencies are using
 [Err].
