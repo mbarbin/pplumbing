@@ -35,36 +35,18 @@
  (depends
   (ocaml
    (>= 4.14))
-  (cmdlang
-   (>= 0.0.9))
   (cmdlang-cmdliner-err-runner
    (= :version))
   (cmdlang-to-cmdliner
    (>= 0.0.9))
-  (cmdliner
-   (>= 1.3.0))
-  (dyn
-   (>= 3.17))
-  (fmt
-   (>= 0.9.0))
-  (loc
-   (>= 0.2.2))
-  (logs
-   (>= 0.7.0))
-  (ordering
-   (>= 3.17))
-  (parsexp
-   (>= v0.16))
-  (pp
-   (>= 2.0.0))
   (pplumbing-err
    (= :version))
-  (pplumbing-pp-tty
+  (pplumbing-log
    (= :version))
-  (sexplib0
-   (>= v0.16))
-  (stdune
-   (>= 3.17))))
+  (pplumbing-log-cli
+   (= :version))
+  (pplumbing-pp-tty
+   (= :version))))
 
 (package
  (name pplumbing-pp-tty)
@@ -97,6 +79,41 @@
    (>= v0.16))
   (stdune
    (>= 3.17))))
+
+(package
+ (name pplumbing-log)
+ (synopsis "An interface to [logs] using [Pp_tty] rather than [Format]")
+ (depends
+  (ocaml
+   (>= 4.14))
+  (logs
+   (>= 0.7.0))
+  (pp
+   (>= 2.0.0))
+  (pplumbing-pp-tty
+   (= :version))))
+
+(package
+ (name pplumbing-log-cli)
+ (synopsis
+  "Command line helpers to configure the [err], [logs] and [fmt] libraries")
+ (depends
+  (ocaml
+   (>= 4.14))
+  (cmdlang
+   (>= 0.0.9))
+  (fmt
+   (>= 0.9.0))
+  (logs
+   (>= 0.7.0))
+  (pp
+   (>= 2.0.0))
+  (pplumbing-err
+   (= :version))
+  (pplumbing-log
+   (= :version))
+  (pplumbing-pp-tty
+   (= :version))))
 
 (package
  (name cmdlang-cmdliner-err-runner)

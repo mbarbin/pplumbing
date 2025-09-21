@@ -1,6 +1,7 @@
 (library
- (name log_test)
- (public_name pplumbing-tests.log_test)
+ (name pplumbing_log_cli_test)
+ (public_name pplumbing-tests.pplumbing_log_cli_test)
+ (inline_tests)
  (flags
   :standard
   -w
@@ -10,15 +11,20 @@
   -open
   Base
   -open
-  Expect_test_helpers_base)
+  Expect_test_helpers_base
+  -open
+  Cmdlang)
  (libraries
   base
+  cmdlang
+  cmdlang-to-cmdliner
+  cmdliner
+  err
   expect_test_helpers_core.expect_test_helpers_base
-  fmt
-  log
+  loc
+  log_cli
   logs
-  logs.fmt)
- (inline_tests)
+  stdune)
  (instrumentation
   (backend bisect_ppx))
  (lint

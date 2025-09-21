@@ -10,21 +10,12 @@ bug-reports: "https://github.com/mbarbin/pplumbing/issues"
 depends: [
   "dune" {>= "3.17"}
   "ocaml" {>= "4.14"}
-  "cmdlang" {>= "0.0.9"}
   "cmdlang-cmdliner-err-runner" {= version}
   "cmdlang-to-cmdliner" {>= "0.0.9"}
-  "cmdliner" {>= "1.3.0"}
-  "dyn" {>= "3.17"}
-  "fmt" {>= "0.9.0"}
-  "loc" {>= "0.2.2"}
-  "logs" {>= "0.7.0"}
-  "ordering" {>= "3.17"}
-  "parsexp" {>= "v0.16"}
-  "pp" {>= "2.0.0"}
   "pplumbing-err" {= version}
+  "pplumbing-log" {= version}
+  "pplumbing-log-cli" {= version}
   "pplumbing-pp-tty" {= version}
-  "sexplib0" {>= "v0.16"}
-  "stdune" {>= "3.17"}
   "odoc" {with-doc}
 ]
 build: [
@@ -44,9 +35,12 @@ build: [
 dev-repo: "git+https://github.com/mbarbin/pplumbing.git"
 description: """\
 
-[pplumbing] defines a set of utility libraries to use with [pp]. It
-is compatible with [logs] and inspired by design choices used by
-[dune] for user messages:
+[pplumbing] defines a set of utility libraries to use with [pp].
+It is compatible with [logs] and inspired by design choices used
+by [dune] for user messages.
+
+These libraries are meant to combine nicely into a small ecosystem
+of useful helpers to build CLIs in OCaml.
 
 - [Pp_tty] extends [pp] to build colored documents in the user's
   terminal using ansi escape codes.
@@ -65,9 +59,6 @@ is compatible with [logs] and inspired by design choices used by
   programs specified with [cmdlang] with [cmdliner] as a backend and
   making opinionated choices, assuming your dependencies are using
   [Err].
-
-These libraries are meant to combine nicely into a small ecosystem of
-useful helpers to build CLIs in OCaml.
 
 [cmdlang]: https://github.com/mbarbin/cmdlang
 [cmdliner]: https://github.com/dbuenzli/cmdliner

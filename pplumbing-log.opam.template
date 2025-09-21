@@ -7,12 +7,13 @@ by [dune] for user messages.
 These libraries are meant to combine nicely into a small ecosystem
 of useful helpers to build CLIs in OCaml.
 
-[Err] is an abstraction to report located errors and warnings to
-the user.
+[Pplumbing_log] is an interface to [logs] using [Pp_tty] rather
+than [Format].
 
 [dune]: https://github.com/ocaml/dune
+[logs]: https://github.com/dbuenzli/logs
 [pp]: https://github.com/ocaml-dune/pp
 
 """
-tags: [ "cli" "pp" ]
+tags: [ "cli" "logs" "pp" ]
 x-maintenance-intent: [ "(latest)" ]

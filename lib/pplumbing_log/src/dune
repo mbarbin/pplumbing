@@ -1,8 +1,15 @@
 (library
- (name log)
- (public_name pplumbing.log)
- (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries logs pp pp_tty)
+ (name pplumbing_log)
+ (public_name pplumbing-log)
+ (flags
+  :standard
+  -w
+  +a-4-40-41-42-44-45-48-66
+  -warn-error
+  +a
+  -open
+  Pplumbing_pp_tty)
+ (libraries logs pp pplumbing-pp-tty)
  (instrumentation
   (backend bisect_ppx))
  (lint
@@ -12,6 +19,7 @@
 (mdx
  (package pplumbing-tests)
  (deps
-  (package pplumbing))
+  (package pplumbing-log)
+  (package pplumbing-pp-tty))
  (files :standard - *.mli)
  (preludes prelude.txt))

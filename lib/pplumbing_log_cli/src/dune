@@ -1,0 +1,29 @@
+(library
+ (name pplumbing_log_cli)
+ (public_name pplumbing-log-cli)
+ (flags
+  :standard
+  -w
+  +a-4-40-41-42-44-45-48-66
+  -warn-error
+  +a
+  -open
+  Cmdlang
+  -open
+  Pplumbing_err
+  -open
+  Pplumbing_pp_tty)
+ (libraries
+  cmdlang
+  fmt
+  fmt.tty
+  logs
+  logs.fmt
+  pp
+  pplumbing-err
+  pplumbing-pp-tty)
+ (instrumentation
+  (backend bisect_ppx))
+ (lint
+  (pps ppx_js_style -allow-let-operators -check-doc-comments))
+ (preprocess no_preprocessing))
