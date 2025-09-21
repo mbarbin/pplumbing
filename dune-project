@@ -86,22 +86,12 @@
  (depends
   (ocaml
    (>= 4.14))
-  (loc
-   (>= 0.2.2))
   (logs
    (>= 0.7.0))
-  (parsexp
-   (>= v0.16))
   (pp
    (>= 2.0.0))
-  (pplumbing-err
-   (= :version))
   (pplumbing-pp-tty
-   (= :version))
-  (sexplib0
-   (>= v0.16))
-  (stdune
-   (>= 3.17))))
+   (= :version))))
 
 (package
  (name pplumbing-log-cli)
@@ -114,12 +104,8 @@
    (>= 0.0.9))
   (fmt
    (>= 0.9.0))
-  (loc
-   (>= 0.2.2))
   (logs
    (>= 0.7.0))
-  (parsexp
-   (>= v0.16))
   (pp
    (>= 2.0.0))
   (pplumbing-err
@@ -127,11 +113,7 @@
   (pplumbing-log
    (= :version))
   (pplumbing-pp-tty
-   (= :version))
-  (sexplib0
-   (>= v0.16))
-  (stdune
-   (>= 3.17))))
+   (= :version))))
 
 (package
  (name cmdlang-cmdliner-err-runner)
