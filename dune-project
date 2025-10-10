@@ -151,10 +151,6 @@
  (depends
   (ocaml
    (>= 5.2))
-  (ocamlformat
-   (and
-    :with-dev-setup
-    (= 0.27.0)))
   (base
    (>= v0.17))
   (cmdlang
@@ -203,10 +199,6 @@
    (>= v0.17))
   (ppx_here
    (>= v0.17))
-  (ppx_js_style
-   (and
-    :with-dev-setup
-    (>= v0.17)))
   (ppx_let
    (>= v0.17))
   (ppx_sexp_conv
@@ -220,30 +212,21 @@
   (stdio
    (>= v0.17))
   (stdune
-   (>= 3.17))
-  (sherlodoc
-   (and
-    :with-doc
-    (>= 0.2)))))
+   (>= 3.17))))
 
 (package
  (name pplumbing-dev)
- (synopsis
-  "Package to regroup dev targets for the pplumbing project, documentation, and more")
- (allow_empty) ; The package is attached to stanza in doc/ however dune doesn't see it.
+ (synopsis "Package to regroup dev targets, documentation, and more")
+ (allow_empty)
  (depends
   (ocaml
    (>= 5.2))
   (ocamlformat
-   (and
-    :with-dev-setup
-    (= 0.27.0)))
+   (= 0.27.0))
   (base
    (>= v0.17))
   (bisect_ppx
-   (and
-    :with-dev-setup
-    (>= 2.8.3)))
+   (>= 2.8.3))
   (cmdlang
    (>= 0.0.9))
   (cmdlang-climate-err-runner
@@ -293,9 +276,7 @@
   (ppx_here
    (>= v0.17))
   (ppx_js_style
-   (and
-    :with-dev-setup
-    (>= v0.17)))
+   (>= v0.17))
   (ppx_let
    (>= v0.17))
   (ppx_sexp_conv
@@ -311,6 +292,4 @@
   (stdune
    (>= 3.17))
   (sherlodoc
-   (and
-    :with-doc
-    (>= 0.2)))))
+   (>= 0.2))))
