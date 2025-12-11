@@ -1,16 +1,15 @@
 # List of directories for headache.sh
 # Add new directories below. Lines starting with '#' are ignored.
-lib/cmdlang_climate_err_runner/src
-lib/cmdlang_climate_err_runner/test
-lib/cmdlang_cmdliner_err_runner/src
-lib/cmdlang_cmdliner_err_runner/test
-lib/pplumbing/src
-lib/pplumbing_err/src
-lib/pplumbing_err/test
-lib/pplumbing_err/test/cram
-lib/pplumbing_log/src
-lib/pplumbing_log/test
-lib/pplumbing_log_cli/src
-lib/pplumbing_log_cli/test
-lib/pplumbing_pp_tty/src
-lib/pplumbing_pp_tty/test
+src/cmdlang-climate-err-runner
+src/cmdlang-cmdliner-err-runner
+src/pplumbing
+src/pplumbing-err
+src/pplumbing-log
+src/pplumbing-log-cli
+src/pplumbing-pp-tty
+test/cram
+test/cmdlang-cmdliner-err-runner
+test/pplumbing-err
+test/pplumbing-log
+test/pplumbing-log-cli
+test/pplumbing-pp-tty
