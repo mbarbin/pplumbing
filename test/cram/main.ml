@@ -5,5 +5,5 @@
 (*********************************************************************************)
 
 let () =
-  Cmdlang_cmdliner_err_runner.run Test_command.main ~name:"main" ~version:"%%VERSION%%"
+  Cmdlang_cmdliner_err_runner.run Command_test.main ~name:"main" ~version:"%%VERSION%%"
 ;;

@@ -1,6 +1,6 @@
 (library
  (name pplumbing_err_test)
- (public_name pplumbing-tests.pplumbing_err_test)
+ (package pplumbing-tests)
  (inline_tests)
  (flags
   :standard

@@ -6,7 +6,7 @@
 
 let () =
   Cmdlang_climate_err_runner.run
-    Test_command.main
+    Command_test.main
     ~name:"main-climate"
     ~version:"%%VERSION%%"
 ;;

@@ -1,6 +1,6 @@
 (library
  (name cmdlang_cmdliner_err_runner_test)
- (public_name pplumbing-tests.cmdlang_cmdliner_err_runner_test)
+ (package pplumbing-tests)
  (inline_tests)
  (flags
   :standard

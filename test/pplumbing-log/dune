@@ -1,6 +1,6 @@
 (library
  (name pplumbing_log_test)
- (public_name pplumbing-tests.pplumbing_log_test)
+ (package pplumbing-tests)
  (flags
   :standard
   -w
