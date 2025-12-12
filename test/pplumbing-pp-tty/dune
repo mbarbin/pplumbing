@@ -1,6 +1,6 @@
 (library
  (name pplumbing_pp_tty_test)
- (public_name pplumbing-tests.pplumbing_pp_tty_test)
+ (package pplumbing-tests)
  (inline_tests)
  (flags
   :standard
