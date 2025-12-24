@@ -1,7 +1,18 @@
+## 0.0.17 (unreleased)
+
+### Added
+
+- Added `dunolint` config and workflow (#31, @mbarbin).
+
+### Changed
+
+- Enabled OCaml `5.4` in CI (#28, @mbarbin).
+
 ## 0.0.16 (2025-09-21)
 
 ### Changed
 
+- Refactor pkg directory structure (#30, @mbarbin).
 - Split remaining pakages to isolate dependencies (#25, @mbarbin).
 
 ## 0.0.15 (2025-09-19)
