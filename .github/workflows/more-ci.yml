@@ -65,4 +65,4 @@ jobs:
         run: opam install ./pplumbing-pp-tty.opam ./pplumbing-err.opam ./cmdlang-cmdliner-err-runner.opam ./cmdlang-climate-err-runner.opam ./pplumbing-log.opam ./pplumbing-log-cli.opam ./pplumbing.opam ./pplumbing-tests.opam --deps-only --with-test
 
       - name: Build & Run tests
-        run: opam exec -- dune build @all @runtest -p pplumbing-pp-tty,pplumbing-err,cmdlang-cmdliner-err-runner,cmdlang-climate-err-runner,pplumbing-log,pplumbing-log-cli,pplumbing,pplumbing-tests
+        run: opam exec -- dune build @all @runtest --only-packages=pplumbing-pp-tty,pplumbing-err,cmdlang-cmdliner-err-runner,cmdlang-climate-err-runner,pplumbing-log,pplumbing-log-cli,pplumbing,pplumbing-tests
