@@ -10,6 +10,7 @@
 <p align="center">
   <a href="https://github.com/mbarbin/pplumbing/actions/workflows/ci.yml"><img src="https://github.com/mbarbin/pplumbing/workflows/ci/badge.svg" alt="CI Status"/></a>
   <a href="https://coveralls.io/github/mbarbin/pplumbing?branch=main"><img src="https://coveralls.io/repos/github/mbarbin/pplumbing/badge.svg?branch=main" alt="Coverage Status"/></a>
+  <a href="https://ocaml.ci.dev/github/mbarbin/pplumbing"><img src="https://img.shields.io/endpoint?url=https://ocaml.ci.dev/badge/mbarbin/pplumbing/main&logo=ocaml" alt="OCaml-CI Build Status"/></a>
 </p>
 
 *pplumbing* defines a set of utility libraries to use with `pp`. It is compatible with `logs` and inspired by design choices used by *Dune* for user messages. These libraries are meant to combine nicely into a small ecosystem of useful helpers to build CLIs in OCaml.
