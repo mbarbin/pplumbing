@@ -13,24 +13,24 @@
     For example:
 
     {[
-      let hello ?src () =
-        Log.info ?src (fun () -> [ Pp.textf "Hello %s World!" "Friendly" ])
-      ;;
+    let hello ?src () =
+      Log.info ?src (fun () -> [ Pp.textf "Hello %s World!" "Friendly" ])
+    ;;
     ]}
 
     Styles may be injected in the document using [Pp_tty]. For example:
 
     {[
-      let hello ?src () =
-        Log.info ?src (fun () ->
-          [ Pp.concat
-              ~sep:Pp.space
-              [ Pp.text "Hello"
-              ; Pp_tty.tag (Ansi_styles [ `Fg_blue ]) (Pp.verbatim "Colored")
-              ; Pp.text "World!"
-              ]
-          ])
-      ;;
+    let hello ?src () =
+      Log.info ?src (fun () ->
+        [ Pp.concat
+            ~sep:Pp.space
+            [ Pp.text "Hello"
+            ; Pp_tty.tag (Ansi_styles [ `Fg_blue ]) (Pp.verbatim "Colored")
+            ; Pp.text "World!"
+            ]
+        ])
+    ;;
     ]} *)
 
 (** {1 Logs types aliases} *)
@@ -55,16 +55,16 @@ type src = Logs.src
     We this interface, the previous example can be written as:
 
     {[
-      let hello ?src ?header ?tags () =
-        Log.info ?src ?header ?tags (fun () ->
-          [ Pp.concat
-              ~sep:Pp.space
-              [ Pp.text "Hello"
-              ; Pp_tty.tag (Ansi_styles [ `Fg_blue ]) (Pp.verbatim "Colored")
-              ; Pp.text "World!"
-              ]
-          ])
-      ;;
+    let hello ?src ?header ?tags () =
+      Log.info ?src ?header ?tags (fun () ->
+        [ Pp.concat
+            ~sep:Pp.space
+            [ Pp.text "Hello"
+            ; Pp_tty.tag (Ansi_styles [ `Fg_blue ]) (Pp.verbatim "Colored")
+            ; Pp.text "World!"
+            ]
+        ])
+    ;;
     ]} *)
 
 type log =
@@ -89,15 +89,13 @@ module Logs : sig
       For example, the following [Logs] style logging:
 
       {[
-        let hello ?src () = Logs.info ?src (fun m -> m "Hello %s!" "World")
+      let hello ?src () = Logs.info ?src (fun m -> m "Hello %s!" "World")
       ]}
 
       Can be written with [Log.Logs] as:
 
       {[
-        let hello ?src () =
-          Log.Logs.info ?src (fun m -> m [ Pp.textf "Hello %s!" "World" ])
-        ;;
+      let hello ?src () = Log.Logs.info ?src (fun m -> m [ Pp.textf "Hello %s!" "World" ])
       ]} *)
 
   type msgf = ?header:string -> ?tags:Logs.Tag.set -> Pp_tty.t list -> unit

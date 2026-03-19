@@ -35,7 +35,7 @@ type t
     {ul
      {- When reporting an error:
         {[
-          if had_error then Err.raise [ Pp.text "An error occurred." ]
+        if had_error then Err.raise [ Pp.text "An error occurred." ]
         ]}
      }
     }
@@ -43,7 +43,7 @@ type t
     {ul
      {- When requesting an exit code:
         {[
-          if shall_exit_42 then Err.exit 42
+        if shall_exit_42 then Err.exit 42
         ]}
      }
     }
@@ -102,12 +102,12 @@ end
 
     Example:
     {[
-      let unknown_var var =
-        Err.raise
-          ~loc
-          [ Pp.textf "Unknown variable '%s'" var ]
-          ~hints:(Err.did_you_mean var ~candidates:[ "foo"; "bar"; "baz" ])
-      ;;
+    let unknown_var var =
+      Err.raise
+        ~loc
+        [ Pp.textf "Unknown variable '%s'" var ]
+        ~hints:(Err.did_you_mean var ~candidates:[ "foo"; "bar"; "baz" ])
+    ;;
     ]} *)
 val raise
   :  ?loc:Loc.t
@@ -153,10 +153,10 @@ val add_context : t -> Pp_tty.t list -> t
 (** Reraise with added context. See also {!add_context}. Usage:
 
     {[
-      match do_x (Y.to_x y) with
-      | exception Err.E e ->
-        let bt = Printexc.get_raw_backtrace () in
-        Err.reraise_with_context e bt [ Pp.text "Trying to do x with y"; Y.pp y ]
+    match do_x (Y.to_x y) with
+    | exception Err.E e ->
+      let bt = Printexc.get_raw_backtrace () in
+      Err.reraise_with_context e bt [ Pp.text "Trying to do x with y"; Y.pp y ]
     ]} *)
 val reraise_with_context : t -> Printexc.raw_backtrace -> Pp_tty.t list -> _
 
@@ -261,11 +261,11 @@ val color_mode : unit -> Color_mode.t
     Example usage:
 
     {[
-      if Err.log_enables ~level:Debug
-      then (
-        (* Perform expensive debugging operations *)
-        let debug_data = compute_debug_data () in
-        Err.debug (lazy [ Pp.textf "Debug data: %s" debug_data ]))
+    if Err.log_enables ~level:Debug
+    then (
+      (* Perform expensive debugging operations *)
+      let debug_data = compute_debug_data () in
+      Err.debug (lazy [ Pp.textf "Debug data: %s" debug_data ]))
     ]}
 
     Note: Functions such as {!Err.info}, {!Err.warning}, and {!Err.debug}
@@ -390,10 +390,10 @@ val debug : ?loc:Loc.t -> ?hints:Pp_tty.t list -> Pp_tty.t list Lazy.t -> unit
     error raised by some code, and make that a warning instead.
 
     {[
-      let warn_on_error ~f =
-        try f () with
-        | Err.E e -> Err.emit e ~level:Warning
-      ;;
+    let warn_on_error ~f =
+      try f () with
+      | Err.E e -> Err.emit e ~level:Warning
+    ;;
     ]}
 
     The emit functions does check the current log level, and only emit the message
