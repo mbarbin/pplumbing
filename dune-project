@@ -163,6 +163,8 @@
    (>= 0.0.9))
   (cmdliner
    (>= 1.3.0))
+  (dune-build-info
+   (>= 3.17))
   (dyn
    (>= 3.17))
   (expect_test_helpers_core

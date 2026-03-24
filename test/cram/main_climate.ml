@@ -4,9 +4,10 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
-let () =
-  Cmdlang_climate_err_runner.run
-    Command_test.main
-    ~name:"main-climate"
-    ~version:"%%VERSION%%"
+let version =
+  match Build_info.V1.version () with
+  | None -> "n/a"
+  | Some v -> Build_info.V1.Version.to_string v
 ;;
+
+let () = Cmdlang_climate_err_runner.run Command_test.main ~name:"main-climate" ~version
