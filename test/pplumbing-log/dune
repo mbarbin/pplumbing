@@ -9,7 +9,7 @@
   +a
   -open
   Pplumbing_log)
- (libraries pplumbing_log)
+ (libraries logs pplumbing_log)
  (inline_tests)
  (instrumentation
   (backend bisect_ppx))
