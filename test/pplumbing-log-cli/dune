@@ -13,18 +13,12 @@
   -open
   Stdlib_for_test
   -open
-  Pplumbing_err
-  -open
-  Pplumbing_log_cli
-  -open
-  Cmdlang)
+  Pplumbing_log_cli)
  (libraries
   base
-  cmdlang
   cmdlang-to-cmdliner
   cmdliner
   logs
-  pplumbing_err
   pplumbing_log_cli
   stdlib_for_test)
  (instrumentation
@@ -32,12 +26,4 @@
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
  (preprocess
-  (pps
-   -unused-code-warnings=force
-   ppx_compare
-   ppx_enumerate
-   ppx_expect
-   ppx_hash
-   ppx_let
-   ppx_sexp_conv
-   ppx_sexp_value)))
+  (pps ppx_expect)))
