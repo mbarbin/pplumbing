@@ -43,9 +43,14 @@ module Ansi_color = Ansi_color
 (** Symbolic styles that can be used inside messages. These styles are later
     converted to actual concrete styles depending on the output device. For
     instance, when printed to the terminal they are converted to ansi terminal
-    styles ([Ansi_color.Style.t list] values). *)
+    styles ([Ansi_color.Style.t list] values).
+
+    In addition to the symbolic styles inherited from [Stdune.User_message.Style],
+    this type includes tags that carry original structured data. These allow
+    round-tripping between [Pp_tty.t] and structured representations such as
+    [Sexp.t] or [Dyn.t] without lossy string rendering. *)
 module Style : sig
-  type t = Stdune.User_message.Style.t =
+  type t =
     | Loc
     | Error
     | Warning
@@ -58,9 +63,19 @@ module Style : sig
     | Debug
     | Success
     | Ansi_styles of Ansi_color.Style.t list
+    | Original_sexp of Sexplib0.Sexp.t
+    | Original_dyn of Dyn.t
 
   val to_dyn : t -> Dyn.t
   val compare : t -> t -> Ordering.t
+
+  (** Convert from [Stdune.User_message.Style.t]. This is a total injection
+      (all Stdune constructors are preserved). *)
+  val of_stdune : Stdune.User_message.Style.t -> t
+
+  (** Convert to [Stdune.User_message.Style.t]. The new structured-data tags
+      are mapped to [Details] as a visual fallback. *)
+  val to_stdune : t -> Stdune.User_message.Style.t
 end
 
 (** Styled document that can be printed to the console or in the log file. *)
@@ -97,6 +112,14 @@ val to_string_with_config : config:Print_config.t -> t -> string
 (*_ End of the section derived from [Stdune.User_message].
 
   ---------------------------------------------------------------------------- *)
+
+(** Embed a [Sexp.t] value, preserving the original structure for round-tripping
+    while rendering it as a human-readable string. *)
+val sexp : Sexplib0.Sexp.t -> t
+
+(** Embed a [Dyn.t] value, preserving the original structure for round-tripping
+    while rendering it as a human-readable string. *)
+val dyn : Dyn.t -> t
 
 (** An alias for [Pp.tag] dedicated to the expected [Style.t] type. Using this
     function allows to write the [Style.t] constructor without qualifying them,

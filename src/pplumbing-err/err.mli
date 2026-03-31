@@ -65,6 +65,10 @@ exception E of t
     {!With_exit_code.sexp_of_t} if needed. *)
 val sexp_of_t : t -> Sexplib0.Sexp.t
 
+(** Same as {!sexp_of_t} but returns a [Dyn.t] value instead. Note the exit code
+    is not shown by {!to_dyn}. See {!With_exit_code.to_dyn} if needed. *)
+val to_dyn : t -> Dyn.t
+
 (** {1 Exit codes}
 
     This part allows breaking the control flow with an exception indicating a
@@ -93,6 +97,9 @@ module With_exit_code : sig
 
   (** Same as [sexp_of_t] but augmented with the requested exit code. *)
   val sexp_of_t : t -> Sexplib0.Sexp.t
+
+  (** Same as [to_dyn] but augmented with the requested exit code. *)
+  val to_dyn : t -> Dyn.t
 end
 
 (** [set_exit_code e ~exit_code] allows to change the exit code previously
@@ -130,12 +137,18 @@ val create
   -> t
 
 (** [sexp s] is the preferred way to embed some context of type [Sexp.t] into a
-    [_ Pp.t] paragraph as part of a error. *)
-val sexp : Sexplib0.Sexp.t -> _ Pp.t
+    [Pp_tty.t] paragraph as part of an error. The resulting document carries the
+    original [Sexp.t] as a tag, enabling lossless round-tripping. *)
+val sexp : Sexplib0.Sexp.t -> Pp_tty.t
 
-(** [exn e] is the preferred way to embed an exception into a [_ Pp.t] paragraph
-    as part of an error. *)
-val exn : exn -> _ Pp.t
+(** [exn e] is the preferred way to embed an exception into a [Pp_tty.t]
+    paragraph as part of an error. *)
+val exn : exn -> Pp_tty.t
+
+(** [dyn d] is the preferred way to embed some context of type [Dyn.t] into a
+    [Pp_tty.t] paragraph as part of an error. The resulting document carries the
+    original [Dyn.t] as a tag, enabling lossless round-tripping. *)
+val dyn : Dyn.t -> Pp_tty.t
 
 (** {1 Context} *)
 
@@ -233,6 +246,7 @@ module Color_mode : sig
     ]
 
   val sexp_of_t : t -> Sexplib0.Sexp.t
+  val to_dyn : t -> Dyn.t
   val all : t list
   val compare : t -> t -> int
   val equal : t -> t -> bool
@@ -301,6 +315,7 @@ module Log_level : sig
     | Debug
 
   val sexp_of_t : t -> Sexplib0.Sexp.t
+  val to_dyn : t -> Dyn.t
   val all : t list
   val compare : t -> t -> int
   val equal : t -> t -> bool
@@ -326,6 +341,7 @@ module Level : sig
     | Debug
 
   val sexp_of_t : t -> Sexplib0.Sexp.t
+  val to_dyn : t -> Dyn.t
   val all : t list
   val compare : t -> t -> int
   val equal : t -> t -> bool
@@ -530,5 +546,5 @@ val reraise_s
   }]
 
 (** This was renamed {!val:Err.sexp}. *)
-val pp_of_sexp : Sexplib0.Sexp.t -> _ Pp.t
+val pp_of_sexp : Sexplib0.Sexp.t -> Pp_tty.t
 [@@migrate { repl = Rel.sexp }]

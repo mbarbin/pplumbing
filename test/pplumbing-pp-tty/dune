@@ -10,7 +10,7 @@
   +a
   -open
   Stdlib_for_test)
- (libraries stdlib_for_test)
+ (libraries stdlib_for_test stdune)
  (instrumentation
   (backend bisect_ppx))
  (lint

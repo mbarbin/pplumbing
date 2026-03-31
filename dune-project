@@ -56,10 +56,14 @@
  (depends
   (ocaml
    (>= 4.14))
+  (dyn
+   (>= 3.17))
   (loc
    (>= 0.2.2))
   (pp
    (>= 2.0.0))
+  (sexplib0
+   (>= 0.17))
   (stdune
    (>= 3.17))))
 
@@ -73,8 +77,6 @@
    (>= 3.17))
   (loc
    (>= 0.2.2))
-  (parsexp
-   (>= v0.16))
   (pp
    (>= 2.0.0))
   (pplumbing-pp-tty
@@ -190,7 +192,9 @@
   (ppx_expect
    (>= v0.17))
   (sexplib0
-   (>= v0.17))))
+   (>= v0.17))
+  (stdune
+   (>= 3.17))))
 
 (package
  (name pplumbing-dev)

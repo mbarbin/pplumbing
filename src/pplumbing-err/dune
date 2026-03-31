@@ -9,7 +9,7 @@
   +a
   -open
   Pplumbing_pp_tty)
- (libraries dyn loc parsexp pp pplumbing-pp-tty sexplib0 stdune)
+ (libraries dyn loc pp pplumbing-pp-tty sexplib0 stdune)
  (instrumentation
   (backend bisect_ppx))
  (lint

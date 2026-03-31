@@ -23,27 +23,58 @@ module Exit_code = struct
   let internal_error = 125
 end
 
-let sexp sexp = Pp.verbatim (Sexplib0.Sexp.to_string_hum sexp)
+let to_stdune_pp pp = Pp.map_tags pp ~f:Pp_tty.Style.to_stdune
+let sexp = Pp_tty.sexp
 let exn e = sexp (Sexplib0.Sexp_conv.sexp_of_exn e)
+let dyn = Pp_tty.dyn
 
 module Paragraph = struct
   type t = Pp_tty.t
 
-  let recognize_sexp t =
-    match Pp.to_ast t with
-    | Verbatim str ->
-      (match Parsexp.Single.parse_string str with
-       | Ok sexp -> Some sexp
-       | Error _ -> None)
-    | _ -> None
+  let find_original_sexp t =
+    let rec aux (ast : Pp_tty.Style.t Pp.Ast.t) =
+      match[@coverage off] ast with
+      | Tag (Original_sexp s, _) -> Some s
+      | Tag (_, inner)
+      | Box (_, inner)
+      | Vbox (_, inner)
+      | Hbox inner
+      | Hvbox (_, inner)
+      | Hovbox (_, inner) -> aux inner
+      | Nop | Verbatim _ | Char _ | Break _ | Newline | Text _ | Seq _ | Concat _ -> None
+    in
+    aux (Pp.to_ast t)
+  ;;
+
+  let find_original_dyn t =
+    let rec aux (ast : Pp_tty.Style.t Pp.Ast.t) =
+      match[@coverage off] ast with
+      | Tag (Original_dyn d, _) -> Some d
+      | Tag (_, inner)
+      | Box (_, inner)
+      | Vbox (_, inner)
+      | Hbox inner
+      | Hvbox (_, inner)
+      | Hovbox (_, inner) -> aux inner
+      | Nop | Verbatim _ | Char _ | Break _ | Newline | Text _ | Seq _ | Concat _ -> None
+    in
+    aux (Pp.to_ast t)
   ;;
 
   let sexp_of_t t =
-    match recognize_sexp t with
+    match find_original_sexp t with
     | Some sexp -> sexp
     | None ->
       let str = Format.asprintf "%a" Pp.to_fmt (Pp.hbox t) in
       Sexplib0.Sexp.Atom str
+  ;;
+
+  let to_dyn t =
+    match find_original_dyn t with
+    | Some dyn -> dyn
+    | None ->
+      let str = Format.asprintf "%a" Pp.to_fmt (Pp.hbox t) in
+      Dyn.String str
   ;;
 
   let rec simplify_sexp sexp =
@@ -57,7 +88,7 @@ module Paragraph = struct
 
   let default_sexp_rendering = sexp
 
-  (* Future plans involve coloring the sexps when rendering to the console. *)
+  (* Future plans involve coloring the sexps & dyns when rendering to the console. *)
   let pp_sexp sexp =
     let sexp = simplify_sexp sexp in
     let pp =
@@ -78,8 +109,8 @@ module Paragraph = struct
   ;;
 
   let pp t =
-    match recognize_sexp t with
-    | Some sexp -> pp_sexp sexp
+    match find_original_sexp t with
+    | Some s -> pp_sexp s
     | None -> t
   ;;
 end
@@ -91,13 +122,15 @@ module Level = struct
     | Info
     | Debug
 
-  let sexp_of_t : t -> Sexplib0.Sexp.t = function
-    | Error -> Atom "Error"
-    | Warning -> Atom "Warning"
-    | Info -> Atom "Info"
-    | Debug -> Atom "Debug"
+  let variant_constructor_name = function
+    | Error -> "Error"
+    | Warning -> "Warning"
+    | Info -> "Info"
+    | Debug -> "Debug"
   ;;
 
+  let sexp_of_t t = Sexplib0.Sexp.Atom (variant_constructor_name t)
+  let to_dyn t = Dyn.Variant (variant_constructor_name t, [])
   let all = [ Error; Warning; Info; Debug ]
 
   let to_index = function
@@ -140,7 +173,7 @@ let with_prefix ~prefix ~(style : Pp_tty.Style.t) paragraphs =
 let make_message ~level ?loc ?(context = []) ?(hints = []) paragraphs =
   Stdune.User_message.make
     ?loc:(Option.map stdune_loc loc)
-    ~hints
+    ~hints:(hints |> List.map to_stdune_pp)
     ?prefix:None
     (List.concat
        [ (match context with
@@ -150,7 +183,8 @@ let make_message ~level ?loc ?(context = []) ?(hints = []) paragraphs =
            ~prefix:(Level.to_string level |> String.capitalize_ascii)
            ~style:(Level.style level)
            paragraphs
-       ])
+       ]
+     |> List.map to_stdune_pp)
 ;;
 
 type t =
@@ -178,11 +212,45 @@ let to_sexps { loc; context; paragraphs; hints; exit_code = _ } =
          [ List (Atom "context" :: List.map Paragraph.sexp_of_t context)
          ; List (Atom "error" :: List.map Paragraph.sexp_of_t paragraphs)
          ])
-    ; (match hints with
-       | [] -> []
-       | _ :: _ -> [ List (Atom "hints" :: List.map Paragraph.sexp_of_t hints) ])
+    ; (if List.is_empty hints
+       then []
+       else [ List (Atom "hints" :: List.map Paragraph.sexp_of_t hints) ])
     ]
 ;;
+
+let to_dyns { loc; context; paragraphs; hints; exit_code = _ } =
+  List.filter_map
+    Fun.id
+    [ (match loc with
+       | None -> None
+       | Some loc ->
+         if Loc.include_sexp_of_locs.contents
+         then Some ("loc", Dyn.String (Loc.to_string loc))
+         else None)
+    ; (if List.is_empty context
+       then None
+       else Some ("context", Dyn.list Paragraph.to_dyn context))
+    ; (if List.is_empty paragraphs
+       then None
+       else Some ("msgs", Dyn.list Paragraph.to_dyn paragraphs))
+    ; (if List.is_empty hints
+       then None
+       else Some ("hints", Dyn.list Paragraph.to_dyn hints))
+    ]
+;;
+
+let to_dyn_internal ~include_exit_code t =
+  let dyns = to_dyns t in
+  Dyn.record
+    (List.concat
+       [ dyns
+       ; (if include_exit_code || List.is_empty dyns
+          then [ "exit_code", Dyn.Int t.exit_code ]
+          else [])
+       ])
+;;
+
+let to_dyn t = to_dyn_internal ~include_exit_code:false t
 
 let to_stdune_user_message ~level { loc; context; paragraphs; hints; exit_code = _ } =
   if
@@ -216,6 +284,7 @@ module With_exit_code = struct
   type nonrec t = t
 
   let sexp_of_t t = sexp_of_t_internal ~include_exit_code:true t
+  let to_dyn t = to_dyn_internal ~include_exit_code:true t
 end
 
 exception E of t
@@ -261,7 +330,11 @@ let of_exn e =
   | e -> create [ exn e ]
 ;;
 
-let did_you_mean = Stdune.User_message.did_you_mean
+let did_you_mean s ~candidates =
+  List.map
+    (fun pp -> Pp.map_tags pp ~f:Pp_tty.Style.of_stdune)
+    (Stdune.User_message.did_you_mean s ~candidates)
+;;
 
 module Color_mode = struct
   type t =
@@ -270,12 +343,14 @@ module Color_mode = struct
     | `Never
     ]
 
-  let sexp_of_t : t -> Sexplib0.Sexp.t = function
-    | `Auto -> Atom "Auto"
-    | `Always -> Atom "Always"
-    | `Never -> Atom "Never"
+  let variant_constructor_name : t -> string = function
+    | `Auto -> "Auto"
+    | `Always -> "Always"
+    | `Never -> "Never"
   ;;
 
+  let sexp_of_t t : Sexplib0.Sexp.t = Atom (variant_constructor_name t)
+  let to_dyn t : Dyn.t = Variant (variant_constructor_name t, [])
   let all : t list = [ `Auto; `Always; `Never ]
 
   let to_index = function
@@ -395,6 +470,15 @@ module Log_level = struct
     | Debug -> Atom "Debug"
   ;;
 
+  let to_dyn : t -> Dyn.t = function
+    | Quiet -> Variant ("Quiet", [])
+    | App -> Variant ("App", [])
+    | Error -> Variant ("Error", [])
+    | Warning -> Variant ("Warning", [])
+    | Info -> Variant ("Info", [])
+    | Debug -> Variant ("Debug", [])
+  ;;
+
   let all = [ Quiet; App; Error; Warning; Info; Debug ]
 
   let to_index = function
@@ -490,7 +574,11 @@ let handle_messages_and_exit ~err:({ exit_code; _ } as t) ~backtrace =
     if Int.equal exit_code Exit_code.internal_error
     then (
       let message =
-        let prefix = Pp.seq (Pp_tty.tag Error (Pp.verbatim "Backtrace")) (Pp.char ':') in
+        let prefix =
+          Pp.seq
+            (Pp.tag Stdune.User_message.Style.Error (Pp.verbatim "Backtrace"))
+            (Pp.char ':')
+        in
         let backtrace = pp_backtrace backtrace in
         Stdune.User_message.make
           ~prefix
@@ -521,7 +609,9 @@ let protect ?(exn_handler = Fun.const None) f =
        then (
          let message =
            let prefix =
-             Pp.seq (Pp_tty.tag Error (Pp.verbatim "Internal Error")) (Pp.char ':')
+             Pp.seq
+               (Pp.tag Stdune.User_message.Style.Error (Pp.verbatim "Internal Error"))
+               (Pp.char ':')
            in
            let backtrace = pp_backtrace backtrace in
            Stdune.User_message.make

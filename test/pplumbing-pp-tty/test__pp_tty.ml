@@ -168,6 +168,129 @@ let%expect_test "Style.to_dyn" =
   [%expect {| Success |}];
   test (Ansi_styles [ `Bold; `Fg_red ]);
   [%expect {| Ansi_styles [ Bold; Fg_red ] |}];
+  test (Original_sexp (List [ Atom "key"; Atom "value" ]));
+  [%expect {| Original_sexp "<sexp>" |}];
+  test (Original_dyn (Dyn.variant "Hello" [ Dyn.int 42 ]));
+  [%expect {| Original_dyn (Hello 42) |}];
+  ()
+;;
+
+(* {1 Tests for sexp and dyn helpers} *)
+
+let%expect_test "sexp" =
+  let pp = Pp_tty.sexp (List [ Atom "key"; Atom "value" ]) in
+  print pp;
+  [%expect {| (key value) |}];
+  ()
+;;
+
+let%expect_test "dyn" =
+  let pp = Pp_tty.dyn (Dyn.variant "Hello" [ Dyn.int 42 ]) in
+  print pp;
+  [%expect {| Hello 42 |}];
+  ()
+;;
+
+(* {1 Tests for stdune tag mapping} *)
+
+let%expect_test "Style.of_stdune - all tags" =
+  let test (stdune_tag : Stdune.User_message.Style.t) =
+    let tag = Pp_tty.Style.of_stdune stdune_tag in
+    print_dyn (Pp_tty.Style.to_dyn tag)
+  in
+  test Loc;
+  [%expect {| Loc |}];
+  test Error;
+  [%expect {| Error |}];
+  test Warning;
+  [%expect {| Warning |}];
+  test Kwd;
+  [%expect {| Kwd |}];
+  test Id;
+  [%expect {| Id |}];
+  test Prompt;
+  [%expect {| Prompt |}];
+  test Hint;
+  [%expect {| Hint |}];
+  test Details;
+  [%expect {| Details |}];
+  test Ok;
+  [%expect {| Ok |}];
+  test Debug;
+  [%expect {| Debug |}];
+  test Success;
+  [%expect {| Success |}];
+  test (Ansi_styles [ `Bold; `Fg_red ]);
+  [%expect {| Ansi_styles [ Bold; Fg_red ] |}];
+  ()
+;;
+
+let%expect_test "Style.to_stdune - all tags" =
+  let module Stdune_style = Stdune.User_message.Style in
+  let test tag =
+    let stdune_tag = Pp_tty.Style.to_stdune tag in
+    (* We use Stdune's to_dyn to print the result. *)
+    print_dyn (Stdune_style.to_dyn stdune_tag)
+  in
+  test Loc;
+  [%expect {| Loc |}];
+  test Error;
+  [%expect {| Error |}];
+  test Warning;
+  [%expect {| Warning |}];
+  test Kwd;
+  [%expect {| Kwd |}];
+  test Id;
+  [%expect {| Id |}];
+  test Prompt;
+  [%expect {| Prompt |}];
+  test Hint;
+  [%expect {| Hint |}];
+  test Details;
+  [%expect {| Details |}];
+  test Ok;
+  [%expect {| Ok |}];
+  test Debug;
+  [%expect {| Debug |}];
+  test Success;
+  [%expect {| Success |}];
+  test (Ansi_styles [ `Bold; `Fg_red ]);
+  [%expect {| Ansi_styles [ Bold; Fg_red ] |}];
+  (* Original_sexp and Original_dyn map to Details. *)
+  test (Original_sexp (Atom "x"));
+  [%expect {| Details |}];
+  test (Original_dyn (Dyn.int 0));
+  [%expect {| Details |}];
+  ()
+;;
+
+let%expect_test "Style.of_stdune roundtrip" =
+  let test (stdune_tag : Stdune.User_message.Style.t) =
+    let tag = Pp_tty.Style.of_stdune stdune_tag in
+    let back = Pp_tty.Style.to_stdune tag in
+    require_equal
+      (module struct
+        type t = Stdune.User_message.Style.t
+
+        let equal a b = Stdune.User_message.Style.compare a b = Eq
+        let to_dyn = Stdune.User_message.Style.to_dyn
+      end)
+      stdune_tag
+      back
+  in
+  test Loc;
+  test Error;
+  test Warning;
+  test Kwd;
+  test Id;
+  test Prompt;
+  test Hint;
+  test Details;
+  test Ok;
+  test Debug;
+  test Success;
+  test (Ansi_styles [ `Bold; `Fg_red ]);
+  [%expect {||}];
   ()
 ;;
 

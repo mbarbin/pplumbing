@@ -81,6 +81,8 @@ let print_styles_cmd =
              ; `Fg_white
              ; `Bg_24_bit_color (Pp_tty.Ansi_color.RGB24.make ~red:0 ~green:0 ~blue:128)
              ] )
+       ; "Original_sexp", Original_sexp (List [ Atom "key"; Atom "value" ])
+       ; "Original_dyn", Original_dyn (Dyn.String "hello")
        ]
      in
      let print_styled pp =
@@ -103,6 +105,31 @@ let print_styles_cmd =
             ++ Pp.verbatim "_Italic")))
 ;;
 
+let sexp_and_dyn_cmd =
+  Command.make
+    ~summary:"Demonstrate error messages embedding sexp and dyn data."
+    (let+ () = Log_cli.set_config () in
+     let sexp_data : Sexp.t =
+       List
+         [ Atom "config"
+         ; List [ Atom "timeout"; Atom "30" ]
+         ; List [ Atom "retries"; Atom "3" ]
+         ]
+     in
+     let dyn_data : Dyn.t =
+       Record
+         [ "name", String "widget"
+         ; "count", Int 42
+         ; "tags", List [ String "alpha"; String "beta" ]
+         ]
+     in
+     Err.error [ Pp.text "Invalid configuration."; Err.sexp sexp_data ];
+     Err.error [ Pp.text "Unexpected value."; Err.dyn dyn_data ];
+     Err.error
+       ~hints:[ Pp.text "Check the config file." ]
+       [ Pp.text "Multiple embedded values."; Err.sexp sexp_data; Err.dyn dyn_data ])
+;;
+
 let emit_error_cmd =
   Command.make
     ~summary:"Emit a simple error message to stderr."
@@ -116,6 +143,7 @@ let main =
     [ "emit-error", emit_error_cmd
     ; "logs", logs_cmd
     ; "print-styles", print_styles_cmd
+    ; "sexp-and-dyn", sexp_and_dyn_cmd
     ; "write", write_cmd
     ]
 ;;
