@@ -343,26 +343,30 @@ let reset_counts () =
 let reset_separator () = include_separator := false
 
 let prerr_message (t : Stdune.User_message.t) =
-  let use_no_style_printer =
-    !am_running_test_value
-    ||
-    match !color_mode_value with
-    | `Never -> true
-    | `Always | `Auto -> false
-  in
+  let color_mode = if !am_running_test_value then `Never else !color_mode_value in
   let () =
     if !include_separator then Stdlib.prerr_newline () else include_separator := true
   in
+  let prerr_ansi pp =
+    match color_mode with
+    | `Never -> no_style_printer pp
+    | `Auto -> Stdune.Ansi_color.prerr pp
+    | `Always -> Pp_tty.Ansi_color.pp Format.err_formatter pp
+  in
   t.loc
   |> Option.iter (fun loc ->
-    (if use_no_style_printer then no_style_printer else Stdune.Ansi_color.prerr)
+    prerr_ansi
       (Stdune.Loc.pp loc
        |> Pp.map_tags ~f:(fun (Loc : Stdune.Loc.tag) ->
          Stdune.User_message.Print_config.default Loc)));
   let message = { t with loc = None } in
-  if use_no_style_printer
-  then no_style_printer (Stdune.User_message.pp message)
-  else Stdune.User_message.prerr message
+  match color_mode with
+  | `Never -> no_style_printer (Stdune.User_message.pp message)
+  | `Auto -> Stdune.User_message.prerr message
+  | `Always ->
+    prerr_ansi
+      (Stdune.User_message.pp message
+       |> Pp.map_tags ~f:Stdune.User_message.Print_config.default)
 ;;
 
 let prerr ?(reset_separator = false) (t : t) =
