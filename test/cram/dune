@@ -8,9 +8,9 @@
   -warn-error
   +a
   -open
-  Stdlib_for_test
-  -open
   Base
+  -open
+  Stdlib_for_test
   -open
   Pplumbing_pp_tty
   -open
@@ -22,9 +22,7 @@
  (libraries
   base
   cmdlang
-  loc
   logs
-  pp
   pplumbing-err
   pplumbing-log-cli
   pplumbing-pp-tty
@@ -40,7 +38,6 @@
    ppx_compare
    ppx_enumerate
    ppx_hash
-   ppx_here
    ppx_let
    ppx_sexp_conv
    ppx_sexp_value)))

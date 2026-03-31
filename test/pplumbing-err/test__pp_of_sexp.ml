@@ -83,7 +83,7 @@ let%expect_test "pp_of_sexp" =
 
 let sexp_vs_prerr err =
   print_endline "========= sexp ==========";
-  print_s (Err.sexp_of_t err);
+  print_endline (Sexp.to_string_hum (Err.sexp_of_t err));
   print_endline "======== console ========";
   Err.prerr err ~reset_separator:true
 ;;
@@ -106,8 +106,7 @@ let%expect_test "sexp vs prerr" =
   [%expect
     {|
     ========= sexp ==========
-    ((context "Hello Context!")
-     (error   "Hello World"))
+    ((context "Hello Context!") (error "Hello World"))
     ======== console ========
     Context: Hello Context!
     Error: Hello World
@@ -121,11 +120,7 @@ let%expect_test "sexp vs prerr" =
   [%expect
     {|
     ========= sexp ==========
-    ((context
-       ("And even more context" (
-         (x 42)
-         (y Foo)))
-       "Hello Context!")
+    ((context ("And even more context" ((x 42) (y Foo))) "Hello Context!")
      (error "Hello World"))
     ======== console ========
     Context: And even more context ((x 42) (y Foo))
@@ -166,8 +161,7 @@ With Multiple lines
   [%expect
     {|
     ========= sexp ==========
-    ("File \"foo.txt\", line 1, characters 0-0:"
-     "Hello Located Error"
+    ("File \"foo.txt\", line 1, characters 0-0:" "Hello Located Error"
      (hints "With hints too!"))
     ======== console ========
     File "foo.txt", line 1, characters 0-0:

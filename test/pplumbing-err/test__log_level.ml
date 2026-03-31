@@ -6,7 +6,7 @@
 
 let%expect_test "sexp_of_t" =
   List.iter Err.Log_level.all ~f:(fun log_level ->
-    print_s [%sexp (log_level : Err.Log_level.t)]);
+    print_endline (Sexp.to_string_hum (Err.Log_level.sexp_of_t log_level)));
   [%expect
     {|
     Quiet
@@ -36,22 +36,22 @@ let%expect_test "to_string" =
 
 let%expect_test "compare" =
   List.iter Err.Log_level.all ~f:(fun log_level ->
-    require [%here] (Err.Log_level.equal log_level log_level);
-    require [%here] (0 = Err.Log_level.compare log_level log_level));
-  require [%here] (not (Err.Log_level.equal Error Warning));
-  require [%here] (Err.Log_level.compare Error Warning < 0);
-  require [%here] (Err.Log_level.compare Debug Error > 0);
+    require (Err.Log_level.equal log_level log_level);
+    require (0 = Err.Log_level.compare log_level log_level));
+  require (not (Err.Log_level.equal Error Warning));
+  require (Err.Log_level.compare Error Warning < 0);
+  require (Err.Log_level.compare Debug Error > 0);
   [%expect {||}];
   ()
 ;;
 
 let print_err_state () =
-  print_s
-    [%sexp
-      { had_errors = (Err.had_errors () : bool)
-      ; error_count = (Err.error_count () : int)
-      ; warning_count = (Err.warning_count () : int)
-      }]
+  print_dyn
+    (Dyn.record
+       [ "had_errors", Err.had_errors () |> Dyn.bool
+       ; "error_count", Err.error_count () |> Dyn.int
+       ; "warning_count", Err.warning_count () |> Dyn.int
+       ])
 ;;
 
 let%expect_test "log levels" =
@@ -78,12 +78,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test (Some Info);
   [%expect
     {|
@@ -93,12 +88,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test (Some Debug);
   [%expect
     {|
@@ -108,12 +98,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   (* In this section we set both levels consistently ourselves. *)
   Err.Private.set_log_level
     ~get:(fun () ->
@@ -137,21 +122,11 @@ let%expect_test "log levels" =
   [%expect {| [123] |}];
   (* Note that the error is accounted for even though it is not printed. *)
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test (Some App);
   [%expect {| [123] |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test (Some Error);
   [%expect
     {|
@@ -159,12 +134,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test (Some Warning);
   [%expect
     {|
@@ -174,12 +144,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test (Some Info);
   [%expect
     {|
@@ -191,12 +156,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test (Some Debug);
   [%expect
     {|
@@ -210,12 +170,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   (* In this section we go through [Log_cli]. *)
   let test level =
     Err.For_test.protect (fun () ->
@@ -228,21 +183,11 @@ let%expect_test "log levels" =
   test Quiet;
   [%expect {| [123] |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test App;
   [%expect {| [123] |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test Error;
   [%expect
     {|
@@ -250,12 +195,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test Warning;
   [%expect
     {|
@@ -265,12 +205,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test Info;
   [%expect
     {|
@@ -282,12 +217,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   test Debug;
   [%expect
     {|
@@ -301,12 +231,7 @@ let%expect_test "log levels" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 1))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 1 } |}];
   ()
 ;;
 
@@ -321,12 +246,7 @@ let%expect_test "error when quiet" =
     Err.error [ Pp.text "Hello Exn1" ]);
   [%expect {| [123] |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    true)
-     (error_count   1)
-     (warning_count 0))
-    |}];
+  [%expect {| { had_errors = true; error_count = 1; warning_count = 0 } |}];
   ()
 ;;
 
@@ -344,11 +264,6 @@ let%expect_test "raise when quiet" =
     [123]
     |}];
   print_err_state ();
-  [%expect
-    {|
-    ((had_errors    false)
-     (error_count   0)
-     (warning_count 0))
-    |}];
+  [%expect {| { had_errors = false; error_count = 0; warning_count = 0 } |}];
   ()
 ;;

@@ -24,7 +24,7 @@ end
 
 let had_errors () =
   Err.For_test.wrap
-  @@ fun () -> print_s [%sexp { had_errors = (Err.had_errors () : bool) }]
+  @@ fun () -> print_dyn (Dyn.record [ "had_errors", Err.had_errors () |> Dyn.bool ])
 ;;
 
 (* When you catch [Err]'s then the exit code of the program is not affected -
@@ -32,17 +32,17 @@ let had_errors () =
    errors were shown to the user. *)
 let%expect_test "catch" =
   Err.Private.reset_counts ();
-  require_does_raise [%here] (fun () -> Lib.raise ());
+  require_does_raise (fun () -> Lib.raise ());
   [%expect {| "Hello from raising library" |}];
   had_errors ();
-  [%expect {| ((had_errors false)) |}];
+  [%expect {| { had_errors = false } |}];
   Err.For_test.protect (fun () ->
     match Lib.raise () with
     | () -> assert false
     | exception Err.E _ -> print_endline "Caught a lib error, all is well, moving on");
   [%expect {| Caught a lib error, all is well, moving on |}];
   had_errors ();
-  [%expect {| ((had_errors false)) |}];
+  [%expect {| { had_errors = false } |}];
   (* This also allows you to raise the error if you'd like, and for it to be
      caught by the handler as expected, taking care of the rendering, exit code,
      etc. *)
@@ -67,7 +67,7 @@ let%expect_test "catch" =
 let%expect_test "emit" =
   Err.Private.reset_counts ();
   had_errors ();
-  [%expect {| ((had_errors false)) |}];
+  [%expect {| { had_errors = false } |}];
   Err.For_test.protect (fun () ->
     Lib.emit_error ();
     Stdlib.prerr_endline "Lib didn't raise but emitted some errors.";
@@ -80,7 +80,7 @@ let%expect_test "emit" =
     [123]
     |}];
   had_errors ();
-  [%expect {| ((had_errors true)) |}];
+  [%expect {| { had_errors = true } |}];
   ()
 ;;
 
@@ -95,14 +95,14 @@ let%expect_test "emit" =
 let%expect_test "match" =
   Err.Private.reset_counts ();
   had_errors ();
-  [%expect {| ((had_errors false)) |}];
+  [%expect {| { had_errors = false } |}];
   Err.For_test.protect (fun () ->
     match Lib.return_error () with
     | Ok () -> assert false
     | Error _ -> print_endline "Matched on a lib error, all is well, moving on");
   [%expect {| Matched on a lib error, all is well, moving on |}];
   had_errors ();
-  [%expect {| ((had_errors false)) |}];
+  [%expect {| { had_errors = false } |}];
   (* This also allows you to raise the error if you'd like, and for it to be
      caught by the handler as expected, taking care of the rendering, exit code,
      etc. *)

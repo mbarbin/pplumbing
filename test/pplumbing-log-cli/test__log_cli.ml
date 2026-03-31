@@ -76,21 +76,29 @@ let roundtrip_test original_config =
     let+ config = Cmdlang_to_cmdliner.Translate.arg Log_cli.Config.arg in
     Log_cli.setup_config ~config;
     if Config_with_sexp.equal original_config config
-    then print_s [%sexp { args : string list; config : Config_with_sexp.t }]
+    then
+      print_endline
+        (Sexp.to_string_hum [%sexp { args : string list; config : Config_with_sexp.t }])
     else
-      print_s
-        [%sexp
-          "Roundtrip Failed"
-        , { args : string list
-          ; original_config : Config_with_sexp.t
-          ; config : Config_with_sexp.t
-          }] [@coverage off]
+      print_endline
+        (Sexp.to_string_hum
+           [%sexp
+             "Roundtrip Failed"
+           , { args : string list
+             ; original_config : Config_with_sexp.t
+             ; config : Config_with_sexp.t
+             }]) [@coverage off]
   in
   let cmd = Cmdliner.Cmd.v (Cmdliner.Cmd.info "err_cli") term in
   match Cmdliner.Cmd.eval cmd ~argv:(Array.of_list ("err_cli" :: args)) with
   | 0 -> ()
-  | exit_code -> print_s [%sexp "Evaluation Failed", { exit_code : int }] [@coverage off]
-  | exception e -> print_s [%sexp "Evaluation Raised", (e : Exn.t)] [@coverage off]
+  | exit_code ->
+    print_endline
+      (Sexp.to_string_hum [%sexp "Evaluation Failed", { exit_code : int }])
+    [@coverage off]
+  | exception e ->
+    print_endline
+      (Sexp.to_string_hum [%sexp "Evaluation Raised", (e : Exn.t)]) [@coverage off]
 ;;
 
 let%expect_test "roundtrip" =
@@ -98,122 +106,89 @@ let%expect_test "roundtrip" =
   [%expect
     {|
     ((args ())
-     (config (
-       (log_level Warning)
-       (logs_level (Warning))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Warning) (logs_level (Warning)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~log_level:Quiet ());
   [%expect
     {|
     ((args (--quiet))
-     (config (
-       (log_level Quiet)
-       (logs_level ())
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Quiet) (logs_level ()) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~log_level:App ());
   [%expect
     {|
     ((args (--verbosity app))
-     (config (
-       (log_level App)
-       (logs_level (App))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level App) (logs_level (App)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~log_level:Error ());
   [%expect
     {|
     ((args (--verbosity error))
-     (config (
-       (log_level Error)
-       (logs_level (Error))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Error) (logs_level (Error)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~log_level:Warning ());
   [%expect
     {|
     ((args ())
-     (config (
-       (log_level Warning)
-       (logs_level (Warning))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Warning) (logs_level (Warning)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~log_level:Info ());
   [%expect
     {|
     ((args (--verbosity info))
-     (config (
-       (log_level Info)
-       (logs_level (Info))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Info) (logs_level (Info)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~log_level:Debug ());
   [%expect
     {|
     ((args (--verbosity debug))
-     (config (
-       (log_level Debug)
-       (logs_level (Debug))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Debug) (logs_level (Debug)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~color_mode:`Auto ());
   [%expect
     {|
     ((args ())
-     (config (
-       (log_level Warning)
-       (logs_level (Warning))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Warning) (logs_level (Warning)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~color_mode:`Always ());
   [%expect
     {|
     ((args (--color always))
-     (config (
-       (log_level Warning)
-       (logs_level (Warning))
-       (color_mode Always)
-       (fmt_style_renderer (Ansi_tty))
-       (warn_error false))))
+     (config
+      ((log_level Warning) (logs_level (Warning)) (color_mode Always)
+       (fmt_style_renderer (Ansi_tty)) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~color_mode:`Never ());
   [%expect
     {|
     ((args (--color never))
-     (config (
-       (log_level Warning)
-       (logs_level (Warning))
-       (color_mode Never)
-       (fmt_style_renderer (None))
-       (warn_error false))))
+     (config
+      ((log_level Warning) (logs_level (Warning)) (color_mode Never)
+       (fmt_style_renderer (None)) (warn_error false))))
     |}];
   roundtrip_test (Log_cli.Config.create ~warn_error:true ());
   [%expect
     {|
     ((args (--warn-error))
-     (config (
-       (log_level Warning)
-       (logs_level (Warning))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error true))))
+     (config
+      ((log_level Warning) (logs_level (Warning)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error true))))
     |}];
   ()
 ;;
@@ -226,13 +201,19 @@ let parse args =
     let open Cmdliner.Term.Syntax in
     let+ config = Cmdlang_to_cmdliner.Translate.arg Log_cli.Config.arg in
     Log_cli.setup_config ~config;
-    print_s [%sexp { args : string list; config : Config_with_sexp.t }]
+    print_endline
+      (Sexp.to_string_hum [%sexp { args : string list; config : Config_with_sexp.t }])
   in
   let cmd = Cmdliner.Cmd.v (Cmdliner.Cmd.info "err_cli") term in
   match Cmdliner.Cmd.eval cmd ~argv:(Array.of_list ("err_cli" :: args)) with
   | 0 -> ()
-  | exit_code -> print_s [%sexp "Evaluation Failed", { exit_code : int }] [@coverage off]
-  | exception e -> print_s [%sexp "Evaluation Raised", (e : Exn.t)] [@coverage off]
+  | exit_code ->
+    print_endline
+      (Sexp.to_string_hum [%sexp "Evaluation Failed", { exit_code : int }])
+    [@coverage off]
+  | exception e ->
+    print_endline
+      (Sexp.to_string_hum [%sexp "Evaluation Raised", (e : Exn.t)]) [@coverage off]
 ;;
 
 let%expect_test "parse verbose count" =
@@ -240,45 +221,33 @@ let%expect_test "parse verbose count" =
   [%expect
     {|
     ((args ())
-     (config (
-       (log_level Warning)
-       (logs_level (Warning))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Warning) (logs_level (Warning)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   parse [ "-v" ];
   [%expect
     {|
     ((args (-v))
-     (config (
-       (log_level Info)
-       (logs_level (Info))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Info) (logs_level (Info)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   parse [ "-v"; "-v" ];
   [%expect
     {|
     ((args (-v -v))
-     (config (
-       (log_level Debug)
-       (logs_level (Debug))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Debug) (logs_level (Debug)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   parse [ "-v"; "-v"; "-v" ];
   [%expect
     {|
     ((args (-v -v -v))
-     (config (
-       (log_level Debug)
-       (logs_level (Debug))
-       (color_mode Auto)
-       (fmt_style_renderer ())
-       (warn_error false))))
+     (config
+      ((log_level Debug) (logs_level (Debug)) (color_mode Auto)
+       (fmt_style_renderer ()) (warn_error false))))
     |}];
   ()
 ;;

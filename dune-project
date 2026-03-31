@@ -165,8 +165,6 @@
    (>= 3.17))
   (dyn
    (>= 3.17))
-  (expect_test_helpers_core
-   (>= v0.17))
   (fpath
    (>= 0.7.3))
   (loc
@@ -192,8 +190,6 @@
   (ppx_expect
    (>= v0.17))
   (ppx_hash
-   (>= v0.17))
-  (ppx_here
    (>= v0.17))
   (ppx_let
    (>= v0.17))

@@ -5,7 +5,8 @@
 (*********************************************************************************)
 
 let%expect_test "sexp_of_t" =
-  List.iter Err.Level.all ~f:(fun log_level -> print_s [%sexp (log_level : Err.Level.t)]);
+  List.iter Err.Level.all ~f:(fun log_level ->
+    print_endline (Sexp.to_string_hum (Err.Level.sexp_of_t log_level)));
   [%expect
     {|
     Error
@@ -31,11 +32,11 @@ let%expect_test "to_string" =
 
 let%expect_test "compare" =
   List.iter Err.Level.all ~f:(fun log_level ->
-    require [%here] (Err.Level.equal log_level log_level);
-    require [%here] (0 = Err.Level.compare log_level log_level));
-  require [%here] (not (Err.Level.equal Error Warning));
-  require [%here] (Err.Level.compare Error Warning < 0);
-  require [%here] (Err.Level.compare Debug Error > 0);
+    require (Err.Level.equal log_level log_level);
+    require (0 = Err.Level.compare log_level log_level));
+  require (not (Err.Level.equal Error Warning));
+  require (Err.Level.compare Error Warning < 0);
+  require (Err.Level.compare Debug Error > 0);
   [%expect {||}];
   ()
 ;;

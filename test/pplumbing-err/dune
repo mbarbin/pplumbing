@@ -9,23 +9,18 @@
   -warn-error
   +a
   -open
-  Stdlib_for_test
-  -open
   Base
+  -open
+  Stdlib_for_test
   -open
   Pplumbing_err
   -open
-  Pplumbing_log_cli
-  -open
-  Expect_test_helpers_base)
+  Pplumbing_log_cli)
  (libraries
   base
   cmdliner
-  expect_test_helpers_core.expect_test_helpers_base
   fpath
-  loc
   logs
-  pp
   pplumbing_err
   pplumbing_log_cli
   stdlib_for_test)
@@ -40,7 +35,6 @@
    ppx_enumerate
    ppx_expect
    ppx_hash
-   ppx_here
    ppx_let
    ppx_sexp_conv
    ppx_sexp_value)))
