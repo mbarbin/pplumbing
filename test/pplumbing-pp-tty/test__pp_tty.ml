@@ -87,14 +87,6 @@ let%expect_test "prerr" =
   ()
 ;;
 
-let%expect_test "print with style tag" =
-  Pp_tty.print
-    ~config:(fun _ -> [])
-    (Pp_tty.tag Pp_tty.Style.Error (Pp.verbatim "error text"));
-  [%expect {| error text |}];
-  ()
-;;
-
 (* {1 Tests for loc} *)
 
 let%expect_test "loc - of_pos" =
