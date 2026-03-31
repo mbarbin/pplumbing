@@ -24,13 +24,9 @@ module Exit_code = struct
 end
 
 let to_stdune_pp pp = Pp.map_tags pp ~f:Pp_tty.Style.to_stdune
-
-let sexp s =
-  Pp.tag (Pp_tty.Style.Original_sexp s) (Pp.verbatim (Sexplib0.Sexp.to_string_hum s))
-;;
-
+let sexp = Pp_tty.sexp
 let exn e = sexp (Sexplib0.Sexp_conv.sexp_of_exn e)
-let dyn d = Pp.tag (Pp_tty.Style.Original_dyn d) (Dyn.pp d)
+let dyn = Pp_tty.dyn
 
 module Paragraph = struct
   type t = Pp_tty.t

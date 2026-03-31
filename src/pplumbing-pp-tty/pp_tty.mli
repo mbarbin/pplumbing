@@ -113,6 +113,14 @@ val to_string_with_config : config:Print_config.t -> t -> string
 
   ---------------------------------------------------------------------------- *)
 
+(** Embed a [Sexp.t] value, preserving the original structure for round-tripping
+    while rendering it as a human-readable string. *)
+val sexp : Sexplib0.Sexp.t -> t
+
+(** Embed a [Dyn.t] value, preserving the original structure for round-tripping
+    while rendering it as a human-readable string. *)
+val dyn : Dyn.t -> t
+
 (** An alias for [Pp.tag] dedicated to the expected [Style.t] type. Using this
     function allows to write the [Style.t] constructor without qualifying them,
     which may be more ergonomic. *)
