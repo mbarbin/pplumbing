@@ -27,7 +27,7 @@ depends: [
   "pplumbing-log-cli" {= version}
   "pplumbing-pp-tty" {= version}
   "ppx_expect" {>= "v0.17"}
-  "sexplib0" {>= "v0.16"}
+  "sexplib0" {>= "v0.17"}
   "odoc" {with-doc}
 ]
 build: [

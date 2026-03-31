@@ -190,7 +190,7 @@
   (ppx_expect
    (>= v0.17))
   (sexplib0
-   (>= v0.16))))
+   (>= v0.17))))
 
 (package
  (name pplumbing-dev)
