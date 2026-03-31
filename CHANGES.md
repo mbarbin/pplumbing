@@ -1,18 +1,36 @@
-## 0.0.17 (unreleased)
+## 0.0.17 (2026-03-31)
 
 ### Added
 
+- Added `to_dyn` helpers to `Err` interface (#43, @mbarbin).
+- Added `Pp_tty.{sexp,dyn}`, `Err.{sexp,dyn}` (#43, @mbarbin).
+- Added `Err.reset_loc` and `Err.set_exit_code` (#41, @mbarbin).
+- Added new module `Code_error` to `pplumbing-err` (#40, @mbarbin).
+- Added new tests, extend coverage (#36, @mbarbin).
+- Added new stdlib extension for the tests (#36, @mbarbin).
 - Added `dunolint` config and workflow (#31, @mbarbin).
 
 ### Changed
 
+- Simplify use of `Err` and `Pp_tty` in tests (#42, @mbarbin).
+- Document deprecation of `pplumbing` meta-package.
+- Vendor more of stdune `ansi-color` (#39, @mbarbin).
+- Reduce overal tests and dev dependencies (#37, @mbarbin).
+- Various improvements to the project's CI (#32, @mbarbin).
+- Internal improvements to dune files (#31, @mbarbin).
+- Simplify dev dependencies (#27, @mbarbin).
+- Refactor pkg directory structure (#30, @mbarbin).
 - Enabled OCaml `5.4` in CI (#28, @mbarbin).
+- Use split pkgs (#26, @mbarbin).
+
+### Deprecated
+
+- Produce `ocaml.deprecated` alerts for api documented as deprecated in `0.0.16`.
 
 ## 0.0.16 (2025-09-21)
 
 ### Changed
 
-- Refactor pkg directory structure (#30, @mbarbin).
 - Split remaining pakages to isolate dependencies (#25, @mbarbin).
 
 ## 0.0.15 (2025-09-19)
