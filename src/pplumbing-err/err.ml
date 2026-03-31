@@ -35,26 +35,34 @@ let dyn d = Pp.tag (Pp_tty.Style.Original_dyn d) (Dyn.pp d)
 module Paragraph = struct
   type t = Pp_tty.t
 
-  let rec find_original_sexp t =
-    match Pp.to_ast t with
-    | Tag (Pp_tty.Style.Original_sexp s, _) -> Some s
-    | Tag (_, inner) -> find_original_sexp (Pp.of_ast inner)
-    | Seq (a, b) ->
-      (match find_original_sexp (Pp.of_ast a) with
-       | Some _ as r -> r
-       | None -> find_original_sexp (Pp.of_ast b))
-    | _ -> None
+  let find_original_sexp t =
+    let rec aux (ast : Pp_tty.Style.t Pp.Ast.t) =
+      match ast with
+      | Tag (Original_sexp s, _) -> Some s
+      | Tag (_, inner)
+      | Box (_, inner)
+      | Vbox (_, inner)
+      | Hbox inner
+      | Hvbox (_, inner)
+      | Hovbox (_, inner) -> aux inner
+      | Nop | Verbatim _ | Char _ | Break _ | Newline | Text _ | Seq _ | Concat _ -> None
+    in
+    aux (Pp.to_ast t)
   ;;
 
-  let rec find_original_dyn t =
-    match Pp.to_ast t with
-    | Tag (Pp_tty.Style.Original_dyn d, _) -> Some d
-    | Tag (_, inner) -> find_original_dyn (Pp.of_ast inner)
-    | Seq (a, b) ->
-      (match find_original_dyn (Pp.of_ast a) with
-       | Some _ as r -> r
-       | None -> find_original_dyn (Pp.of_ast b))
-    | _ -> None
+  let find_original_dyn t =
+    let rec aux (ast : Pp_tty.Style.t Pp.Ast.t) =
+      match ast with
+      | Tag (Original_dyn d, _) -> Some d
+      | Tag (_, inner)
+      | Box (_, inner)
+      | Vbox (_, inner)
+      | Hbox inner
+      | Hvbox (_, inner)
+      | Hovbox (_, inner) -> aux inner
+      | Nop | Verbatim _ | Char _ | Break _ | Newline | Text _ | Seq _ | Concat _ -> None
+    in
+    aux (Pp.to_ast t)
   ;;
 
   let sexp_of_t t =
