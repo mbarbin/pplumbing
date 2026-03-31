@@ -139,8 +139,8 @@ module Print_config = struct
     | Debug -> [ `Underline; `Fg_bright_cyan ]
     | Success -> [ `Bold; `Fg_green ]
     | Ansi_styles l -> l
-    | Original_sexp _ -> []
-    | Original_dyn _ -> []
+    | Original_sexp _ -> [ `Dim ]
+    | Original_dyn _ -> [ `Dim ]
   ;;
 end
 

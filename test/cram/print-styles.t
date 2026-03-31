@@ -17,4 +17,6 @@ Exercising Pp_tty.Style printing.
   Fg_8bit
   Fg_24bit
   Bold_White_on_Bg24bit
+  Original_sexp
+  Original_dyn
   Italic_UnderRed_Italic
