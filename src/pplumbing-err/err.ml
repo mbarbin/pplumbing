@@ -96,20 +96,15 @@ module Level = struct
     | Info
     | Debug
 
-  let sexp_of_t : t -> Sexplib0.Sexp.t = function
-    | Error -> Atom "Error"
-    | Warning -> Atom "Warning"
-    | Info -> Atom "Info"
-    | Debug -> Atom "Debug"
+  let variant_constructor_name = function
+    | Error -> "Error"
+    | Warning -> "Warning"
+    | Info -> "Info"
+    | Debug -> "Debug"
   ;;
 
-  let to_dyn : t -> Dyn.t = function
-    | Error -> Variant ("Error", [])
-    | Warning -> Variant ("Warning", [])
-    | Info -> Variant ("Info", [])
-    | Debug -> Variant ("Debug", [])
-  ;;
-
+  let sexp_of_t t = Sexplib0.Sexp.Atom (variant_constructor_name t)
+  let to_dyn t = Dyn.Variant (variant_constructor_name t, [])
   let all = [ Error; Warning; Info; Debug ]
 
   let to_index = function
