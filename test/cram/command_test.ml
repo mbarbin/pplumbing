@@ -52,8 +52,49 @@ let write_cmd =
      Err.emit msg ~level)
 ;;
 
+let print_styles_cmd =
+  Command.make
+    ~summary:"Print each Pp_tty.Style with a sample text."
+    (let+ () = Log_cli.set_config () in
+     let styles =
+       [ "Loc", Pp_tty.Style.Loc
+       ; "Error", Error
+       ; "Warning", Warning
+       ; "Kwd", Kwd
+       ; "Id", Id
+       ; "Prompt", Prompt
+       ; "Hint", Hint
+       ; "Details", Details
+       ; "Ok", Ok
+       ; "Debug", Debug
+       ; "Success", Success
+       ; "Ansi_styles", Ansi_styles [ `Bold; `Fg_red ]
+       ]
+     in
+     let print_styled pp =
+       (match Err.color_mode () with
+        | `Never -> Format.printf "%a%!" Pp.to_fmt pp
+        | `Auto -> Pp_tty.print pp [@coverage off]
+        | `Always -> print_string (Pp_tty.to_string pp));
+       print_char '\n'
+     in
+     List.iter styles ~f:(fun (name, style) ->
+       print_styled (Pp_tty.tag style (Pp.verbatim name))))
+;;
+
+let emit_error_cmd =
+  Command.make
+    ~summary:"Emit a simple error message to stderr."
+    (let+ () = Log_cli.set_config () in
+     Err.error [ Pp.text "error message." ])
+;;
+
 let main =
   Command.group
-    ~summary:"Test err from the command line."
-    [ "logs", logs_cmd; "write", write_cmd ]
+    ~summary:"Test pplumbing libs from the command line."
+    [ "emit-error", emit_error_cmd
+    ; "logs", logs_cmd
+    ; "print-styles", print_styles_cmd
+    ; "write", write_cmd
+    ]
 ;;
