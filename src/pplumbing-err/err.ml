@@ -185,9 +185,9 @@ let to_sexps { loc; context; paragraphs; hints; exit_code = _ } =
          [ List (Atom "context" :: List.map Paragraph.sexp_of_t context)
          ; List (Atom "error" :: List.map Paragraph.sexp_of_t paragraphs)
          ])
-    ; (match hints with
-       | [] -> []
-       | _ :: _ -> [ List (Atom "hints" :: List.map Paragraph.sexp_of_t hints) ])
+    ; (if List.is_empty hints
+       then []
+       else [ List (Atom "hints" :: List.map Paragraph.sexp_of_t hints) ])
     ]
 ;;
 
@@ -206,9 +206,9 @@ let to_dyns { loc; context; paragraphs; hints; exit_code = _ } =
     ; (if List.is_empty paragraphs
        then None
        else Some ("msgs", Dyn.list Paragraph.to_dyn paragraphs))
-    ; (match hints with
-       | [] -> None
-       | _ :: _ -> Some ("hints", Dyn.list Paragraph.to_dyn hints))
+    ; (if List.is_empty hints
+       then None
+       else Some ("hints", Dyn.list Paragraph.to_dyn hints))
     ]
 ;;
 
