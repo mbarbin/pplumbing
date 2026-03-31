@@ -80,6 +80,20 @@ val print : ?config:Print_config.t -> t -> unit
 (** Print to [stderr] (not thread safe) *)
 val prerr : ?config:Print_config.t -> t -> unit
 
+(** Render a styled document to a formatter, resolving symbolic styles to ANSI
+    escape sequences using the default print config. *)
+val pp : Format.formatter -> t -> unit
+
+(** Render a styled document to a string with ANSI escape sequences using the
+    default print config. *)
+val to_string : t -> string
+
+(** Same as {!pp} but with a custom print config. *)
+val pp_with_config : config:Print_config.t -> Format.formatter -> t -> unit
+
+(** Same as {!to_string} but with a custom print config. *)
+val to_string_with_config : config:Print_config.t -> t -> string
+
 (*_ End of the section derived from [Stdune.User_message].
 
   ---------------------------------------------------------------------------- *)

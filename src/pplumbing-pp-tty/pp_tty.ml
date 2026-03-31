@@ -12,6 +12,10 @@ type t = Style.t Pp.t
 
 let print ?(config = Print_config.default) t = Ansi_color.print (Pp.map_tags t ~f:config)
 let prerr ?(config = Print_config.default) t = Ansi_color.prerr (Pp.map_tags t ~f:config)
+let pp_with_config ~config fmt t = Ansi_color.pp fmt (Pp.map_tags t ~f:config)
+let pp fmt t = pp_with_config ~config:Print_config.default fmt t
+let to_string_with_config ~config t = Ansi_color.to_string (Pp.map_tags t ~f:config)
+let to_string t = to_string_with_config ~config:Print_config.default t
 let tag = Pp.tag
 let surround s1 s2 t = Pp.box ~indent:1 Pp.O.(Pp.verbatim s1 ++ t ++ Pp.verbatim s2)
 let parens t = surround "(" ")" t

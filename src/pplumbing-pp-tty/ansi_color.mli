@@ -137,18 +137,17 @@ end
 
 type t = Style.t list Pp.t
 
-module Staged : sig
-  type +'a t
+(** Render an ANSI-colored document to a formatter. Always produces ANSI escape
+    sequences (color support detection is the caller's responsibility). *)
+val pp : Format.formatter -> t -> unit
 
-  val unstage : 'a t -> 'a
-end
+(** Render an ANSI-colored document to a string with escape sequences. *)
+val to_string : t -> string
 
-val make_printer : bool Lazy.t -> Format.formatter -> (t -> unit) Staged.t
-
-(** Print to [Format.std_formatter] *)
+(** Print to [Format.std_formatter], with auto-detection of color support. *)
 val print : t -> unit
 
-(** Print to [Format.err_formatter] *)
+(** Print to [Format.err_formatter], with auto-detection of color support. *)
 val prerr : t -> unit
 
 (** Whether [stdout]/[stderr] support colors *)
