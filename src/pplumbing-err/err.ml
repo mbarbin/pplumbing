@@ -33,7 +33,7 @@ module Paragraph = struct
 
   let find_original_sexp t =
     let rec aux (ast : Pp_tty.Style.t Pp.Ast.t) =
-      match ast with
+      match[@coverage off] ast with
       | Tag (Original_sexp s, _) -> Some s
       | Tag (_, inner)
       | Box (_, inner)
@@ -48,7 +48,7 @@ module Paragraph = struct
 
   let find_original_dyn t =
     let rec aux (ast : Pp_tty.Style.t Pp.Ast.t) =
-      match ast with
+      match[@coverage off] ast with
       | Tag (Original_dyn d, _) -> Some d
       | Tag (_, inner)
       | Box (_, inner)
