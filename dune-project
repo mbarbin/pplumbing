@@ -27,6 +27,9 @@
 
 (implicit_transitive_deps true)
 
+;; This meta-package is deprecated and will not be published to opam for
+;; versions > 0.0.16. It is kept here because [dune-release] requires a
+;; package whose name matches the project name.
 (package
  (name pplumbing)
  (synopsis "Utility libraries to use with [pp]")

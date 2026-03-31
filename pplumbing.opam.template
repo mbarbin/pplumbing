@@ -1,5 +1,16 @@
 description: """\
 
+DEPRECATED: This meta-package is no longer maintained and will not
+be available for versions > 0.0.16. Please switch to depending on
+individual packages instead:
+
+- pplumbing-pp-tty
+- pplumbing-err
+- pplumbing-log
+- pplumbing-log-cli
+- cmdlang-cmdliner-err-runner
+- cmdlang-climate-err-runner
+
 [pplumbing] defines a set of utility libraries to use with [pp].
 It is compatible with [logs] and inspired by design choices used
 by [dune] for user messages.
@@ -20,12 +31,18 @@ of useful helpers to build CLIs in OCaml.
   helpers to configure the [Err] library, while taking care of setting
   the [logs] and [fmt] style rendering.
 
-- [Cmdlang_cmdliner_runner] is a library for running command line
+- [Cmdlang_cmdliner_err_runner] is a library for running command line
   programs specified with [cmdlang] with [cmdliner] as a backend and
   making opinionated choices, assuming your dependencies are using
   [Err].
 
+- [Cmdlang_climate_err_runner] is a library for running command line
+  programs specified with [cmdlang] with [climate] as a backend and
+  making opinionated choices, assuming your dependencies are using
+  [Err].
+
 [cmdlang]: https://github.com/mbarbin/cmdlang
+[climate]: https://github.com/gridbugs/climate
 [cmdliner]: https://github.com/dbuenzli/cmdliner
 [dune]: https://github.com/ocaml/dune
 [fmt]: https://github.com/dbuenzli/fmt
@@ -33,5 +50,20 @@ of useful helpers to build CLIs in OCaml.
 [pp]: https://github.com/ocaml-dune/pp
 
 """
+flags: [ deprecated ]
+post-messages: [
+  """\
+The pplumbing meta-package is deprecated and will not be available
+for versions > 0.0.16. Please update your dependencies to use
+individual packages instead:
+
+- pplumbing-pp-tty
+- pplumbing-err
+- pplumbing-log
+- pplumbing-log-cli
+- cmdlang-cmdliner-err-runner
+- cmdlang-climate-err-runner
+"""
+]
 tags: [ "cli" "cmdlang" "logs" "pp" ]
-x-maintenance-intent: [ "(latest)" ]
+x-maintenance-intent: [ "(none)" ]
