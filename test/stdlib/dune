@@ -1,5 +1,5 @@
 (library
- (name pplumbing_log_test)
+ (name stdlib_for_test_test)
  (package pplumbing-tests)
  (flags
   :standard
@@ -8,10 +8,8 @@
   -warn-error
   +a
   -open
-  Stdlib_for_test
-  -open
-  Pplumbing_log)
- (libraries logs pplumbing_log stdlib_for_test)
+  Stdlib_for_test)
+ (libraries stdlib_for_test)
  (inline_tests)
  (instrumentation
   (backend bisect_ppx))
