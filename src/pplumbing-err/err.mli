@@ -65,8 +65,8 @@ exception E of t
     {!With_exit_code.sexp_of_t} if needed. *)
 val sexp_of_t : t -> Sexplib0.Sexp.t
 
-(** Same as {!sexp_of_t} but returns a {!Dyn.t} value instead. Note the exit
-    code is not shown by {!to_dyn}. See {!With_exit_code.to_dyn} if needed. *)
+(** Same as {!sexp_of_t} but returns a [Dyn.t] value instead. Note the exit code
+    is not shown by {!to_dyn}. See {!With_exit_code.to_dyn} if needed. *)
 val to_dyn : t -> Dyn.t
 
 (** {1 Exit codes}
