@@ -161,6 +161,9 @@ type t =
   ; exit_code : Exit_code.t
   }
 
+let reset_loc ?loc t = { t with loc }
+let set_exit_code t ~exit_code = { t with exit_code }
+
 let to_sexps { loc; context; paragraphs; hints; exit_code = _ } =
   List.concat
     [ (match loc with

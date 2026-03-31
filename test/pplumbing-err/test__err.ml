@@ -165,6 +165,66 @@ let%expect_test "add_context" =
   ()
 ;;
 
+let%expect_test "set_exit_code" =
+  let err =
+    Err.create
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~exit_code:41
+      [ Pp.text "Hello Error" ]
+  in
+  Err.For_test.protect (fun () -> raise (Err.E err));
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error: Hello Error
+    [41]
+    |}];
+  let err = Err.set_exit_code err ~exit_code:42 in
+  Err.For_test.protect (fun () -> raise (Err.E err));
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error: Hello Error
+    [42]
+    |}];
+  ()
+;;
+
+let%expect_test "reset_loc" =
+  let err =
+    Err.create
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      [ Pp.text "Hello Error" ]
+  in
+  Err.For_test.protect (fun () -> raise (Err.E err));
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error: Hello Error
+    [123]
+    |}];
+  (* Remove the loc entirely. *)
+  let err_no_loc = Err.reset_loc err in
+  Err.For_test.protect (fun () -> raise (Err.E err_no_loc));
+  [%expect
+    {|
+    Error: Hello Error
+    [123]
+    |}];
+  (* Change the loc to another one. *)
+  let err_new_loc =
+    Err.reset_loc err ~loc:(Loc.of_file ~path:(Fpath.v "path/to/other-file.txt"))
+  in
+  Err.For_test.protect (fun () -> raise (Err.E err_new_loc));
+  [%expect
+    {|
+    File "path/to/other-file.txt", line 1, characters 0-0:
+    Error: Hello Error
+    [123]
+    |}];
+  ()
+;;
+
 let%expect_test "ok_exn" =
   let err =
     Err.create
