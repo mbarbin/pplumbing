@@ -137,12 +137,18 @@ val create
   -> t
 
 (** [sexp s] is the preferred way to embed some context of type [Sexp.t] into a
-    [_ Pp.t] paragraph as part of a error. *)
-val sexp : Sexplib0.Sexp.t -> _ Pp.t
+    [Pp_tty.t] paragraph as part of an error. The resulting document carries the
+    original [Sexp.t] as a tag, enabling lossless round-tripping. *)
+val sexp : Sexplib0.Sexp.t -> Pp_tty.t
 
-(** [exn e] is the preferred way to embed an exception into a [_ Pp.t] paragraph
-    as part of an error. *)
-val exn : exn -> _ Pp.t
+(** [exn e] is the preferred way to embed an exception into a [Pp_tty.t]
+    paragraph as part of an error. *)
+val exn : exn -> Pp_tty.t
+
+(** [dyn d] is the preferred way to embed some context of type [Dyn.t] into a
+    [Pp_tty.t] paragraph as part of an error. The resulting document carries the
+    original [Dyn.t] as a tag, enabling lossless round-tripping. *)
+val dyn : Dyn.t -> Pp_tty.t
 
 (** {1 Context} *)
 
@@ -540,5 +546,5 @@ val reraise_s
   }]
 
 (** This was renamed {!val:Err.sexp}. *)
-val pp_of_sexp : Sexplib0.Sexp.t -> _ Pp.t
+val pp_of_sexp : Sexplib0.Sexp.t -> Pp_tty.t
 [@@migrate { repl = Rel.sexp }]

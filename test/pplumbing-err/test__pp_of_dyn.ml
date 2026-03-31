@@ -8,7 +8,7 @@ let%expect_test "pp_of_dyn" =
   Err.For_test.wrap
   @@ fun () ->
   let test dyn =
-    let err = Err.create [ Dyn.pp dyn ] in
+    let err = Err.create [ Err.dyn dyn ] in
     print_endline "========= sexp ==========";
     print_endline (Sexp.to_string_hum (Err.sexp_of_t err));
     print_endline "========== dyn ==========";
@@ -22,7 +22,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     []
     ========== dyn ==========
-    { msgs = [ "[]" ] }
+    { msgs = [ [] ] }
     ======== console ========
     Error: []
     |}];
@@ -30,11 +30,11 @@ let%expect_test "pp_of_dyn" =
   [%expect
     {|
     ========= sexp ==========
-    Hello
+    "\"Hello\""
     ========== dyn ==========
-    { msgs = [ "\"Hello\"" ] }
+    { msgs = [ "Hello" ] }
     ======== console ========
-    Error: Hello
+    Error: "Hello"
     |}];
   test (Dyn.record [ "x", Dyn.int 42 ]);
   [%expect
@@ -42,7 +42,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     "{ x = 42 }"
     ========== dyn ==========
-    { msgs = [ "{ x = 42 }" ] }
+    { msgs = [ { x = 42 } ] }
     ======== console ========
     Error: { x = 42 }
     |}];
@@ -52,7 +52,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     "{ x = 42; y = \"why\" }"
     ========== dyn ==========
-    { msgs = [ "{ x = 42; y = \"why\" }" ] }
+    { msgs = [ { x = 42; y = "why" } ] }
     ======== console ========
     Error: { x = 42; y = "why" }
     |}];
@@ -62,7 +62,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     "Hello_error { x = 42 }"
     ========== dyn ==========
-    { msgs = [ "Hello_error { x = 42 }" ] }
+    { msgs = [ Hello_error { x = 42 } ] }
     ======== console ========
     Error: Hello_error { x = 42 }
     |}];
@@ -108,7 +108,7 @@ let%expect_test "dyn vs prerr" =
   let err =
     Err.add_context
       err
-      [ Dyn.pp
+      [ Err.dyn
           (Dyn.Variant
              ( "And_even_more_context"
              , [ Dyn.record [ "x", Dyn.int 42; "y", Dyn.string "Foo" ] ] ))
@@ -121,8 +121,7 @@ let%expect_test "dyn vs prerr" =
     ((context "And_even_more_context { x = 42; y = \"Foo\" }" "Hello Context!")
      (error "Hello World"))
     ========== dyn ==========
-    { context =
-        [ "And_even_more_context { x = 42; y = \"Foo\" }"; "Hello Context!" ]
+    { context = [ And_even_more_context { x = 42; y = "Foo" }; "Hello Context!" ]
     ; msgs = [ "Hello World" ]
     }
     ======== console ========

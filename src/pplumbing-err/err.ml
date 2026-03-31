@@ -23,23 +23,42 @@ module Exit_code = struct
   let internal_error = 125
 end
 
-let sexp sexp = Pp.verbatim (Sexplib0.Sexp.to_string_hum sexp)
+let to_stdune_pp pp = Pp.map_tags pp ~f:Pp_tty.Style.to_stdune
+
+let sexp s =
+  Pp.tag (Pp_tty.Style.Original_sexp s) (Pp.verbatim (Sexplib0.Sexp.to_string_hum s))
+;;
+
 let exn e = sexp (Sexplib0.Sexp_conv.sexp_of_exn e)
+let dyn d = Pp.tag (Pp_tty.Style.Original_dyn d) (Dyn.pp d)
 
 module Paragraph = struct
   type t = Pp_tty.t
 
-  let recognize_sexp t =
+  let rec find_original_sexp t =
     match Pp.to_ast t with
-    | Verbatim str ->
-      (match Parsexp.Single.parse_string str with
-       | Ok sexp -> Some sexp
-       | Error _ -> None)
+    | Tag (Pp_tty.Style.Original_sexp s, _) -> Some s
+    | Tag (_, inner) -> find_original_sexp (Pp.of_ast inner)
+    | Seq (a, b) ->
+      (match find_original_sexp (Pp.of_ast a) with
+       | Some _ as r -> r
+       | None -> find_original_sexp (Pp.of_ast b))
+    | _ -> None
+  ;;
+
+  let rec find_original_dyn t =
+    match Pp.to_ast t with
+    | Tag (Pp_tty.Style.Original_dyn d, _) -> Some d
+    | Tag (_, inner) -> find_original_dyn (Pp.of_ast inner)
+    | Seq (a, b) ->
+      (match find_original_dyn (Pp.of_ast a) with
+       | Some _ as r -> r
+       | None -> find_original_dyn (Pp.of_ast b))
     | _ -> None
   ;;
 
   let sexp_of_t t =
-    match recognize_sexp t with
+    match find_original_sexp t with
     | Some sexp -> sexp
     | None ->
       let str = Format.asprintf "%a" Pp.to_fmt (Pp.hbox t) in
@@ -47,8 +66,11 @@ module Paragraph = struct
   ;;
 
   let to_dyn t =
-    let str = Format.asprintf "%a" Pp.to_fmt (Pp.hbox t) in
-    Dyn.String str
+    match find_original_dyn t with
+    | Some dyn -> dyn
+    | None ->
+      let str = Format.asprintf "%a" Pp.to_fmt (Pp.hbox t) in
+      Dyn.String str
   ;;
 
   let rec simplify_sexp sexp =
@@ -83,9 +105,9 @@ module Paragraph = struct
   ;;
 
   let pp t =
-    match recognize_sexp t with
-    | Some sexp -> pp_sexp sexp
-    | None -> t
+    match Pp.to_ast t with
+    | Tag (Pp_tty.Style.Original_sexp s, _) -> pp_sexp s
+    | _ -> t
   ;;
 end
 
@@ -147,17 +169,19 @@ let with_prefix ~prefix ~(style : Pp_tty.Style.t) paragraphs =
 let make_message ~level ?loc ?(context = []) ?(hints = []) paragraphs =
   Stdune.User_message.make
     ?loc:(Option.map stdune_loc loc)
-    ~hints
+    ~hints:(List.map to_stdune_pp hints)
     ?prefix:None
-    (List.concat
-       [ (match context with
-          | [] -> []
-          | _ :: _ as context -> with_prefix ~prefix:"Context" ~style:Kwd context)
-       ; with_prefix
-           ~prefix:(Level.to_string level |> String.capitalize_ascii)
-           ~style:(Level.style level)
-           paragraphs
-       ])
+    (List.map
+       to_stdune_pp
+       (List.concat
+          [ (match context with
+             | [] -> []
+             | _ :: _ as context -> with_prefix ~prefix:"Context" ~style:Kwd context)
+          ; with_prefix
+              ~prefix:(Level.to_string level |> String.capitalize_ascii)
+              ~style:(Level.style level)
+              paragraphs
+          ]))
 ;;
 
 type t =
@@ -303,7 +327,11 @@ let of_exn e =
   | e -> create [ exn e ]
 ;;
 
-let did_you_mean = Stdune.User_message.did_you_mean
+let did_you_mean s ~candidates =
+  List.map
+    (fun pp -> Pp.map_tags pp ~f:Pp_tty.Style.of_stdune)
+    (Stdune.User_message.did_you_mean s ~candidates)
+;;
 
 module Color_mode = struct
   type t =
@@ -543,7 +571,9 @@ let handle_messages_and_exit ~err:({ exit_code; _ } as t) ~backtrace =
     if Int.equal exit_code Exit_code.internal_error
     then (
       let message =
-        let prefix = Pp.seq (Pp_tty.tag Error (Pp.verbatim "Backtrace")) (Pp.char ':') in
+        let prefix =
+          to_stdune_pp (Pp.seq (Pp_tty.tag Error (Pp.verbatim "Backtrace")) (Pp.char ':'))
+        in
         let backtrace = pp_backtrace backtrace in
         Stdune.User_message.make
           ~prefix
@@ -574,7 +604,8 @@ let protect ?(exn_handler = Fun.const None) f =
        then (
          let message =
            let prefix =
-             Pp.seq (Pp_tty.tag Error (Pp.verbatim "Internal Error")) (Pp.char ':')
+             to_stdune_pp
+               (Pp.seq (Pp_tty.tag Error (Pp.verbatim "Internal Error")) (Pp.char ':'))
            in
            let backtrace = pp_backtrace backtrace in
            Stdune.User_message.make
