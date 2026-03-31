@@ -4,4 +4,5 @@
 (*_  SPDX-License-Identifier: MIT                                                 *)
 (*_********************************************************************************)
 
+module Code_error = Code_error
 module Err = Err

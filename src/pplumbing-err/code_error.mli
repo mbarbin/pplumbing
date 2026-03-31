@@ -4,6 +4,15 @@
 (*_  SPDX-License-Identifier: MIT                                                 *)
 (*_********************************************************************************)
 
-include module type of struct
-  include Pplumbing_err.Code_error
-end
+(*_ Inspired by a similar module in stdune. *)
+
+(** A programming error that should be reported upstream *)
+
+type t =
+  { message : string
+  ; data : (string * Dyn.t) list
+  }
+
+exception E of t
+
+val raise : string -> (string * Dyn.t) list -> _
