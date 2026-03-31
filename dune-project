@@ -15,8 +15,6 @@
 
 (documentation "https://mbarbin.github.io/pplumbing/")
 
-(using mdx 0.4)
-
 ;; The value for the [implicit_transitive_deps] option is set during the CI
 ;; depending on the OCaml compiler version.
 ;;
@@ -177,8 +175,6 @@
    (>= 0.2.2))
   (logs
    (>= 0.9.0))
-  (mdx
-   (>= 2.4))
   (ordering
    (>= 3.17))
   (parsexp
@@ -251,8 +247,6 @@
    (>= 0.2.2))
   (logs
    (>= 0.9.0))
-  (mdx
-   (>= 2.4))
   (ordering
    (>= 3.17))
   (parsexp

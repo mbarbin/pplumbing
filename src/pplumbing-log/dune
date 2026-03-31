@@ -15,11 +15,3 @@
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
  (preprocess no_preprocessing))
-
-(mdx
- (package pplumbing-tests)
- (deps
-  (package pplumbing-log)
-  (package pplumbing-pp-tty))
- (files :standard - *.mli)
- (preludes prelude.txt))
