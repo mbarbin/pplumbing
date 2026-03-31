@@ -95,6 +95,10 @@ module With_exit_code : sig
   val sexp_of_t : t -> Sexplib0.Sexp.t
 end
 
+(** [set_exit_code e ~exit_code] allows to change the exit code previously
+    attached to an existing error. *)
+val set_exit_code : t -> exit_code:Exit_code.t -> t
+
 (** {1 Raising errors} *)
 
 (** Raise a user error. You may override [exit_code] with the requested exit
@@ -159,6 +163,11 @@ val add_context : t -> Pp_tty.t list -> t
       Err.reraise_with_context e bt [ Pp.text "Trying to do x with y"; Y.pp y ]
     ]} *)
 val reraise_with_context : t -> Printexc.raw_backtrace -> Pp_tty.t list -> _
+
+(** [reset_loc] allows to change the loc attached to an existing error. It may
+    be used to remove it entirely ([reset_loc e]) or change it to another one
+    [reset_loc e ~loc]. *)
+val reset_loc : ?loc:Loc.t -> t -> t
 
 (** {1 Result} *)
 
