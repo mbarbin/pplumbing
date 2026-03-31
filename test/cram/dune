@@ -60,3 +60,49 @@
 (cram
  (package pplumbing-tests)
  (deps main.exe main_climate.exe))
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-stdout-to
+   print-styles-color-always.output
+   (run ./main.exe print-styles --color=always))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff print-styles-color-always.expected print-styles-color-always.output)))
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-accepted-exit-codes
+   (not 0)
+   (with-stderr-to
+    emit-error-color-never.output
+    (run ./main.exe emit-error --color=never)))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff emit-error-color-never.expected emit-error-color-never.output)))
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-accepted-exit-codes
+   (not 0)
+   (with-stderr-to
+    emit-error-color-always.output
+    (run ./main.exe emit-error --color=always)))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff emit-error-color-always.expected emit-error-color-always.output)))

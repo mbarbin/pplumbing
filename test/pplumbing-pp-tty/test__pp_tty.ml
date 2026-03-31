@@ -87,6 +87,49 @@ let%expect_test "prerr" =
   ()
 ;;
 
+(* {1 Tests for pp and to_string} *)
+
+let%expect_test "pp - plain text" =
+  Pp_tty.pp Format.std_formatter (Pp.verbatim "hello via pp");
+  [%expect {| hello via pp |}];
+  ()
+;;
+
+let%expect_test "pp - with style tag" =
+  let t = Pp_tty.tag Pp_tty.Style.Error (Pp.verbatim "error") in
+  let s = Pp_tty.to_string t in
+  print_string (Pp_tty.Ansi_color.strip s);
+  [%expect {| error |}];
+  ()
+;;
+
+let%expect_test "to_string - plain text" =
+  let s = Pp_tty.to_string (Pp.verbatim "plain") in
+  print_string s;
+  [%expect {| plain |}];
+  ()
+;;
+
+let%expect_test "to_string - with style produces escape sequences" =
+  let t = Pp_tty.tag Pp_tty.Style.Warning (Pp.verbatim "warn") in
+  let s = Pp_tty.to_string t in
+  require (String.length s > String.length "warn");
+  print_string (Pp_tty.Ansi_color.strip s);
+  [%expect {| warn |}];
+  ()
+;;
+
+let%expect_test "to_string - Ansi_styles" =
+  let t =
+    Pp_tty.tag (Pp_tty.Style.Ansi_styles [ `Fg_red; `Bold ]) (Pp.verbatim "red bold")
+  in
+  let s = Pp_tty.to_string t in
+  require (String.length s > String.length "red bold");
+  print_string (Pp_tty.Ansi_color.strip s);
+  [%expect {| red bold |}];
+  ()
+;;
+
 (* {1 Tests for loc} *)
 
 let%expect_test "loc - of_pos" =

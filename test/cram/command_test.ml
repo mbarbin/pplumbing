@@ -52,8 +52,70 @@ let write_cmd =
      Err.emit msg ~level)
 ;;
 
+let print_styles_cmd =
+  Command.make
+    ~summary:"Print each Pp_tty.Style with a sample text."
+    (let+ () = Log_cli.set_config () in
+     let styles =
+       [ "Loc", Pp_tty.Style.Loc
+       ; "Error", Error
+       ; "Warning", Warning
+       ; "Kwd", Kwd
+       ; "Id", Id
+       ; "Prompt", Prompt
+       ; "Hint", Hint
+       ; "Details", Details
+       ; "Ok", Ok
+       ; "Debug", Debug
+       ; "Success", Success
+       ; "Ansi_styles", Ansi_styles [ `Bold; `Fg_red ]
+       ; "Italic_Magenta", Ansi_styles [ `Italic; `Fg_magenta ]
+       ; "Fg_8bit", Ansi_styles [ `Fg_8_bit_color (Pp_tty.Ansi_color.RGB8.of_int 42) ]
+       ; ( "Fg_24bit"
+         , Ansi_styles
+             [ `Fg_24_bit_color (Pp_tty.Ansi_color.RGB24.make ~red:255 ~green:128 ~blue:0)
+             ] )
+       ; ( "Bold_White_on_Bg24bit"
+         , Ansi_styles
+             [ `Bold
+             ; `Fg_white
+             ; `Bg_24_bit_color (Pp_tty.Ansi_color.RGB24.make ~red:0 ~green:0 ~blue:128)
+             ] )
+       ]
+     in
+     let print_styled pp =
+       (match Err.color_mode () with
+        | `Never -> Format.printf "%a%!" Pp.to_fmt pp
+        | `Auto -> Pp_tty.print pp [@coverage off]
+        | `Always -> print_string (Pp_tty.to_string pp));
+       print_char '\n'
+     in
+     List.iter styles ~f:(fun (name, style) ->
+       print_styled (Pp_tty.tag style (Pp.verbatim name)));
+     (* Nested tags: italic text containing an inner underline+red word,
+        exercises the [with_reset:true] path with non-empty [current_styles]. *)
+     print_styled
+       (Pp_tty.tag
+          (Pp_tty.Style.Ansi_styles [ `Italic ])
+          Pp.O.(
+            Pp.verbatim "Italic_"
+            ++ Pp_tty.tag (Ansi_styles [ `Underline; `Fg_red ]) (Pp.verbatim "UnderRed")
+            ++ Pp.verbatim "_Italic")))
+;;
+
+let emit_error_cmd =
+  Command.make
+    ~summary:"Emit a simple error message to stderr."
+    (let+ () = Log_cli.set_config () in
+     Err.error [ Pp.text "error message." ])
+;;
+
 let main =
   Command.group
-    ~summary:"Test err from the command line."
-    [ "logs", logs_cmd; "write", write_cmd ]
+    ~summary:"Test pplumbing libs from the command line."
+    [ "emit-error", emit_error_cmd
+    ; "logs", logs_cmd
+    ; "print-styles", print_styles_cmd
+    ; "write", write_cmd
+    ]
 ;;
