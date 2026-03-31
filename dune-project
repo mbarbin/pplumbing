@@ -68,6 +68,8 @@
  (depends
   (ocaml
    (>= 4.14))
+  (dyn
+   (>= 3.17))
   (loc
    (>= 0.2.2))
   (parsexp

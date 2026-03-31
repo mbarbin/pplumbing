@@ -10,6 +10,7 @@ bug-reports: "https://github.com/mbarbin/pplumbing/issues"
 depends: [
   "dune" {>= "3.17"}
   "ocaml" {>= "4.14"}
+  "dyn" {>= "3.17"}
   "loc" {>= "0.2.2"}
   "parsexp" {>= "v0.16"}
   "pp" {>= "2.0.0"}
