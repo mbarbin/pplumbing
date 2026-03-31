@@ -312,18 +312,14 @@ module Color_mode = struct
     | `Never
     ]
 
-  let sexp_of_t : t -> Sexplib0.Sexp.t = function
-    | `Auto -> Atom "Auto"
-    | `Always -> Atom "Always"
-    | `Never -> Atom "Never"
+  let variant_constructor_name : t -> string = function
+    | `Auto -> "Auto"
+    | `Always -> "Always"
+    | `Never -> "Never"
   ;;
 
-  let to_dyn : t -> Dyn.t = function
-    | `Auto -> Variant ("Auto", [])
-    | `Always -> Variant ("Always", [])
-    | `Never -> Variant ("Never", [])
-  ;;
-
+  let sexp_of_t t : Sexplib0.Sexp.t = Atom (variant_constructor_name t)
+  let to_dyn t : Dyn.t = Variant (variant_constructor_name t, [])
   let all : t list = [ `Auto; `Always; `Never ]
 
   let to_index = function
