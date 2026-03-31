@@ -65,6 +65,10 @@ exception E of t
     {!With_exit_code.sexp_of_t} if needed. *)
 val sexp_of_t : t -> Sexplib0.Sexp.t
 
+(** Same as {!sexp_of_t} but returns a {!Dyn.t} value instead. Note the exit
+    code is not shown by {!to_dyn}. See {!With_exit_code.to_dyn} if needed. *)
+val to_dyn : t -> Dyn.t
+
 (** {1 Exit codes}
 
     This part allows breaking the control flow with an exception indicating a
@@ -93,6 +97,9 @@ module With_exit_code : sig
 
   (** Same as [sexp_of_t] but augmented with the requested exit code. *)
   val sexp_of_t : t -> Sexplib0.Sexp.t
+
+  (** Same as [to_dyn] but augmented with the requested exit code. *)
+  val to_dyn : t -> Dyn.t
 end
 
 (** [set_exit_code e ~exit_code] allows to change the exit code previously
@@ -233,6 +240,7 @@ module Color_mode : sig
     ]
 
   val sexp_of_t : t -> Sexplib0.Sexp.t
+  val to_dyn : t -> Dyn.t
   val all : t list
   val compare : t -> t -> int
   val equal : t -> t -> bool
@@ -301,6 +309,7 @@ module Log_level : sig
     | Debug
 
   val sexp_of_t : t -> Sexplib0.Sexp.t
+  val to_dyn : t -> Dyn.t
   val all : t list
   val compare : t -> t -> int
   val equal : t -> t -> bool
@@ -326,6 +335,7 @@ module Level : sig
     | Debug
 
   val sexp_of_t : t -> Sexplib0.Sexp.t
+  val to_dyn : t -> Dyn.t
   val all : t list
   val compare : t -> t -> int
   val equal : t -> t -> bool

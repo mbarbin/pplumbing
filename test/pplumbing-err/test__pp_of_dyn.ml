@@ -4,92 +4,72 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
-let%expect_test "pp_of_sexp" =
+let%expect_test "pp_of_dyn" =
   Err.For_test.wrap
   @@ fun () ->
-  let test sexp =
-    let err = Err.create [ Err.sexp sexp ] in
+  let test dyn =
+    let err = Err.create [ Dyn.pp dyn ] in
     print_endline "========= sexp ==========";
     print_endline (Sexp.to_string_hum (Err.sexp_of_t err));
+    print_endline "========== dyn ==========";
+    print_dyn (Err.to_dyn err);
     print_endline "======== console ========";
     Err.prerr err ~reset_separator:true
   in
-  test (List []);
+  test (Dyn.List []);
   [%expect
     {|
     ========= sexp ==========
-    ()
+    []
+    ========== dyn ==========
+    "[]"
     ======== console ========
-    Error: ()
+    Error: []
     |}];
-  test (Atom "Hello");
+  test (Dyn.String "Hello");
   [%expect
     {|
     ========= sexp ==========
     Hello
+    ========== dyn ==========
+    "\"Hello\""
     ======== console ========
     Error: Hello
     |}];
-  test (List [ Atom "Hello error"; List [ List [ Atom "x"; Atom "42" ] ] ]);
+  test (Dyn.record [ "x", Dyn.int 42 ]);
   [%expect
     {|
     ========= sexp ==========
-    ("Hello error" ((x 42)))
+    "{ x = 42 }"
+    ========== dyn ==========
+    "{ x = 42 }"
     ======== console ========
-    Error: Hello error (x 42)
+    Error: { x = 42 }
     |}];
-  test (List [ List [ Atom "x"; Atom "42" ] ]);
+  test (Dyn.record [ "x", Dyn.int 42; "y", Dyn.string "why" ]);
   [%expect
     {|
     ========= sexp ==========
-    ((x 42))
+    "{ x = 42; y = \"why\" }"
+    ========== dyn ==========
+    "{ x = 42; y = \"why\" }"
     ======== console ========
-    Error: (x 42)
+    Error: { x = 42; y = "why" }
     |}];
-  test (List [ List [ Atom "x"; Atom "42" ]; List [ Atom "y"; Atom "why" ] ]);
+  test (Dyn.Variant ("Hello_error", [ Dyn.record [ "x", Dyn.int 42 ] ]));
   [%expect
     {|
     ========= sexp ==========
-    ((x 42) (y why))
+    "Hello_error { x = 42 }"
+    ========== dyn ==========
+    "Hello_error { x = 42 }"
     ======== console ========
-    Error: ((x 42) (y why))
-    |}];
-  test (List [ Atom "Hello error"; List [ List [ Atom "x"; Atom "42" ] ] ]);
-  [%expect
-    {|
-    ========= sexp ==========
-    ("Hello error" ((x 42)))
-    ======== console ========
-    Error: Hello error (x 42)
-    |}];
-  test
-    (List
-       [ Atom "Hello error"
-       ; List [ List [ Atom "x"; Atom "42" ]; List [ Atom "y"; Atom "why" ] ]
-       ]);
-  [%expect
-    {|
-    ========= sexp ==========
-    ("Hello error" ((x 42) (y why)))
-    ======== console ========
-    Error: Hello error ((x 42) (y why))
-    |}];
-  test
-    (List
-       [ Atom "Var"
-       ; List [ List [ Atom "x"; Atom "42" ]; List [ Atom "y"; Atom "why" ] ]
-       ]);
-  [%expect
-    {|
-    ========= sexp ==========
-    (Var ((x 42) (y why)))
-    ======== console ========
-    Error: (Var (x 42) (y why))
+    Error: Hello_error { x = 42 }
     |}];
   ()
 ;;
 
-let sexp_vs_prerr err =
+let dyn_vs_prerr err =
   print_endline "========= sexp ==========";
   print_endline (Sexp.to_string_hum (Err.sexp_of_t err));
   print_endline "========== dyn ==========";
@@ -98,10 +78,10 @@ let sexp_vs_prerr err =
   Err.prerr err ~reset_separator:true
 ;;
 
-let%expect_test "sexp vs prerr" =
+let%expect_test "dyn vs prerr" =
   Err.For_test.wrap
   @@ fun () ->
-  let test = sexp_vs_prerr in
+  let test = dyn_vs_prerr in
   let err = Err.create [ Pp.verbatim "Hello World" ] in
   test err;
   [%expect
@@ -128,28 +108,27 @@ let%expect_test "sexp vs prerr" =
   let err =
     Err.add_context
       err
-      [ Err.sexp
-          (List
-             [ Atom "And even more context"
-             ; List [ List [ Atom "x"; Atom "42" ]; List [ Atom "y"; Atom "Foo" ] ]
-             ])
+      [ Dyn.pp
+          (Dyn.Variant
+             ( "And_even_more_context"
+             , [ Dyn.record [ "x", Dyn.int 42; "y", Dyn.string "Foo" ] ] ))
       ]
   in
   test err;
   [%expect
     {|
     ========= sexp ==========
-    ((context ("And even more context" ((x 42) (y Foo))) "Hello Context!")
+    ((context "And_even_more_context { x = 42; y = \"Foo\" }" "Hello Context!")
      (error "Hello World"))
     ========== dyn ==========
     [ [ "context"
-      ; "(\"And even more context\" ((x 42) (y Foo)))"
+      ; "And_even_more_context { x = 42; y = \"Foo\" }"
       ; "Hello Context!"
       ]
     ; [ "error"; "Hello World" ]
     ]
     ======== console ========
-    Context: And even more context ((x 42) (y Foo))
+    Context: And_even_more_context { x = 42; y = "Foo" }
     Hello Context!
     Error: Hello World
     |}];
@@ -172,7 +151,7 @@ With Multiple lines
   let err =
     Err.create ~loc [ Pp.text "Hello Located Error" ] ~hints:[ Pp.text "With hints too!" ]
   in
-  let test = sexp_vs_prerr in
+  let test = dyn_vs_prerr in
   test err;
   [%expect
     {|

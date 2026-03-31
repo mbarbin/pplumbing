@@ -46,6 +46,11 @@ module Paragraph = struct
       Sexplib0.Sexp.Atom str
   ;;
 
+  let to_dyn t =
+    let str = Format.asprintf "%a" Pp.to_fmt (Pp.hbox t) in
+    Dyn.String str
+  ;;
+
   let rec simplify_sexp sexp =
     match (sexp : Sexplib0.Sexp.t) with
     | (Atom _ | List []) as sexp -> sexp
@@ -96,6 +101,13 @@ module Level = struct
     | Warning -> Atom "Warning"
     | Info -> Atom "Info"
     | Debug -> Atom "Debug"
+  ;;
+
+  let to_dyn : t -> Dyn.t = function
+    | Error -> Variant ("Error", [])
+    | Warning -> Variant ("Warning", [])
+    | Info -> Variant ("Info", [])
+    | Debug -> Variant ("Debug", [])
   ;;
 
   let all = [ Error; Warning; Info; Debug ]
@@ -184,6 +196,43 @@ let to_sexps { loc; context; paragraphs; hints; exit_code = _ } =
     ]
 ;;
 
+let to_dyns { loc; context; paragraphs; hints; exit_code = _ } =
+  List.concat
+    [ (match loc with
+       | None -> []
+       | Some loc ->
+         if Loc.include_sexp_of_locs.contents
+         then [ Dyn.String (Loc.to_string loc) ]
+         else [])
+    ; (if List.is_empty context
+       then List.map Paragraph.to_dyn paragraphs
+       else
+         [ Dyn.List (Dyn.String "context" :: List.map Paragraph.to_dyn context)
+         ; Dyn.List (Dyn.String "error" :: List.map Paragraph.to_dyn paragraphs)
+         ])
+    ; (match hints with
+       | [] -> []
+       | _ :: _ -> [ Dyn.List (Dyn.String "hints" :: List.map Paragraph.to_dyn hints) ])
+    ]
+;;
+
+let to_dyn_internal ~include_exit_code t =
+  let dyns = to_dyns t in
+  let list =
+    List.concat
+      [ dyns
+      ; (if include_exit_code || List.is_empty dyns
+         then [ Dyn.List [ Dyn.String "exit_code"; Dyn.Int t.exit_code ] ]
+         else [])
+      ]
+  in
+  match list with
+  | [ dyn ] -> dyn
+  | _ -> Dyn.List list
+;;
+
+let to_dyn t = to_dyn_internal ~include_exit_code:false t
+
 let to_stdune_user_message ~level { loc; context; paragraphs; hints; exit_code = _ } =
   if
     List.is_empty paragraphs
@@ -216,6 +265,7 @@ module With_exit_code = struct
   type nonrec t = t
 
   let sexp_of_t t = sexp_of_t_internal ~include_exit_code:true t
+  let to_dyn t = to_dyn_internal ~include_exit_code:true t
 end
 
 exception E of t
@@ -274,6 +324,12 @@ module Color_mode = struct
     | `Auto -> Atom "Auto"
     | `Always -> Atom "Always"
     | `Never -> Atom "Never"
+  ;;
+
+  let to_dyn : t -> Dyn.t = function
+    | `Auto -> Variant ("Auto", [])
+    | `Always -> Variant ("Always", [])
+    | `Never -> Variant ("Never", [])
   ;;
 
   let all : t list = [ `Auto; `Always; `Never ]
@@ -393,6 +449,15 @@ module Log_level = struct
     | Warning -> Atom "Warning"
     | Info -> Atom "Info"
     | Debug -> Atom "Debug"
+  ;;
+
+  let to_dyn : t -> Dyn.t = function
+    | Quiet -> Variant ("Quiet", [])
+    | App -> Variant ("App", [])
+    | Error -> Variant ("Error", [])
+    | Warning -> Variant ("Warning", [])
+    | Info -> Variant ("Info", [])
+    | Debug -> Variant ("Debug", [])
   ;;
 
   let all = [ Quiet; App; Error; Warning; Info; Debug ]

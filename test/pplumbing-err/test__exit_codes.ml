@@ -74,3 +74,26 @@ let%expect_test "exit_code in sexp" =
   [%expect {| ("Hello Exit Code" (exit_code 123)) |}];
   ()
 ;;
+
+let%expect_test "exit_code in dyn" =
+  let e = Err.create [ Pp.text "Hello Exit Code" ] in
+  print_dyn (Err.to_dyn e);
+  [%expect {| "Hello Exit Code" |}];
+  print_dyn (Err.With_exit_code.to_dyn e);
+  [%expect {| [ "Hello Exit Code"; [ "exit_code"; 123 ] ] |}];
+  ()
+;;
+
+let%expect_test "empty error to_dyn" =
+  (* When an error has no paragraphs (e.g. created via [Err.exit]), the exit
+     code is always included in [to_dyn], even without [With_exit_code]. *)
+  let e = Err.create ~exit_code:Err.Exit_code.ok [] in
+  print_dyn (Err.to_dyn e);
+  [%expect {| [ "exit_code"; 0 ] |}];
+  print_dyn (Err.With_exit_code.to_dyn e);
+  [%expect {| [ "exit_code"; 0 ] |}];
+  let e = Err.create ~exit_code:Err.Exit_code.some_error [] in
+  print_dyn (Err.to_dyn e);
+  [%expect {| [ "exit_code"; 123 ] |}];
+  ()
+;;

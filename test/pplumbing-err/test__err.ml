@@ -131,6 +131,20 @@ let%expect_test "sexp_of_t" =
   ()
 ;;
 
+let%expect_test "to_dyn" =
+  let err =
+    Err.create
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
+      [ Pp.text "Hello Sexp"
+      ; Err.sexp (List [ List [ Atom "a"; Atom "Hello" ]; List [ Atom "b"; Atom "42" ] ])
+      ]
+  in
+  print_dyn (Err.to_dyn err);
+  [%expect {| [ "Hello Sexp"; "((a Hello) (b 42))"; [ "hints"; "did you mean bar?" ] ] |}];
+  ()
+;;
+
 let%expect_test "add_context" =
   let err1 =
     Err.create

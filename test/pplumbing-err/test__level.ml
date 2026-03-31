@@ -17,6 +17,18 @@ let%expect_test "sexp_of_t" =
   ()
 ;;
 
+let%expect_test "to_dyn" =
+  List.iter Err.Level.all ~f:(fun log_level -> print_dyn (Err.Level.to_dyn log_level));
+  [%expect
+    {|
+    Error
+    Warning
+    Info
+    Debug
+    |}];
+  ()
+;;
+
 let%expect_test "to_string" =
   List.iter Err.Level.all ~f:(fun log_level ->
     print_endline (Err.Level.to_string log_level));
