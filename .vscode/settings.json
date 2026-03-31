@@ -1,9 +1,16 @@
 {
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
     "cSpell.words": [
+        "Barbin",
         "janestreet",
+        "Mathieu",
         "ocamlmig",
         "odoc",
         "opam",
-        "reraise"
+        "pplumbing",
+        "prerr",
+        "reraise",
+        "stdlib"
     ]
 }
