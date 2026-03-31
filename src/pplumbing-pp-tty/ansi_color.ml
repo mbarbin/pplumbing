@@ -93,7 +93,8 @@ module Simple_style = struct
     | `Underline
     ]
 
-  let code : t -> int = function
+  let code t =
+    match[@coverage off] (t : t) with
     | `Fg_default -> 39
     | `Fg_black -> 30
     | `Fg_red -> 31
@@ -136,7 +137,8 @@ module Simple_style = struct
 end
 
 module Vendor_style = struct
-  let write_to_buffer buf : Style.t -> unit = function
+  let write_to_buffer buf style =
+    match[@coverage off] (style : Style.t) with
     | #Simple_style.t as style ->
       Buffer.add_string buf (Int.to_string (Simple_style.code style))
     | `Fg_8_bit_color c ->

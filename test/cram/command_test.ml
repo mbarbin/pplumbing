@@ -69,6 +69,18 @@ let print_styles_cmd =
        ; "Debug", Debug
        ; "Success", Success
        ; "Ansi_styles", Ansi_styles [ `Bold; `Fg_red ]
+       ; "Italic_Magenta", Ansi_styles [ `Italic; `Fg_magenta ]
+       ; "Fg_8bit", Ansi_styles [ `Fg_8_bit_color (Pp_tty.Ansi_color.RGB8.of_int 42) ]
+       ; ( "Fg_24bit"
+         , Ansi_styles
+             [ `Fg_24_bit_color (Pp_tty.Ansi_color.RGB24.make ~red:255 ~green:128 ~blue:0)
+             ] )
+       ; ( "Bold_White_on_Bg24bit"
+         , Ansi_styles
+             [ `Bold
+             ; `Fg_white
+             ; `Bg_24_bit_color (Pp_tty.Ansi_color.RGB24.make ~red:0 ~green:0 ~blue:128)
+             ] )
        ]
      in
      let print_styled pp =
@@ -79,7 +91,16 @@ let print_styles_cmd =
        print_char '\n'
      in
      List.iter styles ~f:(fun (name, style) ->
-       print_styled (Pp_tty.tag style (Pp.verbatim name))))
+       print_styled (Pp_tty.tag style (Pp.verbatim name)));
+     (* Nested tags: italic text containing an inner underline+red word,
+        exercises the [with_reset:true] path with non-empty [current_styles]. *)
+     print_styled
+       (Pp_tty.tag
+          (Pp_tty.Style.Ansi_styles [ `Italic ])
+          Pp.O.(
+            Pp.verbatim "Italic_"
+            ++ Pp_tty.tag (Ansi_styles [ `Underline; `Fg_red ]) (Pp.verbatim "UnderRed")
+            ++ Pp.verbatim "_Italic")))
 ;;
 
 let emit_error_cmd =

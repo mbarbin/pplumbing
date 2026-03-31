@@ -13,3 +13,8 @@ Exercising Pp_tty.Style printing.
   Debug
   Success
   Ansi_styles
+  Italic_Magenta
+  Fg_8bit
+  Fg_24bit
+  Bold_White_on_Bg24bit
+  Italic_UnderRed_Italic
