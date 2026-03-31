@@ -92,7 +92,7 @@ module Paragraph = struct
 
   let default_sexp_rendering = sexp
 
-  (* Future plans involve coloring the sexps when rendering to the console. *)
+  (* Future plans involve coloring the sexps & dyns when rendering to the console. *)
   let pp_sexp sexp =
     let sexp = simplify_sexp sexp in
     let pp =
