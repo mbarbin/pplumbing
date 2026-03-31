@@ -484,10 +484,11 @@ end
 
 (** {1 Deprecated}
 
-    This part of the API is, or will be soon, deprecated. We have added
-    [ocamlmig] annotations to help with migrating existing code. *)
+    This part of the API is deprecated. We have added [ocamlmig] annotations to
+    help with migrating existing code. Hint: Run [ocamlmig migrate]. *)
 
-(** This is deprecated - use {!val:Err.create} instead. *)
+(** This is deprecated - use {!val:Err.create} instead. Hint: Run
+    [ocamlmig migrate]. *)
 val create_s
   :  ?loc:Loc.t
   -> ?hints:Pp_tty.t list
@@ -495,6 +496,7 @@ val create_s
   -> string
   -> Sexplib0.Sexp.t
   -> t
+[@@ocaml.deprecated "[since 2026-03] Use [Err.create]. Hint: Run [ocamlmig migrate]"]
 [@@migrate
   { repl =
       (fun ?loc ?hints ?exit_code msg sexp ->
@@ -506,7 +508,8 @@ val create_s
   ; libraries = [ "pp" ]
   }]
 
-(** This is deprecated - use {!val:Err.raise} instead. *)
+(** This is deprecated - use {!val:Err.raise} instead. Hint: Run
+    [ocamlmig migrate]. *)
 val raise_s
   :  ?loc:Loc.t
   -> ?hints:Pp_tty.t list
@@ -514,6 +517,7 @@ val raise_s
   -> string
   -> Sexplib0.Sexp.t
   -> _
+[@@ocaml.deprecated "[since 2026-03] Use [Err.raise]. Hint: Run [ocamlmig migrate]"]
 [@@migrate
   { repl =
       (fun ?loc ?hints ?exit_code msg sexp ->
@@ -525,7 +529,8 @@ val raise_s
   ; libraries = [ "pp" ]
   }]
 
-(** This is deprecated - use {!Err.reraise_with_context} instead. *)
+(** This is deprecated - use {!Err.reraise_with_context} instead. Hint: Run
+    [ocamlmig migrate]. *)
 val reraise_s
   :  Printexc.raw_backtrace
   -> t
@@ -535,6 +540,8 @@ val reraise_s
   -> string
   -> Sexplib0.Sexp.t
   -> _
+[@@ocaml.deprecated
+  "[since 2026-03] Use [Err.reraise_with_context]. Hint: Run [ocamlmig migrate]"]
 [@@migrate
   { repl =
       (fun bt e ?loc:_ ?hints:_ ?exit_code:_ msg sexp ->
@@ -545,6 +552,7 @@ val reraise_s
   ; libraries = [ "pp" ]
   }]
 
-(** This was renamed {!val:Err.sexp}. *)
+(** This was renamed {!val:Err.sexp}. Hint: Run [ocamlmig migrate]. *)
 val pp_of_sexp : Sexplib0.Sexp.t -> Pp_tty.t
+[@@ocaml.deprecated "[since 2026-03] Use [Err.sexp]. Hint: Run [ocamlmig migrate]"]
 [@@migrate { repl = Rel.sexp }]
