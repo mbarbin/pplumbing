@@ -177,19 +177,18 @@ let with_prefix ~prefix ~(style : Pp_tty.Style.t) paragraphs =
 let make_message ~level ?loc ?(context = []) ?(hints = []) paragraphs =
   Stdune.User_message.make
     ?loc:(Option.map stdune_loc loc)
-    ~hints:(List.map to_stdune_pp hints)
+    ~hints:(hints |> List.map to_stdune_pp)
     ?prefix:None
-    (List.map
-       to_stdune_pp
-       (List.concat
-          [ (match context with
-             | [] -> []
-             | _ :: _ as context -> with_prefix ~prefix:"Context" ~style:Kwd context)
-          ; with_prefix
-              ~prefix:(Level.to_string level |> String.capitalize_ascii)
-              ~style:(Level.style level)
-              paragraphs
-          ]))
+    (List.concat
+       [ (match context with
+          | [] -> []
+          | _ :: _ as context -> with_prefix ~prefix:"Context" ~style:Kwd context)
+       ; with_prefix
+           ~prefix:(Level.to_string level |> String.capitalize_ascii)
+           ~style:(Level.style level)
+           paragraphs
+       ]
+     |> List.map to_stdune_pp)
 ;;
 
 type t =
