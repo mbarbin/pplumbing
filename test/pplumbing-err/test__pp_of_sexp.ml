@@ -109,7 +109,7 @@ let%expect_test "sexp vs prerr" =
     ========= sexp ==========
     "Hello World"
     ========== dyn ==========
-    "Hello World"
+    { msgs = [ "Hello World" ] }
     ======== console ========
     Error: Hello World
     |}];
@@ -120,7 +120,7 @@ let%expect_test "sexp vs prerr" =
     ========= sexp ==========
     ((context "Hello Context!") (error "Hello World"))
     ========== dyn ==========
-    [ [ "context"; "Hello Context!" ]; [ "error"; "Hello World" ] ]
+    { context = [ "Hello Context!" ]; msgs = [ "Hello World" ] }
     ======== console ========
     Context: Hello Context!
     Error: Hello World
@@ -142,12 +142,10 @@ let%expect_test "sexp vs prerr" =
     ((context ("And even more context" ((x 42) (y Foo))) "Hello Context!")
      (error "Hello World"))
     ========== dyn ==========
-    [ [ "context"
-      ; "(\"And even more context\" ((x 42) (y Foo)))"
-      ; "Hello Context!"
-      ]
-    ; [ "error"; "Hello World" ]
-    ]
+    { context =
+        [ "(\"And even more context\" ((x 42) (y Foo)))"; "Hello Context!" ]
+    ; msgs = [ "Hello World" ]
+    }
     ======== console ========
     Context: And even more context ((x 42) (y Foo))
     Hello Context!
@@ -179,7 +177,7 @@ With Multiple lines
     ========= sexp ==========
     ("Hello Located Error" (hints "With hints too!"))
     ========== dyn ==========
-    [ "Hello Located Error"; [ "hints"; "With hints too!" ] ]
+    { msgs = [ "Hello Located Error" ]; hints = [ "With hints too!" ] }
     ======== console ========
     File "foo.txt", line 1, characters 0-0:
     Error: Hello Located Error
@@ -192,10 +190,10 @@ With Multiple lines
     ("File \"foo.txt\", line 1, characters 0-0:" "Hello Located Error"
      (hints "With hints too!"))
     ========== dyn ==========
-    [ "File \"foo.txt\", line 1, characters 0-0:"
-    ; "Hello Located Error"
-    ; [ "hints"; "With hints too!" ]
-    ]
+    { loc = "File \"foo.txt\", line 1, characters 0-0:"
+    ; msgs = [ "Hello Located Error" ]
+    ; hints = [ "With hints too!" ]
+    }
     ======== console ========
     File "foo.txt", line 1, characters 0-0:
     Error: Hello Located Error

@@ -141,7 +141,12 @@ let%expect_test "to_dyn" =
       ]
   in
   print_dyn (Err.to_dyn err);
-  [%expect {| [ "Hello Sexp"; "((a Hello) (b 42))"; [ "hints"; "did you mean bar?" ] ] |}];
+  [%expect
+    {|
+    { msgs = [ "Hello Sexp"; "((a Hello) (b 42))" ]
+    ; hints = [ "did you mean bar?" ]
+    }
+    |}];
   ()
 ;;
 

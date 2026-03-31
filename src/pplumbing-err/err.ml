@@ -192,38 +192,35 @@ let to_sexps { loc; context; paragraphs; hints; exit_code = _ } =
 ;;
 
 let to_dyns { loc; context; paragraphs; hints; exit_code = _ } =
-  List.concat
+  List.filter_map
+    Fun.id
     [ (match loc with
-       | None -> []
+       | None -> None
        | Some loc ->
          if Loc.include_sexp_of_locs.contents
-         then [ Dyn.String (Loc.to_string loc) ]
-         else [])
+         then Some ("loc", Dyn.String (Loc.to_string loc))
+         else None)
     ; (if List.is_empty context
-       then List.map Paragraph.to_dyn paragraphs
-       else
-         [ Dyn.List (Dyn.String "context" :: List.map Paragraph.to_dyn context)
-         ; Dyn.List (Dyn.String "error" :: List.map Paragraph.to_dyn paragraphs)
-         ])
+       then None
+       else Some ("context", Dyn.list Paragraph.to_dyn context))
+    ; (if List.is_empty paragraphs
+       then None
+       else Some ("msgs", Dyn.list Paragraph.to_dyn paragraphs))
     ; (match hints with
-       | [] -> []
-       | _ :: _ -> [ Dyn.List (Dyn.String "hints" :: List.map Paragraph.to_dyn hints) ])
+       | [] -> None
+       | _ :: _ -> Some ("hints", Dyn.list Paragraph.to_dyn hints))
     ]
 ;;
 
 let to_dyn_internal ~include_exit_code t =
   let dyns = to_dyns t in
-  let list =
-    List.concat
-      [ dyns
-      ; (if include_exit_code || List.is_empty dyns
-         then [ Dyn.List [ Dyn.String "exit_code"; Dyn.Int t.exit_code ] ]
-         else [])
-      ]
-  in
-  match list with
-  | [ dyn ] -> dyn
-  | _ -> Dyn.List list
+  Dyn.record
+    (List.concat
+       [ dyns
+       ; (if include_exit_code || List.is_empty dyns
+          then [ "exit_code", Dyn.Int t.exit_code ]
+          else [])
+       ])
 ;;
 
 let to_dyn t = to_dyn_internal ~include_exit_code:false t

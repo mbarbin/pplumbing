@@ -22,7 +22,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     []
     ========== dyn ==========
-    "[]"
+    { msgs = [ "[]" ] }
     ======== console ========
     Error: []
     |}];
@@ -32,7 +32,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     Hello
     ========== dyn ==========
-    "\"Hello\""
+    { msgs = [ "\"Hello\"" ] }
     ======== console ========
     Error: Hello
     |}];
@@ -42,7 +42,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     "{ x = 42 }"
     ========== dyn ==========
-    "{ x = 42 }"
+    { msgs = [ "{ x = 42 }" ] }
     ======== console ========
     Error: { x = 42 }
     |}];
@@ -52,7 +52,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     "{ x = 42; y = \"why\" }"
     ========== dyn ==========
-    "{ x = 42; y = \"why\" }"
+    { msgs = [ "{ x = 42; y = \"why\" }" ] }
     ======== console ========
     Error: { x = 42; y = "why" }
     |}];
@@ -62,7 +62,7 @@ let%expect_test "pp_of_dyn" =
     ========= sexp ==========
     "Hello_error { x = 42 }"
     ========== dyn ==========
-    "Hello_error { x = 42 }"
+    { msgs = [ "Hello_error { x = 42 }" ] }
     ======== console ========
     Error: Hello_error { x = 42 }
     |}];
@@ -89,7 +89,7 @@ let%expect_test "dyn vs prerr" =
     ========= sexp ==========
     "Hello World"
     ========== dyn ==========
-    "Hello World"
+    { msgs = [ "Hello World" ] }
     ======== console ========
     Error: Hello World
     |}];
@@ -100,7 +100,7 @@ let%expect_test "dyn vs prerr" =
     ========= sexp ==========
     ((context "Hello Context!") (error "Hello World"))
     ========== dyn ==========
-    [ [ "context"; "Hello Context!" ]; [ "error"; "Hello World" ] ]
+    { context = [ "Hello Context!" ]; msgs = [ "Hello World" ] }
     ======== console ========
     Context: Hello Context!
     Error: Hello World
@@ -121,12 +121,10 @@ let%expect_test "dyn vs prerr" =
     ((context "And_even_more_context { x = 42; y = \"Foo\" }" "Hello Context!")
      (error "Hello World"))
     ========== dyn ==========
-    [ [ "context"
-      ; "And_even_more_context { x = 42; y = \"Foo\" }"
-      ; "Hello Context!"
-      ]
-    ; [ "error"; "Hello World" ]
-    ]
+    { context =
+        [ "And_even_more_context { x = 42; y = \"Foo\" }"; "Hello Context!" ]
+    ; msgs = [ "Hello World" ]
+    }
     ======== console ========
     Context: And_even_more_context { x = 42; y = "Foo" }
     Hello Context!
@@ -158,7 +156,7 @@ With Multiple lines
     ========= sexp ==========
     ("Hello Located Error" (hints "With hints too!"))
     ========== dyn ==========
-    [ "Hello Located Error"; [ "hints"; "With hints too!" ] ]
+    { msgs = [ "Hello Located Error" ]; hints = [ "With hints too!" ] }
     ======== console ========
     File "foo.txt", line 1, characters 0-0:
     Error: Hello Located Error
@@ -171,10 +169,10 @@ With Multiple lines
     ("File \"foo.txt\", line 1, characters 0-0:" "Hello Located Error"
      (hints "With hints too!"))
     ========== dyn ==========
-    [ "File \"foo.txt\", line 1, characters 0-0:"
-    ; "Hello Located Error"
-    ; [ "hints"; "With hints too!" ]
-    ]
+    { loc = "File \"foo.txt\", line 1, characters 0-0:"
+    ; msgs = [ "Hello Located Error" ]
+    ; hints = [ "With hints too!" ]
+    }
     ======== console ========
     File "foo.txt", line 1, characters 0-0:
     Error: Hello Located Error
