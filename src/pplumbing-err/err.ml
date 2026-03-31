@@ -579,7 +579,9 @@ let handle_messages_and_exit ~err:({ exit_code; _ } as t) ~backtrace =
     then (
       let message =
         let prefix =
-          to_stdune_pp (Pp.seq (Pp_tty.tag Error (Pp.verbatim "Backtrace")) (Pp.char ':'))
+          Pp.seq
+            (Pp.tag Stdune.User_message.Style.Error (Pp.verbatim "Backtrace"))
+            (Pp.char ':')
         in
         let backtrace = pp_backtrace backtrace in
         Stdune.User_message.make
@@ -611,8 +613,9 @@ let protect ?(exn_handler = Fun.const None) f =
        then (
          let message =
            let prefix =
-             to_stdune_pp
-               (Pp.seq (Pp_tty.tag Error (Pp.verbatim "Internal Error")) (Pp.char ':'))
+             Pp.seq
+               (Pp.tag Stdune.User_message.Style.Error (Pp.verbatim "Internal Error"))
+               (Pp.char ':')
            in
            let backtrace = pp_backtrace backtrace in
            Stdune.User_message.make
