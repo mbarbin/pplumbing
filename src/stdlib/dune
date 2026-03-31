@@ -2,7 +2,7 @@
  (name stdlib_for_test)
  (package pplumbing-tests)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries dyn loc ordering pp)
+ (libraries dyn loc ordering pp sexplib0)
  (instrumentation
   (backend bisect_ppx))
  (lint

@@ -11,7 +11,7 @@ let%expect_test "return" =
 ;;
 
 let%expect_test "am_running_test" =
-  let am_running_test () = print_s [%sexp (Err.am_running_test () : bool)] in
+  let am_running_test () = print_dyn (Err.am_running_test () |> Dyn.bool) in
   am_running_test ();
   [%expect {| false |}];
   Err.For_test.wrap (fun () ->
@@ -42,13 +42,13 @@ let%expect_test "raise" =
 let%expect_test "of_exn" =
   let e = Err.create [ Pp.text "Hello of_exn" ] in
   let e' = Err.of_exn (Err.E e) in
-  require [%here] (phys_equal e e');
+  require (phys_equal e e');
   [%expect {||}];
   let e =
     try failwith "Hello Exn!" with
     | e -> Err.of_exn e
   in
-  print_s [%sexp (e : Err.t)];
+  print_endline (Sexp.to_string_hum (Err.sexp_of_t e));
   [%expect {| (Failure "Hello Exn!") |}];
   ()
 ;;
@@ -120,16 +120,12 @@ let%expect_test "sexp_of_t" =
     Err.create
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      [ Pp.text "Hello Sexp"; Err.sexp [%sexp { a = Hello; b = 42 }] ]
+      [ Pp.text "Hello Sexp"
+      ; Err.sexp (List [ List [ Atom "a"; Atom "Hello" ]; List [ Atom "b"; Atom "42" ] ])
+      ]
   in
-  print_s [%sexp (err : Err.t)];
-  [%expect
-    {|
-    ("Hello Sexp"
-      ((a Hello)
-       (b 42))
-      (hints "did you mean bar?"))
-    |}];
+  print_endline (Sexp.to_string_hum (Err.sexp_of_t err));
+  [%expect {| ("Hello Sexp" ((a Hello) (b 42)) (hints "did you mean bar?")) |}];
   print_endline (Err.to_string_hum err);
   [%expect {| ("Hello Sexp" ((a Hello) (b 42)) (hints "did you mean bar?")) |}];
   ()
@@ -152,7 +148,9 @@ let%expect_test "add_context" =
     [41]
     |}];
   let err3 =
-    Err.add_context err2 [ Pp.text "Hello Context 2"; Err.sexp [%sexp Hello Sexp] ]
+    Err.add_context
+      err2
+      [ Pp.text "Hello Context 2"; Err.sexp (List [ Atom "Hello"; Atom "Sexp" ]) ]
   in
   Err.For_test.protect (fun () -> raise (Err.E err3));
   [%expect
@@ -193,7 +191,12 @@ let%expect_test "create_s" =
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
       [ Pp.text "The summary of the error."
-      ; Err.sexp [%sexp { x = 42; y = Some "msg"; var = "bah" }]
+      ; Err.sexp
+          (List
+             [ List [ Atom "x"; Atom "42" ]
+             ; List [ Atom "y"; List [ Atom "Some"; Atom "msg" ] ]
+             ; List [ Atom "var"; Atom "bah" ]
+             ])
       ]
   in
   Err.For_test.protect (fun () -> raise (Err.E err));
@@ -213,7 +216,7 @@ let%expect_test "raise with sexp" =
     Err.raise
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      [ Pp.text "Hello Raise"; Err.sexp [%sexp { hello = 42 }] ]);
+      [ Pp.text "Hello Raise"; Err.sexp (List [ List [ Atom "hello"; Atom "42" ] ]) ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
@@ -226,11 +229,41 @@ let%expect_test "raise with sexp" =
     Err.raise
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      Pp.O.[ Pp.text "Hello Raise " ++ Err.sexp [%sexp { hello = 42 }] ]);
+      Pp.O.
+        [ Pp.text "Hello Raise " ++ Err.sexp (List [ List [ Atom "hello"; Atom "42" ] ]) ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
     Error: Hello Raise ((hello 42))
+    Hint: did you mean bar?
+    [123]
+    |}];
+  ()
+;;
+
+let%expect_test "raise with dyn" =
+  Err.For_test.protect (fun () ->
+    Err.raise
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
+      [ Pp.text "Hello Raise"; Dyn.pp (Dyn.record [ "hello", Dyn.int 42 ]) ]);
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error: Hello Raise
+    { hello = 42 }
+    Hint: did you mean bar?
+    [123]
+    |}];
+  Err.For_test.protect (fun () ->
+    Err.raise
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
+      Pp.O.[ Pp.text "Hello Raise " ++ Dyn.pp (Dyn.record [ "hello", Dyn.int 42 ]) ]);
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error: Hello Raise { hello = 42 }
     Hint: did you mean bar?
     [123]
     |}];
@@ -243,7 +276,7 @@ let%expect_test "reraise_with_context" =
       Err.raise
         ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
         ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-        [ Pp.text "Hello Raise"; Err.sexp [%sexp { hello = 42 }] ]
+        [ Pp.text "Hello Raise"; Err.sexp (List [ List [ Atom "hello"; Atom "42" ] ]) ]
     with
     | _ -> assert false
     | exception Err.E e ->
@@ -251,7 +284,9 @@ let%expect_test "reraise_with_context" =
       Err.reraise_with_context
         e
         bt
-        [ Pp.text "Re raised with context"; Err.sexp [%sexp { x = 42 }] ]);
+        [ Pp.text "Re raised with context"
+        ; Err.sexp (List [ List [ Atom "x"; Atom "42" ] ])
+        ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
@@ -304,7 +339,7 @@ let%expect_test "prerr" =
   ()
 ;;
 
-let am_running_test () = print_s [%sexp (Err.am_running_test () : bool)]
+let am_running_test () = print_dyn (Err.am_running_test () |> Dyn.bool)
 
 let%expect_test "multiple errors" =
   Err.For_test.protect (fun () ->
@@ -346,7 +381,7 @@ let%expect_test "error" =
   Err.For_test.protect (fun () ->
     am_running_test ();
     [%expect {| true |}];
-    print_s [%sexp (Err.had_errors () : bool)];
+    print_dyn (Err.had_errors () |> Dyn.bool);
     [%expect {| false |}];
     Err.error [ Pp.text "Hello Error1" ];
     [%expect {| Error: Hello Error1 |}];
@@ -354,18 +389,14 @@ let%expect_test "error" =
     [%expect {| Error: Hello Error2 |}];
     ());
   [%expect {| [123] |}];
-  print_s [%sexp (Err.had_errors () : bool)];
+  print_dyn (Err.had_errors () |> Dyn.bool);
   [%expect {| true |}];
-  print_s
-    [%sexp
-      { err_count = (Err.error_count () : int)
-      ; warn_count = (Err.warning_count () : int)
-      }];
-  [%expect
-    {|
-    ((err_count  2)
-     (warn_count 0))
-    |}];
+  print_dyn
+    (Dyn.record
+       [ "err_count", Err.error_count () |> Dyn.int
+       ; "warn_count", Err.warning_count () |> Dyn.int
+       ]);
+  [%expect {| { err_count = 2; warn_count = 0 } |}];
   ()
 ;;
 
@@ -385,7 +416,7 @@ let%expect_test "warning" =
   Err.For_test.protect (fun () ->
     am_running_test ();
     [%expect {| true |}];
-    print_s [%sexp (Err.had_errors () : bool)];
+    print_dyn (Err.had_errors () |> Dyn.bool);
     [%expect {| false |}];
     Err.warning [ Pp.text "Hello Warning1" ];
     [%expect {| Warning: Hello Warning1 |}];
@@ -393,36 +424,28 @@ let%expect_test "warning" =
     [%expect {| Warning: Hello Warning2 |}];
     ());
   [%expect {||}];
-  print_s [%sexp (Err.had_errors () : bool)];
+  print_dyn (Err.had_errors () |> Dyn.bool);
   [%expect {| false |}];
-  print_s
-    [%sexp
-      { err_count = (Err.error_count () : int)
-      ; warn_count = (Err.warning_count () : int)
-      }];
-  [%expect
-    {|
-    ((err_count  0)
-     (warn_count 2))
-    |}];
+  print_dyn
+    (Dyn.record
+       [ "err_count", Err.error_count () |> Dyn.int
+       ; "warn_count", Err.warning_count () |> Dyn.int
+       ]);
+  [%expect {| { err_count = 0; warn_count = 2 } |}];
   ()
 ;;
 
 let%expect_test "warning handler" =
   Err.For_test.protect (fun () -> Err.warning [ Pp.text "Hello Warning1" ]);
   [%expect {| Warning: Hello Warning1 |}];
-  print_s [%sexp (Err.had_errors () : bool)];
+  print_dyn (Err.had_errors () |> Dyn.bool);
   [%expect {| false |}];
-  print_s
-    [%sexp
-      { err_count = (Err.error_count () : int)
-      ; warn_count = (Err.warning_count () : int)
-      }];
-  [%expect
-    {|
-    ((err_count  0)
-     (warn_count 1))
-    |}];
+  print_dyn
+    (Dyn.record
+       [ "err_count", Err.error_count () |> Dyn.int
+       ; "warn_count", Err.warning_count () |> Dyn.int
+       ]);
+  [%expect {| { err_count = 0; warn_count = 1 } |}];
   Ref.set_temporarily Err.Private.warn_error true ~f:(fun () ->
     Err.For_test.protect (fun () -> Err.warning [ Pp.text "Hello Warning1" ]));
   [%expect
@@ -430,18 +453,14 @@ let%expect_test "warning handler" =
     Warning: Hello Warning1
     [123]
     |}];
-  print_s [%sexp (Err.had_errors () : bool)];
+  print_dyn (Err.had_errors () |> Dyn.bool);
   [%expect {| false |}];
-  print_s
-    [%sexp
-      { err_count = (Err.error_count () : int)
-      ; warn_count = (Err.warning_count () : int)
-      }];
-  [%expect
-    {|
-    ((err_count  0)
-     (warn_count 1))
-    |}];
+  print_dyn
+    (Dyn.record
+       [ "err_count", Err.error_count () |> Dyn.int
+       ; "warn_count", Err.warning_count () |> Dyn.int
+       ]);
+  [%expect {| { err_count = 0; warn_count = 1 } |}];
   ()
 ;;
 
@@ -482,8 +501,8 @@ let%expect_test "protect and reset" =
       am_running_test ();
       [%expect {| true |}])
   in
-  print_s [%sexp (result : (unit, int) Result.t)];
-  [%expect {| (Ok ()) |}];
+  print_dyn (result |> Dyn.result Dyn.unit Dyn.int);
+  [%expect {| Ok () |}];
   ()
 ;;
 
@@ -498,13 +517,13 @@ let%expect_test "non-test handler" =
         | _ -> None [@coverage off])
   in
   [%expect {| Error: Hello Exn |}];
-  print_s [%sexp (result : (unit, int) Result.t)];
-  [%expect {| (Error 123) |}];
+  print_dyn (result |> Dyn.result Dyn.unit Dyn.int);
+  [%expect {| Error 123 |}];
   ()
 ;;
 
 let%expect_test "raise without handler" =
-  require_does_raise [%here] (fun () -> Err.raise [ Pp.text "Hello" ]);
+  require_does_raise (fun () -> Err.raise [ Pp.text "Hello" ]);
   [%expect {| Hello |}];
   ()
 ;;

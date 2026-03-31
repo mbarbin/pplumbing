@@ -2,8 +2,15 @@
  (name cmdlang_cmdliner_err_runner_test)
  (package pplumbing-tests)
  (inline_tests)
- (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries)
+ (flags
+  :standard
+  -w
+  +a-4-40-41-42-44-45-48-66
+  -warn-error
+  +a
+  -open
+  Stdlib_for_test)
+ (libraries stdlib_for_test)
  (instrumentation
   (backend bisect_ppx))
  (lint

@@ -4,12 +4,18 @@
 (*  SPDX-License-Identifier: MIT                                                 *)
 (*********************************************************************************)
 
+module Color_mode = struct
+  include Err.Color_mode
+
+  let to_dyn t = Dyn.string (to_string t) [@coverage off]
+end
+
 let%expect_test "color_mode" =
   List.iter Err.Color_mode.all ~f:(fun color_mode ->
     Err.Private.color_mode := color_mode;
     let color_mode' = Err.color_mode () in
-    require_equal [%here] (module Err.Color_mode) color_mode color_mode';
-    print_s [%sexp (color_mode' : Err.Color_mode.t)]);
+    require_equal (module Color_mode) color_mode color_mode';
+    print_endline (Sexp.to_string_hum (Err.Color_mode.sexp_of_t color_mode')));
   [%expect
     {|
     Auto
@@ -34,11 +40,11 @@ let%expect_test "to_string" =
 
 let%expect_test "compare" =
   List.iter Err.Color_mode.all ~f:(fun log_level ->
-    require [%here] (Err.Color_mode.equal log_level log_level);
-    require [%here] (0 = Err.Color_mode.compare log_level log_level));
-  require [%here] (not (Err.Color_mode.equal `Never `Always));
-  require [%here] (Err.Color_mode.compare `Never `Auto > 0);
-  require [%here] (Err.Color_mode.compare `Auto `Always < 0);
+    require (Err.Color_mode.equal log_level log_level);
+    require (0 = Err.Color_mode.compare log_level log_level));
+  require (not (Err.Color_mode.equal `Never `Always));
+  require (Err.Color_mode.compare `Never `Auto > 0);
+  require (Err.Color_mode.compare `Auto `Always < 0);
   [%expect {||}];
   ()
 ;;

@@ -15,8 +15,6 @@
 
 (documentation "https://mbarbin.github.io/pplumbing/")
 
-(using mdx 0.4)
-
 ;; The value for the [implicit_transitive_deps] option is set during the CI
 ;; depending on the OCaml compiler version.
 ;;
@@ -151,8 +149,6 @@
  (depends
   (ocaml
    (>= 5.2))
-  (base
-   (>= v0.17))
   (cmdlang
    (>= 0.0.9))
   (cmdlang-climate-err-runner
@@ -167,54 +163,28 @@
    (>= 3.17))
   (dyn
    (>= 3.17))
-  (expect_test_helpers_core
-   (>= v0.17))
-  (fmt
-   (>= 0.9.0))
   (fpath
    (>= 0.7.3))
   (loc
    (>= 0.2.2))
   (logs
    (>= 0.9.0))
-  (mdx
-   (>= 2.4))
   (ordering
    (>= 3.17))
-  (parsexp
-   (>= v0.17))
   (pp
    (>= 2.0.0))
-  (pplumbing
-   (= :version))
   (pplumbing-err
+   (= :version))
+  (pplumbing-log
+   (= :version))
+  (pplumbing-log-cli
    (= :version))
   (pplumbing-pp-tty
    (= :version))
-  (ppx_compare
-   (>= v0.17))
-  (ppx_enumerate
-   (>= v0.17))
   (ppx_expect
    (>= v0.17))
-  (ppx_hash
-   (>= v0.17))
-  (ppx_here
-   (>= v0.17))
-  (ppx_let
-   (>= v0.17))
-  (ppx_sexp_conv
-   (>= v0.17))
-  (ppx_sexp_value
-   (>= v0.17))
-  (ppxlib
-   (>= 0.33))
   (sexplib0
-   (>= v0.17))
-  (stdio
-   (>= v0.17))
-  (stdune
-   (>= 3.17))))
+   (>= v0.16))))
 
 (package
  (name pplumbing-dev)
@@ -225,73 +195,25 @@
    (>= 5.2))
   (ocamlformat
    (= 0.29.0))
-  (base
-   (>= v0.17))
   (bisect_ppx
    (>= 2.8.3))
-  (cmdlang
-   (>= 0.0.9))
   (cmdlang-climate-err-runner
    (= :version))
   (cmdlang-cmdliner-err-runner
    (= :version))
-  (cmdlang-to-cmdliner
-   (>= 0.0.9))
-  (cmdliner
-   (>= 1.3.0))
-  (dyn
-   (>= 3.17))
-  (expect_test_helpers_core
-   (>= v0.17))
-  (fmt
-   (>= 0.9.0))
-  (fpath
-   (>= 0.7.3))
-  (loc
-   (>= 0.2.2))
-  (logs
-   (>= 0.9.0))
-  (mdx
-   (>= 2.4))
-  (ordering
-   (>= 3.17))
-  (parsexp
-   (>= v0.17))
-  (pp
-   (>= 2.0.0))
   (pplumbing
    (= :version))
   (pplumbing-err
+   (= :version))
+  (pplumbing-log
+   (= :version))
+  (pplumbing-log-cli
    (= :version))
   (pplumbing-pp-tty
    (= :version))
   (pplumbing-tests
    (= :version))
-  (ppx_compare
-   (>= v0.17))
-  (ppx_enumerate
-   (>= v0.17))
-  (ppx_expect
-   (>= v0.17))
-  (ppx_hash
-   (>= v0.17))
-  (ppx_here
-   (>= v0.17))
   (ppx_js_style
    (>= v0.17))
-  (ppx_let
-   (>= v0.17))
-  (ppx_sexp_conv
-   (>= v0.17))
-  (ppx_sexp_value
-   (>= v0.17))
-  (ppxlib
-   (>= 0.33))
-  (sexplib0
-   (>= v0.17))
-  (stdio
-   (>= v0.17))
-  (stdune
-   (>= 3.17))
   (sherlodoc
    (>= 0.2))))

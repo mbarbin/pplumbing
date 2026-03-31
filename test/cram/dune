@@ -8,7 +8,7 @@
   -warn-error
   +a
   -open
-  Base
+  Stdlib_for_test
   -open
   Pplumbing_pp_tty
   -open
@@ -18,29 +18,18 @@
   -open
   Cmdlang)
  (libraries
-  base
   cmdlang
-  loc
   logs
-  pp
   pplumbing-err
   pplumbing-log-cli
-  pplumbing-pp-tty)
+  pplumbing-pp-tty
+  stdlib_for_test)
  (modules command_test)
  (instrumentation
   (backend bisect_ppx))
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
- (preprocess
-  (pps
-   -unused-code-warnings=force
-   ppx_compare
-   ppx_enumerate
-   ppx_hash
-   ppx_here
-   ppx_let
-   ppx_sexp_conv
-   ppx_sexp_value)))
+ (preprocess no_preprocessing))
 
 (executable
  (name main)

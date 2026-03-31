@@ -7,12 +7,16 @@
 module Code_error = Code_error0
 module Dyn = Dyn0
 module Int = Int0
+module List = List0
 module Loc = Loc0
 module Ordering = Ordering0
 module Pp = Pp0
+module Ref = Ref0
+module Sexp = Sexp0
 module String = String0
 module With_equal_and_dyn = With_equal_and_dyn0
 
+val phys_equal : 'a -> 'a -> bool
 val print : _ Pp.t -> unit
 val print_dyn : Dyn.t -> unit
 val print_endline : string -> unit

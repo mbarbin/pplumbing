@@ -14,7 +14,7 @@ let%expect_test "pp_of_sexp" =
     print_endline "======== console ========";
     Err.prerr err ~reset_separator:true
   in
-  test [%sexp ()];
+  test (List []);
   [%expect
     {|
     ========= sexp ==========
@@ -22,7 +22,7 @@ let%expect_test "pp_of_sexp" =
     ======== console ========
     Error: ()
     |}];
-  test [%sexp "Hello"];
+  test (Atom "Hello");
   [%expect
     {|
     ========= sexp ==========
@@ -30,7 +30,7 @@ let%expect_test "pp_of_sexp" =
     ======== console ========
     Error: Hello
     |}];
-  test [%sexp "Hello error", { x = 42 }];
+  test (List [ Atom "Hello error"; List [ List [ Atom "x"; Atom "42" ] ] ]);
   [%expect
     {|
     ========= sexp ==========
@@ -38,7 +38,7 @@ let%expect_test "pp_of_sexp" =
     ======== console ========
     Error: Hello error (x 42)
     |}];
-  test [%sexp { x = 42 }];
+  test (List [ List [ Atom "x"; Atom "42" ] ]);
   [%expect
     {|
     ========= sexp ==========
@@ -46,7 +46,7 @@ let%expect_test "pp_of_sexp" =
     ======== console ========
     Error: (x 42)
     |}];
-  test [%sexp { x = 42; y = "why" }];
+  test (List [ List [ Atom "x"; Atom "42" ]; List [ Atom "y"; Atom "why" ] ]);
   [%expect
     {|
     ========= sexp ==========
@@ -54,7 +54,7 @@ let%expect_test "pp_of_sexp" =
     ======== console ========
     Error: ((x 42) (y why))
     |}];
-  test [%sexp "Hello error", { x = 42 }];
+  test (List [ Atom "Hello error"; List [ List [ Atom "x"; Atom "42" ] ] ]);
   [%expect
     {|
     ========= sexp ==========
@@ -62,7 +62,11 @@ let%expect_test "pp_of_sexp" =
     ======== console ========
     Error: Hello error (x 42)
     |}];
-  test [%sexp "Hello error", { x = 42; y = "why" }];
+  test
+    (List
+       [ Atom "Hello error"
+       ; List [ List [ Atom "x"; Atom "42" ]; List [ Atom "y"; Atom "why" ] ]
+       ]);
   [%expect
     {|
     ========= sexp ==========
@@ -70,7 +74,11 @@ let%expect_test "pp_of_sexp" =
     ======== console ========
     Error: Hello error ((x 42) (y why))
     |}];
-  test [%sexp Var { x = 42; y = "why" }];
+  test
+    (List
+       [ Atom "Var"
+       ; List [ List [ Atom "x"; Atom "42" ]; List [ Atom "y"; Atom "why" ] ]
+       ]);
   [%expect
     {|
     ========= sexp ==========
@@ -83,7 +91,7 @@ let%expect_test "pp_of_sexp" =
 
 let sexp_vs_prerr err =
   print_endline "========= sexp ==========";
-  print_s (Err.sexp_of_t err);
+  print_endline (Sexp.to_string_hum (Err.sexp_of_t err));
   print_endline "======== console ========";
   Err.prerr err ~reset_separator:true
 ;;
@@ -106,8 +114,7 @@ let%expect_test "sexp vs prerr" =
   [%expect
     {|
     ========= sexp ==========
-    ((context "Hello Context!")
-     (error   "Hello World"))
+    ((context "Hello Context!") (error "Hello World"))
     ======== console ========
     Context: Hello Context!
     Error: Hello World
@@ -115,17 +122,18 @@ let%expect_test "sexp vs prerr" =
   let err =
     Err.add_context
       err
-      [ Err.sexp [%sexp "And even more context", { x = 42; y = "Foo" }] ]
+      [ Err.sexp
+          (List
+             [ Atom "And even more context"
+             ; List [ List [ Atom "x"; Atom "42" ]; List [ Atom "y"; Atom "Foo" ] ]
+             ])
+      ]
   in
   test err;
   [%expect
     {|
     ========= sexp ==========
-    ((context
-       ("And even more context" (
-         (x 42)
-         (y Foo)))
-       "Hello Context!")
+    ((context ("And even more context" ((x 42) (y Foo))) "Hello Context!")
      (error "Hello World"))
     ======== console ========
     Context: And even more context ((x 42) (y Foo))
@@ -166,8 +174,7 @@ With Multiple lines
   [%expect
     {|
     ========= sexp ==========
-    ("File \"foo.txt\", line 1, characters 0-0:"
-     "Hello Located Error"
+    ("File \"foo.txt\", line 1, characters 0-0:" "Hello Located Error"
      (hints "With hints too!"))
     ======== console ========
     File "foo.txt", line 1, characters 0-0:

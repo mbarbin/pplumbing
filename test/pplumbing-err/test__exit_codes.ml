@@ -5,17 +5,17 @@
 (*********************************************************************************)
 
 let%expect_test "exit codes" =
-  print_s [%sexp (Err.Exit_code.ok : int)];
-  require [%here] (Cmdliner.Cmd.Exit.ok = Err.Exit_code.ok);
+  print_dyn (Err.Exit_code.ok |> Dyn.int);
+  require (Cmdliner.Cmd.Exit.ok = Err.Exit_code.ok);
   [%expect {| 0 |}];
-  print_s [%sexp (Err.Exit_code.some_error : int)];
-  require [%here] (Cmdliner.Cmd.Exit.some_error = Err.Exit_code.some_error);
+  print_dyn (Err.Exit_code.some_error |> Dyn.int);
+  require (Cmdliner.Cmd.Exit.some_error = Err.Exit_code.some_error);
   [%expect {| 123 |}];
-  print_s [%sexp (Err.Exit_code.cli_error : int)];
-  require [%here] (Cmdliner.Cmd.Exit.cli_error = Err.Exit_code.cli_error);
+  print_dyn (Err.Exit_code.cli_error |> Dyn.int);
+  require (Cmdliner.Cmd.Exit.cli_error = Err.Exit_code.cli_error);
   [%expect {| 124 |}];
-  print_s [%sexp (Err.Exit_code.internal_error : int)];
-  require [%here] (Cmdliner.Cmd.Exit.internal_error = Err.Exit_code.internal_error);
+  print_dyn (Err.Exit_code.internal_error |> Dyn.int);
+  require (Cmdliner.Cmd.Exit.internal_error = Err.Exit_code.internal_error);
   [%expect {| 125 |}];
   ()
 ;;
@@ -57,20 +57,20 @@ let%expect_test "exit" =
 ;;
 
 let%expect_test "exit without handler" =
-  require_does_raise [%here] (fun () -> Err.exit Err.Exit_code.ok);
+  require_does_raise (fun () -> Err.exit Err.Exit_code.ok);
   [%expect {| (exit_code 0) |}];
-  require_does_raise [%here] (fun () -> Err.exit Err.Exit_code.some_error);
+  require_does_raise (fun () -> Err.exit Err.Exit_code.some_error);
   [%expect {| (exit_code 123) |}];
   ()
 ;;
 
 let%expect_test "exit_code in sexp" =
   let e = Err.create [ Pp.text "Hello Exit Code" ] in
-  print_s [%sexp (e : Err.t)];
+  print_endline (Sexp.to_string_hum (Err.sexp_of_t e));
   [%expect {| "Hello Exit Code" |}];
-  require_does_raise [%here] (fun () -> raise (Err.E e));
+  require_does_raise (fun () -> raise (Err.E e));
   [%expect {| "Hello Exit Code" |}];
-  print_s [%sexp (e : Err.With_exit_code.t)];
+  print_endline (Sexp.to_string_hum (Err.With_exit_code.sexp_of_t e));
   [%expect {| ("Hello Exit Code" (exit_code 123)) |}];
   ()
 ;;
