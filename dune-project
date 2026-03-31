@@ -201,8 +201,6 @@
    (= :version))
   (cmdlang-cmdliner-err-runner
    (= :version))
-  (pplumbing
-   (= :version))
   (pplumbing-err
    (= :version))
   (pplumbing-log

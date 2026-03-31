@@ -48,9 +48,9 @@ jobs:
         run: |
           echo "DUNE_WORKSPACE=$PWD/dune-workspace-${{ matrix.ocaml-version }}" >> "$GITHUB_ENV"
           if [ "${{ matrix.ocaml-version }}" = "4.14" ]; then
-            echo "PACKAGES=pplumbing-pp-tty,pplumbing-err,cmdlang-cmdliner-err-runner,cmdlang-climate-err-runner,pplumbing-log,pplumbing-log-cli,pplumbing" >> "$GITHUB_ENV"
+            echo "PACKAGES=pplumbing-pp-tty,pplumbing-err,cmdlang-cmdliner-err-runner,cmdlang-climate-err-runner,pplumbing-log,pplumbing-log-cli" >> "$GITHUB_ENV"
           else
-            echo "PACKAGES=pplumbing-pp-tty,pplumbing-err,cmdlang-cmdliner-err-runner,cmdlang-climate-err-runner,pplumbing-log,pplumbing-log-cli,pplumbing,pplumbing-tests" >> "$GITHUB_ENV"
+            echo "PACKAGES=pplumbing-pp-tty,pplumbing-err,cmdlang-cmdliner-err-runner,cmdlang-climate-err-runner,pplumbing-log,pplumbing-log-cli,pplumbing-tests" >> "$GITHUB_ENV"
           fi
 
       - name: Setup Dune
