@@ -76,7 +76,7 @@ module Style = struct
   (* Vendored from [Stdune.User_message.Style.compare] and extended with
      [Original_sexp] and [Original_dyn]. *)
   let compare t1 t2 : Ordering.t =
-    match t1, t2 with
+    match[@coverage off] t1, t2 with
     | Loc, Loc -> Eq
     | Loc, _ -> Lt
     | _, Loc -> Gt
