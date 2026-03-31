@@ -8,22 +8,12 @@
   -warn-error
   +a
   -open
-  Stdlib_for_test
-  -open
-  Pplumbing_pp_tty
-  -open
-  Pplumbing_err
-  -open
   Pplumbing_log_cli
   -open
+  Stdlib_for_test
+  -open
   Cmdlang)
- (libraries
-  cmdlang
-  logs
-  pplumbing-err
-  pplumbing-log-cli
-  pplumbing-pp-tty
-  stdlib_for_test)
+ (libraries cmdlang logs pplumbing-log-cli stdlib_for_test)
  (modules command_test)
  (instrumentation
   (backend bisect_ppx))

@@ -9,10 +9,8 @@
   -warn-error
   +a
   -open
-  Stdlib_for_test
-  -open
-  Pplumbing_pp_tty)
- (libraries pplumbing_pp_tty stdlib_for_test)
+  Stdlib_for_test)
+ (libraries stdlib_for_test)
  (instrumentation
   (backend bisect_ppx))
  (lint

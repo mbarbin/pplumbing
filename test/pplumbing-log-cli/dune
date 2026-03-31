@@ -9,9 +9,9 @@
   -warn-error
   +a
   -open
-  Stdlib_for_test
+  Pplumbing_log_cli
   -open
-  Pplumbing_log_cli)
+  Stdlib_for_test)
  (libraries
   cmdlang-to-cmdliner
   cmdliner

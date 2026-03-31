@@ -8,9 +8,9 @@
   -warn-error
   +a
   -open
-  Stdlib_for_test
+  Pplumbing_log
   -open
-  Pplumbing_log)
+  Stdlib_for_test)
  (libraries logs pplumbing_log stdlib_for_test)
  (inline_tests)
  (instrumentation
