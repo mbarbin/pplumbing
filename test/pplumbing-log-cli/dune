@@ -30,8 +30,7 @@
   logs
   pplumbing_err
   pplumbing_log_cli
-  stdlib_for_test
-  stdune)
+  stdlib_for_test)
  (instrumentation
   (backend bisect_ppx))
  (lint
