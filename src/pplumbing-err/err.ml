@@ -298,8 +298,12 @@ let color_mode () = !color_mode_value
 
    {v
    let%expect_test "am_running_test" =
-     print_s [%sexp { am_running_inline_test : bool; am_running_test : bool }];
-     [%expect {| ((am_running_inline_test false) (am_running_test false)) |}];
+     print_dyn
+       (Dyn.record
+          [ "am_running_inline_test", am_running_inline_test |> Dyn.bool
+          ; "am_running_test", am_running_test |> Dyn.bool
+          ]);
+     [%expect {| { am_running_inline_test = false; am_running_test = false } |}];
      ()
    ;;
    v}
