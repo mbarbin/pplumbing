@@ -192,7 +192,9 @@
   (ppx_expect
    (>= v0.17))
   (sexplib0
-   (>= v0.17))))
+   (>= v0.17))
+  (stdune
+   (>= 3.17))))
 
 (package
  (name pplumbing-dev)
