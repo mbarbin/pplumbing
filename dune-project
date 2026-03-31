@@ -182,7 +182,9 @@
   (pplumbing-pp-tty
    (= :version))
   (ppx_expect
-   (>= v0.17))))
+   (>= v0.17))
+  (sexplib0
+   (>= v0.16))))
 
 (package
  (name pplumbing-dev)
