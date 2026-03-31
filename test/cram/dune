@@ -8,6 +8,8 @@
   -warn-error
   +a
   -open
+  Stdlib_for_test
+  -open
   Base
   -open
   Pplumbing_pp_tty
@@ -25,7 +27,8 @@
   pp
   pplumbing-err
   pplumbing-log-cli
-  pplumbing-pp-tty)
+  pplumbing-pp-tty
+  stdlib_for_test)
  (modules command_test)
  (instrumentation
   (backend bisect_ppx))

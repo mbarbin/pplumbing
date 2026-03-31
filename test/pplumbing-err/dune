@@ -9,6 +9,8 @@
   -warn-error
   +a
   -open
+  Stdlib_for_test
+  -open
   Base
   -open
   Pplumbing_err
@@ -25,7 +27,8 @@
   logs
   pp
   pplumbing_err
-  pplumbing_log_cli)
+  pplumbing_log_cli
+  stdlib_for_test)
  (instrumentation
   (backend bisect_ppx))
  (lint
