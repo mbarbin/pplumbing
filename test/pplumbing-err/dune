@@ -9,18 +9,10 @@
   -warn-error
   +a
   -open
-  Stdlib_for_test
+  Pplumbing_log_cli
   -open
-  Pplumbing_err
-  -open
-  Pplumbing_log_cli)
- (libraries
-  cmdliner
-  fpath
-  logs
-  pplumbing_err
-  pplumbing_log_cli
-  stdlib_for_test)
+  Stdlib_for_test)
+ (libraries cmdliner fpath logs pplumbing_log_cli stdlib_for_test)
  (instrumentation
   (backend bisect_ppx))
  (lint
