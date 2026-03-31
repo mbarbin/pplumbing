@@ -109,9 +109,9 @@ module Paragraph = struct
   ;;
 
   let pp t =
-    match Pp.to_ast t with
-    | Tag (Pp_tty.Style.Original_sexp s, _) -> pp_sexp s
-    | _ -> t
+    match find_original_sexp t with
+    | Some s -> pp_sexp s
+    | None -> t
   ;;
 end
 
