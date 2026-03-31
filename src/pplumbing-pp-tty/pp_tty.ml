@@ -73,39 +73,59 @@ module Style = struct
     | Original_dyn d -> variant "Original_dyn" [ d ]
   ;;
 
-  let to_index = function
-    | Loc -> 0
-    | Error -> 1
-    | Warning -> 2
-    | Kwd -> 3
-    | Id -> 4
-    | Prompt -> 5
-    | Hint -> 6
-    | Details -> 7
-    | Ok -> 8
-    | Debug -> 9
-    | Success -> 10
-    | Ansi_styles _ -> 11
-    | Original_sexp _ -> 12
-    | Original_dyn _ -> 13
-  ;;
-
+  (* Vendored from [Stdune.User_message.Style.compare] and extended with
+     [Original_sexp] and [Original_dyn]. *)
   let compare t1 t2 : Ordering.t =
     match t1, t2 with
+    | Loc, Loc -> Eq
+    | Loc, _ -> Lt
+    | _, Loc -> Gt
+    | Error, Error -> Eq
+    | Error, _ -> Lt
+    | _, Error -> Gt
+    | Warning, Warning -> Eq
+    | Warning, _ -> Lt
+    | _, Warning -> Gt
+    | Kwd, Kwd -> Eq
+    | Kwd, _ -> Lt
+    | _, Kwd -> Gt
+    | Id, Id -> Eq
+    | Id, _ -> Lt
+    | _, Id -> Gt
+    | Prompt, Prompt -> Eq
+    | Prompt, _ -> Lt
+    | _, Prompt -> Gt
+    | Hint, Hint -> Eq
+    | Hint, _ -> Lt
+    | _, Hint -> Gt
+    | Details, Details -> Eq
+    | Details, _ -> Lt
+    | _, Details -> Gt
+    | Ok, Ok -> Eq
+    | Ok, _ -> Lt
+    | _, Ok -> Gt
+    | Debug, Debug -> Eq
+    | Debug, _ -> Lt
+    | _, Debug -> Gt
+    | Success, Success -> Eq
+    | Success, _ -> Lt
+    | _, Success -> Gt
     | Ansi_styles _, Ansi_styles _ -> Eq
+    | Ansi_styles _, _ -> Lt
+    | _, Ansi_styles _ -> Gt
     | Original_sexp _, Original_sexp _ -> Eq
+    | Original_sexp _, _ -> Lt
+    | _, Original_sexp _ -> Gt
     | Original_dyn _, Original_dyn _ -> Eq
-    | _ ->
-      (match Int.compare (to_index t1) (to_index t2) with
-       | x when x < 0 -> Lt
-       | 0 -> Eq
-       | _ -> Gt)
   ;;
 end
 
 module Print_config = struct
   type t = Style.t -> Ansi_color.Style.t list
 
+  (* Initially vendored from [Stdune.User_message.Print_config.default] and
+     extended with [Original_sexp] and [Original_dyn]. Free to diverge for the
+     needs of the project. *)
   let default : t = function
     | Loc -> [ `Bold ]
     | Error -> [ `Bold; `Fg_red ]
@@ -119,8 +139,8 @@ module Print_config = struct
     | Debug -> [ `Underline; `Fg_bright_cyan ]
     | Success -> [ `Bold; `Fg_green ]
     | Ansi_styles l -> l
-    | Original_sexp _ -> [ `Dim ]
-    | Original_dyn _ -> [ `Dim ]
+    | Original_sexp _ -> []
+    | Original_dyn _ -> []
   ;;
 end
 
