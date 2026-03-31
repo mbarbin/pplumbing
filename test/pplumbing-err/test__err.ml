@@ -120,7 +120,9 @@ let%expect_test "sexp_of_t" =
     Err.create
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      [ Pp.text "Hello Sexp"; Err.sexp [%sexp { a = Hello; b = 42 }] ]
+      [ Pp.text "Hello Sexp"
+      ; Err.sexp (List [ List [ Atom "a"; Atom "Hello" ]; List [ Atom "b"; Atom "42" ] ])
+      ]
   in
   print_endline (Sexp.to_string_hum (Err.sexp_of_t err));
   [%expect {| ("Hello Sexp" ((a Hello) (b 42)) (hints "did you mean bar?")) |}];
@@ -146,7 +148,9 @@ let%expect_test "add_context" =
     [41]
     |}];
   let err3 =
-    Err.add_context err2 [ Pp.text "Hello Context 2"; Err.sexp [%sexp Hello Sexp] ]
+    Err.add_context
+      err2
+      [ Pp.text "Hello Context 2"; Err.sexp (List [ Atom "Hello"; Atom "Sexp" ]) ]
   in
   Err.For_test.protect (fun () -> raise (Err.E err3));
   [%expect
@@ -187,7 +191,12 @@ let%expect_test "create_s" =
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
       [ Pp.text "The summary of the error."
-      ; Err.sexp [%sexp { x = 42; y = Some "msg"; var = "bah" }]
+      ; Err.sexp
+          (List
+             [ List [ Atom "x"; Atom "42" ]
+             ; List [ Atom "y"; List [ Atom "Some"; Atom "msg" ] ]
+             ; List [ Atom "var"; Atom "bah" ]
+             ])
       ]
   in
   Err.For_test.protect (fun () -> raise (Err.E err));
@@ -207,7 +216,7 @@ let%expect_test "raise with sexp" =
     Err.raise
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      [ Pp.text "Hello Raise"; Err.sexp [%sexp { hello = 42 }] ]);
+      [ Pp.text "Hello Raise"; Err.sexp (List [ List [ Atom "hello"; Atom "42" ] ]) ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
@@ -220,11 +229,41 @@ let%expect_test "raise with sexp" =
     Err.raise
       ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
       ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-      Pp.O.[ Pp.text "Hello Raise " ++ Err.sexp [%sexp { hello = 42 }] ]);
+      Pp.O.
+        [ Pp.text "Hello Raise " ++ Err.sexp (List [ List [ Atom "hello"; Atom "42" ] ]) ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:
     Error: Hello Raise ((hello 42))
+    Hint: did you mean bar?
+    [123]
+    |}];
+  ()
+;;
+
+let%expect_test "raise with dyn" =
+  Err.For_test.protect (fun () ->
+    Err.raise
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
+      [ Pp.text "Hello Raise"; Dyn.pp (Dyn.record [ "hello", Dyn.int 42 ]) ]);
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error: Hello Raise
+    { hello = 42 }
+    Hint: did you mean bar?
+    [123]
+    |}];
+  Err.For_test.protect (fun () ->
+    Err.raise
+      ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
+      ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
+      Pp.O.[ Pp.text "Hello Raise " ++ Dyn.pp (Dyn.record [ "hello", Dyn.int 42 ]) ]);
+  [%expect
+    {|
+    File "path/to/my-file.txt", line 1, characters 0-0:
+    Error: Hello Raise { hello = 42 }
     Hint: did you mean bar?
     [123]
     |}];
@@ -237,7 +276,7 @@ let%expect_test "reraise_with_context" =
       Err.raise
         ~loc:(Loc.of_file ~path:(Fpath.v "path/to/my-file.txt"))
         ~hints:(Err.did_you_mean "bah" ~candidates:[ "bar"; "foo" ])
-        [ Pp.text "Hello Raise"; Err.sexp [%sexp { hello = 42 }] ]
+        [ Pp.text "Hello Raise"; Err.sexp (List [ List [ Atom "hello"; Atom "42" ] ]) ]
     with
     | _ -> assert false
     | exception Err.E e ->
@@ -245,7 +284,9 @@ let%expect_test "reraise_with_context" =
       Err.reraise_with_context
         e
         bt
-        [ Pp.text "Re raised with context"; Err.sexp [%sexp { x = 42 }] ]);
+        [ Pp.text "Re raised with context"
+        ; Err.sexp (List [ List [ Atom "x"; Atom "42" ] ])
+        ]);
   [%expect
     {|
     File "path/to/my-file.txt", line 1, characters 0-0:

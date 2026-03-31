@@ -9,13 +9,10 @@
   -warn-error
   +a
   -open
-  Base
-  -open
   Stdlib_for_test
   -open
   Pplumbing_log_cli)
  (libraries
-  base
   cmdlang-to-cmdliner
   cmdliner
   logs

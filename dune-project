@@ -149,8 +149,6 @@
  (depends
   (ocaml
    (>= 5.2))
-  (base
-   (>= v0.17))
   (cmdlang
    (>= 0.0.9))
   (cmdlang-climate-err-runner
@@ -183,13 +181,7 @@
    (= :version))
   (pplumbing-pp-tty
    (= :version))
-  (ppx_compare
-   (>= v0.17))
   (ppx_expect
-   (>= v0.17))
-  (ppx_sexp_conv
-   (>= v0.17))
-  (ppx_sexp_value
    (>= v0.17))))
 
 (package
