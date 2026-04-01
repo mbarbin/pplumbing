@@ -44,18 +44,16 @@ let env_color_mode =
      in
      if clicolor_force
      then `Always
-     else (
-       let is_dumb =
-         match Sys.getenv_opt "TERM" with
-         | Some "dumb" -> true
-         | _ -> false
-       in
-       let clicolor =
-         match Sys.getenv_opt "CLICOLOR" with
-         | Some "0" -> false
-         | _ -> true
-       in
-       if (not is_dumb) && clicolor then `Auto else `Never))
+     else if
+       (match Sys.getenv_opt "TERM" with
+        | Some "dumb" -> true
+        | _ -> false)
+       ||
+       match Sys.getenv_opt "CLICOLOR" with
+       | Some "0" -> true
+       | _ -> false
+     then `Never
+     else `Auto)
 ;;
 
 let color_mode () =
