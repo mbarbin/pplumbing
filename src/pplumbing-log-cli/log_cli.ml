@@ -132,10 +132,10 @@ end
    consistent color behavior across the entire application, including
    dependencies that rely on [Fmt]'s style renderer. *)
 let setup_log ~(config : Config.t) =
-  Fmt_tty.setup_std_outputs
-    ?style_renderer:(Color_mode.to_fmt_style_renderer config.color_mode)
-    ();
   let () = Err.Private.color_mode := config.color_mode in
+  Fmt_tty.setup_std_outputs
+    ?style_renderer:(Color_mode.to_fmt_style_renderer (Err.color_mode ()))
+    ();
   Logs.set_level (Log_level.to_logs_level config.log_level);
   let () =
     Err.Private.set_log_level
