@@ -87,9 +87,7 @@ let print_styles_cmd =
      in
      let print_styled pp =
        let fmt = Format.std_formatter in
-       (if Err.should_enable_color Unix.stdout
-        then Pp_tty.pp fmt pp
-        else Pp.to_fmt fmt pp);
+       if Err.should_enable_color Unix.stdout then Pp_tty.pp fmt pp else Pp.to_fmt fmt pp;
        Format.pp_print_newline fmt ();
        Format.pp_print_flush fmt ()
      in
