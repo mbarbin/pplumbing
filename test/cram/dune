@@ -152,9 +152,12 @@
   (with-stdout-to
    print-styles-term-dumb.output
    (setenv
-    TERM
-    dumb
-    (run ./main.exe print-styles --color=auto)))))
+    CLICOLOR_FORCE
+    0
+    (setenv
+     TERM
+     dumb
+     (run ./main.exe print-styles --color=auto))))))
 
 (rule
  (package pplumbing-tests)
@@ -169,9 +172,12 @@
   (with-stdout-to
    print-styles-clicolor-disabled.output
    (setenv
-    CLICOLOR
+    CLICOLOR_FORCE
     0
-    (run ./main.exe print-styles --color=auto)))))
+    (setenv
+     CLICOLOR
+     0
+     (run ./main.exe print-styles --color=auto))))))
 
 (rule
  (package pplumbing-tests)
