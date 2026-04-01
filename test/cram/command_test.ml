@@ -86,10 +86,12 @@ let print_styles_cmd =
        ]
      in
      let print_styled pp =
-       if Err.should_enable_color Unix.stdout
-       then print_string (Pp_tty.to_string pp)
-       else Format.printf "%a%!" Pp.to_fmt pp;
-       print_char '\n'
+       let fmt = Format.std_formatter in
+       (if Err.should_enable_color Unix.stdout
+        then Pp_tty.pp fmt pp
+        else Pp.to_fmt fmt pp);
+       Format.pp_print_newline fmt ();
+       Format.pp_print_flush fmt ()
      in
      List.iter styles ~f:(fun (name, style) ->
        print_styled (Pp_tty.tag style (Pp.verbatim name)));
