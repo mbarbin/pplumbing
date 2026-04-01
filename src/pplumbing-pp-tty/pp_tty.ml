@@ -193,3 +193,7 @@ let ansi (type a) (module M : To_string with type t = a) x styles =
 let path (type a) (module M : To_string with type t = a) x =
   Pp.tag (Style.Ansi_styles [ `Bold ]) (Pp.verbatim (M.to_string x)) |> double_quotes
 ;;
+
+module Private = struct
+  module Color_mode = Color_mode
+end

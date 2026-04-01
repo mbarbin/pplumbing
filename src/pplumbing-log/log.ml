@@ -7,7 +7,17 @@
 type level = Logs.level
 type src = Logs.src
 
-let render fmt pps = Pp_tty.pp fmt (Pp.vbox (Pp.concat_map pps ~sep:Pp.cut ~f:Pp.box))
+let render fmt pps =
+  let pp = Pp.vbox (Pp.concat_map pps ~sep:Pp.cut ~f:Pp.box) in
+  let use_color =
+    if fmt == Format.std_formatter
+    then Pp_tty.Private.Color_mode.should_enable_color Unix.stdout
+    else if fmt == Format.err_formatter
+    then Pp_tty.Private.Color_mode.should_enable_color Unix.stderr
+    else false
+  in
+  if use_color then Pp_tty.pp fmt pp else Pp.to_fmt fmt pp
+;;
 
 type log =
   ?header:string -> ?tags:(unit -> Logs.Tag.set) -> (unit -> Pp_tty.t list) -> unit

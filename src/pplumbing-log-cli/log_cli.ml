@@ -125,6 +125,12 @@ module Config = struct
   ;;
 end
 
+(* We call [Fmt_tty.setup_std_outputs] so that third-party libraries using the
+   [Fmt] module for styled output (via [Fmt.styled], [Fmt.set_style_renderer],
+   etc.) also respond to the [--color] flag. This does not affect pplumbing's
+   own rendering (which goes through [Pp_tty] and [Err]), but it ensures
+   consistent color behavior across the entire application, including
+   dependencies that rely on [Fmt]'s style renderer. *)
 let setup_log ~(config : Config.t) =
   Fmt_tty.setup_std_outputs
     ?style_renderer:(Color_mode.to_fmt_style_renderer config.color_mode)

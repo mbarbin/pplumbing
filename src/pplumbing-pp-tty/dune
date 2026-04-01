@@ -2,7 +2,7 @@
  (name pplumbing_pp_tty)
  (public_name pplumbing-pp-tty)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries dyn loc pp sexplib0 stdune)
+ (libraries dyn loc pp sexplib0 stdune unix)
  (instrumentation
   (backend bisect_ppx))
  (lint

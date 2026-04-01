@@ -337,68 +337,13 @@ let did_you_mean s ~candidates =
 ;;
 
 module Color_mode = struct
-  type t =
-    [ `Auto
-    | `Always
-    | `Never
-    ]
-
-  let variant_constructor_name : t -> string = function
-    | `Auto -> "Auto"
-    | `Always -> "Always"
-    | `Never -> "Never"
-  ;;
+  include Pp_tty.Private.Color_mode
 
   let sexp_of_t t : Sexplib0.Sexp.t = Atom (variant_constructor_name t)
   let to_dyn t : Dyn.t = Variant (variant_constructor_name t, [])
-  let all : t list = [ `Auto; `Always; `Never ]
-
-  let to_index = function
-    | `Auto -> 0
-    | `Always -> 1
-    | `Never -> 2
-  ;;
-
-  let compare l1 l2 = Int.compare (to_index l1) (to_index l2)
-  let equal l1 l2 = Int.equal (to_index l1) (to_index l2)
-
-  let to_string : t -> string = function
-    | `Auto -> "auto"
-    | `Always -> "always"
-    | `Never -> "never"
-  ;;
 end
 
-let color_mode_value : Color_mode.t ref = ref `Auto
-
-let env_color_mode =
-  lazy
-    (let clicolor_force =
-       match Sys.getenv_opt "CLICOLOR_FORCE" with
-       | None | Some "0" -> false
-       | _ -> true
-     in
-     if clicolor_force
-     then `Always
-     else (
-       let is_dumb =
-         match Sys.getenv_opt "TERM" with
-         | Some "dumb" -> true
-         | _ -> false
-       in
-       let clicolor =
-         match Sys.getenv_opt "CLICOLOR" with
-         | Some "0" -> false
-         | _ -> true
-       in
-       if (not is_dumb) && clicolor then `Auto else `Never))
-;;
-
-let color_mode () =
-  match !color_mode_value with
-  | (`Always | `Never) as mode -> mode
-  | `Auto -> Lazy.force env_color_mode
-;;
+let color_mode = Pp_tty.Private.Color_mode.color_mode
 
 (* I've tried testing the following, which doesn't work as expected:
 
@@ -438,13 +383,7 @@ let warning_count () =
   else !warning_count_value + log_warn_count_value.contents ()
 ;;
 
-let should_enable_color fd =
-  match color_mode () with
-  | `Always -> true
-  | `Never -> false
-  | `Auto -> Unix.isatty fd
-;;
-
+let should_enable_color = Pp_tty.Private.Color_mode.should_enable_color
 let no_style_printer pp = Stdlib.prerr_string (Format.asprintf "%a" Pp.to_fmt pp)
 let include_separator = ref false
 
@@ -684,7 +623,7 @@ module Private = struct
   ;;
 
   let reset_separator () = include_separator := false
-  let color_mode = color_mode_value
+  let color_mode = Pp_tty.Private.Color_mode.value
 
   let set_log_level ~get ~set =
     log_level_get_value := get;

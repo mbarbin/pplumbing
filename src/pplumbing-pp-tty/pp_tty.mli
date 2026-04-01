@@ -169,3 +169,15 @@ val path : (module To_string with type t = 'a) -> 'a -> t
 (** A modular-explicit helper that uses the ansi style to format a stringable
     variable. *)
 val ansi : (module To_string with type t = 'a) -> 'a -> Ansi_color.Style.t list -> t
+
+(** {1 Private}
+
+    This module is exported to be used by libraries with strong ties to
+    [pplumbing-pp-tty] and by tests. Its signature may change in breaking ways at
+    any time without prior notice, and outside of the guidelines set by semver.
+
+    Do not use. *)
+
+module Private : sig
+  module Color_mode = Color_mode
+end

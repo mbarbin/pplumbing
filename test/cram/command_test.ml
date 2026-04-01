@@ -136,10 +136,25 @@ let emit_error_cmd =
      Err.error [ Pp.text "error message." ])
 ;;
 
+let log_styled_cmd =
+  Command.make
+    ~summary:"Emit a styled log message."
+    (let+ () = Log_cli.set_config () in
+     Log.app (fun () ->
+       [ Pp.concat
+           ~sep:Pp.space
+           [ Pp.text "Hello"
+           ; Pp_tty.tag (Ansi_styles [ `Fg_blue ]) (Pp.verbatim "Colored")
+           ; Pp.text "World!"
+           ]
+       ]))
+;;
+
 let main =
   Command.group
     ~summary:"Test pplumbing libs from the command line."
     [ "emit-error", emit_error_cmd
+    ; "log-styled", log_styled_cmd
     ; "logs", logs_cmd
     ; "print-styles", print_styles_cmd
     ; "sexp-and-dyn", sexp_and_dyn_cmd

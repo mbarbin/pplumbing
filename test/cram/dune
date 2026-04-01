@@ -8,12 +8,14 @@
   -warn-error
   +a
   -open
+  Pplumbing_log
+  -open
   Pplumbing_log_cli
   -open
   Stdlib_for_test
   -open
   Cmdlang)
- (libraries cmdlang logs pplumbing-log-cli stdlib_for_test)
+ (libraries cmdlang logs pplumbing-log pplumbing-log-cli stdlib_for_test)
  (modules command_test)
  (instrumentation
   (backend bisect_ppx))
@@ -58,6 +60,34 @@
   (with-stdout-to
    print-styles-color-always.output
    (run ./main.exe print-styles --color=always))))
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-stdout-to
+   log-styled-color-always.output
+   (run ./main.exe log-styled --color=always))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff log-styled-color-always.expected log-styled-color-always.output)))
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-stdout-to
+   log-styled-color-never.output
+   (run ./main.exe log-styled --color=never))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff log-styled-color-never.expected log-styled-color-never.output)))
 
 (rule
  (package pplumbing-tests)

@@ -9,7 +9,7 @@
   +a
   -open
   Pplumbing_pp_tty)
- (libraries logs pp pplumbing-pp-tty)
+ (libraries logs pp pplumbing-pp-tty unix)
  (instrumentation
   (backend bisect_ppx))
  (lint
