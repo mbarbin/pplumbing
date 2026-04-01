@@ -38,20 +38,20 @@ module Style = struct
     | Ansi_styles l -> Ansi_styles l
   ;;
 
-  let to_stdune : t -> Stdune.User_message.Style.t = function
-    | Loc -> Loc
-    | Error -> Error
-    | Warning -> Warning
-    | Kwd -> Kwd
-    | Id -> Id
-    | Prompt -> Prompt
-    | Hint -> Hint
-    | Details -> Details
-    | Ok -> Ok
-    | Debug -> Debug
-    | Success -> Success
-    | Ansi_styles l -> Ansi_styles l
-    | Original_sexp _ | Original_dyn _ -> Details
+  let to_stdune : t -> Stdune.User_message.Style.t option = function
+    | Loc -> Some Loc
+    | Error -> Some Error
+    | Warning -> Some Warning
+    | Kwd -> Some Kwd
+    | Id -> Some Id
+    | Prompt -> Some Prompt
+    | Hint -> Some Hint
+    | Details -> Some Details
+    | Ok -> Some Ok
+    | Debug -> Some Debug
+    | Success -> Some Success
+    | Ansi_styles l -> Some (Ansi_styles l)
+    | Original_sexp _ | Original_dyn _ -> None
   ;;
 
   let to_dyn =
@@ -139,18 +139,25 @@ module Print_config = struct
     | Debug -> [ `Underline; `Fg_bright_cyan ]
     | Success -> [ `Bold; `Fg_green ]
     | Ansi_styles l -> l
-    | Original_sexp _ -> [ `Dim ]
-    | Original_dyn _ -> [ `Dim ]
+    | Original_sexp _ -> []
+    | Original_dyn _ -> []
   ;;
 end
 
 type t = Style.t Pp.t
 
-let print ?(config = Print_config.default) t = Ansi_color.print (Pp.map_tags t ~f:config)
-let prerr ?(config = Print_config.default) t = Ansi_color.prerr (Pp.map_tags t ~f:config)
-let pp_with_config ~config fmt t = Ansi_color.pp fmt (Pp.map_tags t ~f:config)
+let apply_config config t =
+  Pp.filter_map_tags t ~f:(fun tag ->
+    match config tag with
+    | [] -> None
+    | _ :: _ as styles -> Some styles)
+;;
+
+let print ?(config = Print_config.default) t = Ansi_color.print (apply_config config t)
+let prerr ?(config = Print_config.default) t = Ansi_color.prerr (apply_config config t)
+let pp_with_config ~config fmt t = Ansi_color.pp fmt (apply_config config t)
 let pp fmt t = pp_with_config ~config:Print_config.default fmt t
-let to_string_with_config ~config t = Ansi_color.to_string (Pp.map_tags t ~f:config)
+let to_string_with_config ~config t = Ansi_color.to_string (apply_config config t)
 let to_string t = to_string_with_config ~config:Print_config.default t
 let sexp s = Pp.tag (Style.Original_sexp s) (Pp.verbatim (Sexplib0.Sexp.to_string_hum s))
 let dyn d = Pp.tag (Style.Original_dyn d) (Dyn.pp d)
@@ -193,3 +200,7 @@ let ansi (type a) (module M : To_string with type t = a) x styles =
 let path (type a) (module M : To_string with type t = a) x =
   Pp.tag (Style.Ansi_styles [ `Bold ]) (Pp.verbatim (M.to_string x)) |> double_quotes
 ;;
+
+module Private = struct
+  module Color_mode = Color_mode
+end

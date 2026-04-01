@@ -23,7 +23,7 @@ module Exit_code = struct
   let internal_error = 125
 end
 
-let to_stdune_pp pp = Pp.map_tags pp ~f:Pp_tty.Style.to_stdune
+let to_stdune_pp pp = Pp.filter_map_tags pp ~f:Pp_tty.Style.to_stdune
 let sexp = Pp_tty.sexp
 let exn e = sexp (Sexplib0.Sexp_conv.sexp_of_exn e)
 let dyn = Pp_tty.dyn
@@ -337,40 +337,13 @@ let did_you_mean s ~candidates =
 ;;
 
 module Color_mode = struct
-  type t =
-    [ `Auto
-    | `Always
-    | `Never
-    ]
-
-  let variant_constructor_name : t -> string = function
-    | `Auto -> "Auto"
-    | `Always -> "Always"
-    | `Never -> "Never"
-  ;;
+  include Pp_tty.Private.Color_mode
 
   let sexp_of_t t : Sexplib0.Sexp.t = Atom (variant_constructor_name t)
   let to_dyn t : Dyn.t = Variant (variant_constructor_name t, [])
-  let all : t list = [ `Auto; `Always; `Never ]
-
-  let to_index = function
-    | `Auto -> 0
-    | `Always -> 1
-    | `Never -> 2
-  ;;
-
-  let compare l1 l2 = Int.compare (to_index l1) (to_index l2)
-  let equal l1 l2 = Int.equal (to_index l1) (to_index l2)
-
-  let to_string : t -> string = function
-    | `Auto -> "auto"
-    | `Always -> "always"
-    | `Never -> "never"
-  ;;
 end
 
-let color_mode_value : Color_mode.t ref = ref `Auto
-let color_mode () = !color_mode_value
+let color_mode = Pp_tty.Private.Color_mode.color_mode
 
 (* I've tried testing the following, which doesn't work as expected:
 
@@ -389,66 +362,65 @@ let color_mode () = !color_mode_value
    Thus been using this variable to avoid the printer to produce styles in expect
    tests when running in the GitHub Actions environment.
 *)
-let am_running_test_value = ref false
-let am_running_test () = !am_running_test_value
-let log_err_count_value = ref (fun () -> (0 [@coverage off]))
-let log_warn_count_value = ref (fun () -> (0 [@coverage off]))
-let error_count_value = ref 0
-let warning_count_value = ref 0
+let am_running_test_value = Atomic.make false
+let am_running_test () = Atomic.get am_running_test_value
+let log_err_count_value = Atomic.make (fun () -> (0 [@coverage off]))
+let log_warn_count_value = Atomic.make (fun () -> (0 [@coverage off]))
+let error_count_value = Atomic.make 0
+let warning_count_value = Atomic.make 0
 
 let error_count () =
   if am_running_test ()
-  then !error_count_value
-  else !error_count_value + log_err_count_value.contents ()
+  then Atomic.get error_count_value
+  else Atomic.get error_count_value + (Atomic.get log_err_count_value) ()
 ;;
 
 let had_errors () = error_count () > 0
 
 let warning_count () =
   if am_running_test ()
-  then !warning_count_value
-  else !warning_count_value + log_warn_count_value.contents ()
+  then Atomic.get warning_count_value
+  else Atomic.get warning_count_value + (Atomic.get log_warn_count_value) ()
 ;;
 
-let no_style_printer pp = Stdlib.prerr_string (Format.asprintf "%a" Pp.to_fmt pp)
-let include_separator = ref false
+let should_enable_color = Pp_tty.Private.Color_mode.should_enable_color
+let include_separator = Atomic.make false
 
 let reset_counts () =
-  error_count_value := 0;
-  warning_count_value := 0
+  Atomic.set error_count_value 0;
+  Atomic.set warning_count_value 0
 ;;
 
-let reset_separator () = include_separator := false
+let reset_separator () = Atomic.set include_separator false
 
 let prerr_message (t : Stdune.User_message.t) =
-  let color_mode = if !am_running_test_value then `Never else !color_mode_value in
   let () =
-    if !include_separator then Stdlib.prerr_newline () else include_separator := true
+    if Atomic.get include_separator
+    then Format.pp_print_newline Format.err_formatter ()
+    else Atomic.set include_separator true
   in
-  let prerr_ansi pp =
-    match color_mode with
-    | `Never -> no_style_printer pp
-    | `Auto -> Stdune.Ansi_color.prerr pp
-    | `Always -> Pp_tty.Ansi_color.pp Format.err_formatter pp
+  let use_color =
+    (not (Atomic.get am_running_test_value)) && should_enable_color Unix.stderr
+  in
+  let prerr_pp pp =
+    if use_color
+    then Pp_tty.Ansi_color.pp Format.err_formatter pp
+    else Pp.to_fmt Format.err_formatter pp
   in
   t.loc
   |> Option.iter (fun loc ->
-    prerr_ansi
+    prerr_pp
       (Stdune.Loc.pp loc
        |> Pp.map_tags ~f:(fun (Loc : Stdune.Loc.tag) ->
          Stdune.User_message.Print_config.default Loc)));
-  let message = { t with loc = None } in
-  match color_mode with
-  | `Never -> no_style_printer (Stdune.User_message.pp message)
-  | `Auto -> Stdune.User_message.prerr message
-  | `Always ->
-    prerr_ansi
-      (Stdune.User_message.pp message
-       |> Pp.map_tags ~f:Stdune.User_message.Print_config.default)
+  prerr_pp
+    (Stdune.User_message.pp { t with loc = None }
+     |> Pp.map_tags ~f:Stdune.User_message.Print_config.default);
+  Format.pp_print_flush Format.err_formatter ()
 ;;
 
 let prerr ?(reset_separator = false) (t : t) =
-  if reset_separator then include_separator := false;
+  if reset_separator then Atomic.set include_separator false;
   Option.iter prerr_message (to_stdune_user_message ~level:Error t)
 ;;
 
@@ -511,18 +483,19 @@ module Log_level = struct
   ;;
 end
 
-let warn_error_value = ref false
+let warn_error_value = Atomic.make false
 
 let log_level_get_value, log_level_set_value =
-  let value = ref Log_level.Warning in
-  ref (fun () -> (!value [@coverage off])), ref (fun v -> value := (v [@coverage off]))
+  let value = Atomic.make Log_level.Warning in
+  ( Atomic.make (fun () -> (Atomic.get value [@coverage off]))
+  , Atomic.make (fun v -> Atomic.set value (v [@coverage off])) )
 ;;
 
-let log_level () = log_level_get_value.contents ()
+let log_level () = (Atomic.get log_level_get_value) ()
 let log_enables ~level = Log_level.compare (log_level ()) (Log_level.of_level level) >= 0
 
 let error ?loc ?hints paragraphs =
-  incr error_count_value;
+  Atomic.incr error_count_value;
   if log_enables ~level:Error
   then (
     let message = make_message ~level:Error ?loc ?hints paragraphs in
@@ -530,7 +503,7 @@ let error ?loc ?hints paragraphs =
 ;;
 
 let warning ?loc ?hints paragraphs =
-  incr warning_count_value;
+  Atomic.incr warning_count_value;
   if log_enables ~level:Warning
   then (
     let message = make_message ~level:Warning ?loc ?hints paragraphs in
@@ -553,8 +526,8 @@ let debug ?loc ?hints paragraphs =
 
 let emit t ~level =
   (match (level : Level.t) with
-   | Error -> incr error_count_value
-   | Warning -> incr warning_count_value
+   | Error -> Atomic.incr error_count_value
+   | Warning -> Atomic.incr warning_count_value
    | Info | Debug -> ());
   if log_enables ~level then Option.iter prerr_message (to_stdune_user_message t ~level)
 ;;
@@ -589,7 +562,7 @@ let handle_messages_and_exit ~err:({ exit_code; _ } as t) ~backtrace =
 ;;
 
 let had_errors_or_warn_errors () =
-  error_count () > 0 || (!warn_error_value && warning_count () > 0)
+  error_count () > 0 || (Atomic.get warn_error_value && warning_count () > 0)
 ;;
 
 let protect ?(exn_handler = Fun.const None) f =
@@ -629,13 +602,13 @@ let protect ?(exn_handler = Fun.const None) f =
 module For_test = struct
   let wrap f =
     let init = am_running_test () in
-    am_running_test_value := true;
-    let init_level = log_level_get_value.contents () in
-    log_level_set_value.contents Log_level.Warning;
+    Atomic.set am_running_test_value true;
+    let init_level = (Atomic.get log_level_get_value) () in
+    (Atomic.get log_level_set_value) Log_level.Warning;
     Fun.protect
       ~finally:(fun () ->
-        am_running_test_value := init;
-        log_level_set_value.contents init_level)
+        Atomic.set am_running_test_value init;
+        (Atomic.get log_level_set_value) init_level)
       f
   ;;
 
@@ -650,24 +623,24 @@ module Private = struct
   let am_running_test = am_running_test_value
 
   let reset_counts () =
-    error_count_value := 0;
-    warning_count_value := 0
+    Atomic.set error_count_value 0;
+    Atomic.set warning_count_value 0
   ;;
 
-  let reset_separator () = include_separator := false
-  let color_mode = color_mode_value
+  let reset_separator () = Atomic.set include_separator false
+  let color_mode = Pp_tty.Private.Color_mode.value
 
   let set_log_level ~get ~set =
-    log_level_get_value := get;
-    log_level_set_value := set;
+    Atomic.set log_level_get_value get;
+    Atomic.set log_level_set_value set;
     ()
   ;;
 
   let warn_error = warn_error_value
 
   let set_log_counts ~err_count ~warn_count =
-    log_err_count_value := err_count;
-    log_warn_count_value := warn_count;
+    Atomic.set log_err_count_value err_count;
+    Atomic.set log_warn_count_value warn_count;
     ()
   ;;
 end

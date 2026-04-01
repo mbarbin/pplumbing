@@ -255,7 +255,34 @@ module Color_mode : sig
   val to_string : t -> string
 end
 
+(** Return the effective color mode, taking into account the user setting and
+    environment variables.
+
+    When the user setting is [`Auto], this partially resolves it using
+    environment variables:
+
+    - [CLICOLOR_FORCE] set to a non-["0"] value forces [`Always].
+    - [TERM] equal to ["dumb"] or [CLICOLOR] equal to ["0"] forces [`Never].
+    - Otherwise, [`Auto] is returned (the caller still needs to check whether
+      the output is a TTY).
+
+    When the user setting is [`Always] or [`Never], it is returned as-is. *)
 val color_mode : unit -> Color_mode.t
+
+(** Resolve whether color output should be enabled for the given file
+    descriptor.
+
+    This combines {!color_mode} with a [Unix.isatty] check on [fd]:
+
+    - [`Always] returns [true].
+    - [`Never] returns [false].
+    - [`Auto] returns [Unix.isatty fd].
+
+    This is the recommended way for callers that know which file descriptor
+    they write to to determine whether to emit ANSI styles. Callers that do
+    not know the target descriptor can fall back on {!color_mode} and handle
+    [`Auto] themselves. *)
+val should_enable_color : Unix.file_descr -> bool
 
 (** {2 Messages and Log Levels}
 
@@ -464,17 +491,17 @@ module Private : sig
       companion libs. Note any of this can change without notice and without
       requiring a semver bump, so use at your own risk (or don't). *)
 
-  val am_running_test : bool ref
+  val am_running_test : bool Atomic.t
   val reset_counts : unit -> unit
   val reset_separator : unit -> unit
-  val color_mode : Color_mode.t ref
+  val color_mode : Color_mode.t Atomic.t
 
   (** Since [Err] does not depend on [Logs], the [Err] and [Logs] levels must be
       set independently. However, this is done for you consistently if you are
       using [Log_cli]. *)
   val set_log_level : get:(unit -> Log_level.t) -> set:(Log_level.t -> unit) -> unit
 
-  val warn_error : bool ref
+  val warn_error : bool Atomic.t
 
   (** To avoid making this library depend on [Logs] we inject the dependency
       into the functions we need instead. To be called with [Logs.err_count]

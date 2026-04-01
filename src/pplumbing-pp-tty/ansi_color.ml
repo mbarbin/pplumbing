@@ -195,8 +195,7 @@ let rec tag_handler buf current_styles ppf (styles : Style.t list) pp =
 
 let pp fmt t =
   let buf = Buffer.create 16 in
-  Pp.to_fmt_with_tags fmt t ~tag_handler:(tag_handler buf []);
-  Format.pp_print_flush fmt ()
+  Pp.to_fmt_with_tags fmt t ~tag_handler:(tag_handler buf [])
 ;;
 
 let to_string t = Format.asprintf "%a" (fun fmt t -> pp fmt t) t

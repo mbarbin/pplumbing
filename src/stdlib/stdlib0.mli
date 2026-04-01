@@ -4,6 +4,7 @@
 (*_  SPDX-License-Identifier: MIT                                                 *)
 (*_********************************************************************************)
 
+module Atomic = Atomic0
 module Code_error = Code_error0
 module Dyn = Dyn0
 module Err = Err0

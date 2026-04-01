@@ -1,7 +1,9 @@
-## 0.0.17 (2026-03-31)
+## 0.0.17 (2026-04-01)
 
 ### Added
 
+- Added new `Color_mode` module to `pplumbing-pp-tty` with color detection and env var support (#44, @mbarbin).
+- Added `Atomic0` stdlib extension for multicore-safe atomic operations (#44, @mbarbin).
 - Added `to_dyn` helpers to `Err` interface (#43, @mbarbin).
 - Added `Pp_tty.{sexp,dyn}`, `Err.{sexp,dyn}` (#43, @mbarbin).
 - Added `Err.reset_loc` and `Err.set_exit_code` (#41, @mbarbin).
@@ -12,6 +14,12 @@
 
 ### Changed
 
+- Fix `Err` stderr flushing by routing all output through `Format.err_formatter` (#44, @mbarbin).
+- Replace toplevel mutable references by atomics for OCaml 5 multicore correctness (#44, @mbarbin).
+- Fix `Log` color rendering by restoring formatter-aware dispatch (#44, @mbarbin).
+- Pass resolved color mode to `Fmt_tty` for env var consistency (#44, @mbarbin).
+- Revert `Sexp`/`Dyn` styling to no-style by default (#44, @mbarbin).
+- Allow more control on color mode with getter based on unix file descriptor (#44, @mbarbin).
 - Simplify use of `Err` and `Pp_tty` in tests (#42, @mbarbin).
 - Document deprecation of `pplumbing` meta-package.
 - Vendor more of stdune `ansi-color` (#39, @mbarbin).

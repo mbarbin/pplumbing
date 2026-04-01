@@ -264,3 +264,73 @@ let%expect_test "msg with src" =
   [%expect {| [INFO] from custom source |}];
   ()
 ;;
+
+(* {1 Tests for render color dispatch}
+
+   [Log.render] uses physical equality on the formatter to decide whether to
+   emit ANSI styles. These tests exercise the stderr and custom-formatter
+   branches. *)
+
+let%expect_test "render to stderr" =
+  let reporter () =
+    { Logs.report =
+        (fun _src level ~over k msgf ->
+          let k _ =
+            over ();
+            k ()
+          in
+          msgf (fun ?header:_ ?tags:_ fmt ->
+            let level_str =
+              match (level : Logs.level) with
+              | Warning -> "WARNING"
+              | _ -> assert false [@coverage off]
+            in
+            Format.kfprintf k Format.err_formatter ("[%s] " ^^ fmt ^^ "\n") level_str))
+    }
+  in
+  let saved_reporter = Logs.reporter () in
+  let saved_level = Logs.level () in
+  Logs.set_reporter (reporter ());
+  Logs.set_level (Some Debug);
+  Fun.protect
+    (fun () -> Log.warn (fun () -> [ Pp.text "to stderr" ]))
+    ~finally:(fun () ->
+      Logs.set_reporter saved_reporter;
+      Logs.set_level saved_level);
+  [%expect {| [WARNING] to stderr |}];
+  ()
+;;
+
+let%expect_test "render to custom formatter" =
+  let buf = Buffer.create 64 in
+  let fmt = Format.formatter_of_buffer buf in
+  let reporter () =
+    { Logs.report =
+        (fun _src level ~over k msgf ->
+          let k _ =
+            over ();
+            k ()
+          in
+          msgf (fun ?header:_ ?tags:_ format ->
+            let level_str =
+              match (level : Logs.level) with
+              | Info -> "INFO"
+              | _ -> assert false [@coverage off]
+            in
+            Format.kfprintf k fmt ("[%s] " ^^ format ^^ "\n") level_str))
+    }
+  in
+  let saved_reporter = Logs.reporter () in
+  let saved_level = Logs.level () in
+  Logs.set_reporter (reporter ());
+  Logs.set_level (Some Debug);
+  Fun.protect
+    (fun () -> Log.info (fun () -> [ Pp.text "to buffer" ]))
+    ~finally:(fun () ->
+      Logs.set_reporter saved_reporter;
+      Logs.set_level saved_level);
+  Format.pp_print_flush fmt ();
+  print_string (Buffer.contents buf);
+  [%expect {| [INFO] to buffer |}];
+  ()
+;;
