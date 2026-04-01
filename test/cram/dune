@@ -65,6 +65,86 @@
  (action
   (diff print-styles-color-always.expected print-styles-color-always.output)))
 
+; The following rules exercise the environment variable overrides for
+; --color=auto. These are limited tests because the output is not a TTY in this
+; context, so the Auto resolution that would normally fall through to an isatty
+; check always resolves to no-color here. The CLICOLOR_FORCE=1 case is the
+; exception: it forces color regardless of the output being a TTY.
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-stdout-to
+   print-styles-clicolor-force.output
+   (setenv
+    CLICOLOR_FORCE
+    1
+    (run ./main.exe print-styles --color=auto)))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff
+   print-styles-clicolor-force.expected
+   print-styles-clicolor-force.output)))
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-stdout-to
+   print-styles-clicolor-force-0.output
+   (setenv
+    CLICOLOR_FORCE
+    0
+    (run ./main.exe print-styles --color=auto)))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff
+   print-styles-clicolor-force-0.expected
+   print-styles-clicolor-force-0.output)))
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-stdout-to
+   print-styles-term-dumb.output
+   (setenv
+    TERM
+    dumb
+    (run ./main.exe print-styles --color=auto)))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff print-styles-term-dumb.expected print-styles-term-dumb.output)))
+
+(rule
+ (package pplumbing-tests)
+ (deps main.exe)
+ (action
+  (with-stdout-to
+   print-styles-clicolor-disabled.output
+   (setenv
+    CLICOLOR
+    0
+    (run ./main.exe print-styles --color=auto)))))
+
+(rule
+ (package pplumbing-tests)
+ (alias runtest)
+ (action
+  (diff
+   print-styles-clicolor-disabled.expected
+   print-styles-clicolor-disabled.output)))
+
 (rule
  (package pplumbing-tests)
  (deps main.exe)

@@ -370,7 +370,35 @@ module Color_mode = struct
 end
 
 let color_mode_value : Color_mode.t ref = ref `Auto
-let color_mode () = !color_mode_value
+
+let env_color_mode =
+  lazy
+    (let clicolor_force =
+       match Sys.getenv_opt "CLICOLOR_FORCE" with
+       | None | Some "0" -> false
+       | _ -> true
+     in
+     if clicolor_force
+     then `Always
+     else (
+       let is_dumb =
+         match Sys.getenv_opt "TERM" with
+         | Some "dumb" -> true
+         | _ -> false
+       in
+       let clicolor =
+         match Sys.getenv_opt "CLICOLOR" with
+         | Some "0" -> false
+         | _ -> true
+       in
+       if (not is_dumb) && clicolor then `Auto else `Never))
+;;
+
+let color_mode () =
+  match !color_mode_value with
+  | (`Always | `Never) as mode -> mode
+  | `Auto -> Lazy.force env_color_mode
+;;
 
 (* I've tried testing the following, which doesn't work as expected:
 
@@ -410,6 +438,13 @@ let warning_count () =
   else !warning_count_value + log_warn_count_value.contents ()
 ;;
 
+let should_enable_color fd =
+  match color_mode () with
+  | `Always -> true
+  | `Never -> false
+  | `Auto -> Unix.isatty fd
+;;
+
 let no_style_printer pp = Stdlib.prerr_string (Format.asprintf "%a" Pp.to_fmt pp)
 let include_separator = ref false
 
@@ -421,30 +456,24 @@ let reset_counts () =
 let reset_separator () = include_separator := false
 
 let prerr_message (t : Stdune.User_message.t) =
-  let color_mode = if !am_running_test_value then `Never else !color_mode_value in
   let () =
     if !include_separator then Stdlib.prerr_newline () else include_separator := true
   in
-  let prerr_ansi pp =
-    match color_mode with
-    | `Never -> no_style_printer pp
-    | `Auto -> Stdune.Ansi_color.prerr pp
-    | `Always -> Pp_tty.Ansi_color.pp Format.err_formatter pp
+  let use_color = (not !am_running_test_value) && should_enable_color Unix.stderr in
+  let prerr_pp pp =
+    if use_color
+    then Pp_tty.Ansi_color.pp Format.err_formatter pp
+    else no_style_printer pp
   in
   t.loc
   |> Option.iter (fun loc ->
-    prerr_ansi
+    prerr_pp
       (Stdune.Loc.pp loc
        |> Pp.map_tags ~f:(fun (Loc : Stdune.Loc.tag) ->
          Stdune.User_message.Print_config.default Loc)));
-  let message = { t with loc = None } in
-  match color_mode with
-  | `Never -> no_style_printer (Stdune.User_message.pp message)
-  | `Auto -> Stdune.User_message.prerr message
-  | `Always ->
-    prerr_ansi
-      (Stdune.User_message.pp message
-       |> Pp.map_tags ~f:Stdune.User_message.Print_config.default)
+  prerr_pp
+    (Stdune.User_message.pp { t with loc = None }
+     |> Pp.map_tags ~f:Stdune.User_message.Print_config.default)
 ;;
 
 let prerr ?(reset_separator = false) (t : t) =

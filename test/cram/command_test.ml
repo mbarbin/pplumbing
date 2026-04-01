@@ -86,10 +86,9 @@ let print_styles_cmd =
        ]
      in
      let print_styled pp =
-       (match Err.color_mode () with
-        | `Never -> Format.printf "%a%!" Pp.to_fmt pp
-        | `Auto -> Pp_tty.print pp [@coverage off]
-        | `Always -> print_string (Pp_tty.to_string pp));
+       if Err.should_enable_color Unix.stdout
+       then print_string (Pp_tty.to_string pp)
+       else Format.printf "%a%!" Pp.to_fmt pp;
        print_char '\n'
      in
      List.iter styles ~f:(fun (name, style) ->

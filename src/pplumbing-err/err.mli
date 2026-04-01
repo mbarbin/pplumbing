@@ -255,7 +255,34 @@ module Color_mode : sig
   val to_string : t -> string
 end
 
+(** Return the effective color mode, taking into account the user setting and
+    environment variables.
+
+    When the user setting is [`Auto], this partially resolves it using
+    environment variables:
+
+    - [CLICOLOR_FORCE] set to a non-["0"] value forces [`Always].
+    - [TERM] equal to ["dumb"] or [CLICOLOR] equal to ["0"] forces [`Never].
+    - Otherwise, [`Auto] is returned (the caller still needs to check whether
+      the output is a TTY).
+
+    When the user setting is [`Always] or [`Never], it is returned as-is. *)
 val color_mode : unit -> Color_mode.t
+
+(** Resolve whether color output should be enabled for the given file
+    descriptor.
+
+    This combines {!color_mode} with a [Unix.isatty] check on [fd]:
+
+    - [`Always] returns [true].
+    - [`Never] returns [false].
+    - [`Auto] returns [Unix.isatty fd].
+
+    This is the recommended way for callers that know which file descriptor
+    they write to to determine whether to emit ANSI styles. Callers that do
+    not know the target descriptor can fall back on {!color_mode} and handle
+    [`Auto] themselves. *)
+val should_enable_color : Unix.file_descr -> bool
 
 (** {2 Messages and Log Levels}
 
