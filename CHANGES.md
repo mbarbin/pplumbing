@@ -14,6 +14,7 @@
 
 ### Changed
 
+- Fix `Err` stderr flushing by routing all output through `Format.err_formatter` (#44, @mbarbin).
 - Replace toplevel mutable references by atomics for OCaml 5 multicore correctness (#44, @mbarbin).
 - Fix `Log` color rendering by restoring formatter-aware dispatch (#44, @mbarbin).
 - Pass resolved color mode to `Fmt_tty` for env var consistency (#44, @mbarbin).

@@ -384,7 +384,6 @@ let warning_count () =
 ;;
 
 let should_enable_color = Pp_tty.Private.Color_mode.should_enable_color
-let no_style_printer pp = Stdlib.prerr_string (Format.asprintf "%a" Pp.to_fmt pp)
 let include_separator = Atomic.make false
 
 let reset_counts () =
@@ -397,7 +396,7 @@ let reset_separator () = Atomic.set include_separator false
 let prerr_message (t : Stdune.User_message.t) =
   let () =
     if Atomic.get include_separator
-    then Stdlib.prerr_newline ()
+    then Format.pp_print_newline Format.err_formatter ()
     else Atomic.set include_separator true
   in
   let use_color =
@@ -406,7 +405,7 @@ let prerr_message (t : Stdune.User_message.t) =
   let prerr_pp pp =
     if use_color
     then Pp_tty.Ansi_color.pp Format.err_formatter pp
-    else no_style_printer pp
+    else Pp.to_fmt Format.err_formatter pp
   in
   t.loc
   |> Option.iter (fun loc ->
@@ -416,7 +415,8 @@ let prerr_message (t : Stdune.User_message.t) =
          Stdune.User_message.Print_config.default Loc)));
   prerr_pp
     (Stdune.User_message.pp { t with loc = None }
-     |> Pp.map_tags ~f:Stdune.User_message.Print_config.default)
+     |> Pp.map_tags ~f:Stdune.User_message.Print_config.default);
+  Format.pp_print_flush Format.err_formatter ()
 ;;
 
 let prerr ?(reset_separator = false) (t : t) =
