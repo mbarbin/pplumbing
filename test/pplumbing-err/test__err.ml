@@ -442,10 +442,10 @@ let%expect_test "wrap" =
   Err.For_test.wrap (fun () ->
     am_running_test ();
     [%expect {| true |}];
-    Err.Private.am_running_test := false;
+    Atomic.set Err.Private.am_running_test false;
     am_running_test ();
     [%expect {| false |}];
-    Err.Private.am_running_test := true;
+    Atomic.set Err.Private.am_running_test true;
     am_running_test ();
     [%expect {| true |}]);
   (* The [am_running_test] is returned to its internal value after [wrap] returns. *)
@@ -525,7 +525,7 @@ let%expect_test "warning handler" =
        ; "warn_count", Err.warning_count () |> Dyn.int
        ]);
   [%expect {| { err_count = 0; warn_count = 1 } |}];
-  Ref.set_temporarily Err.Private.warn_error true ~f:(fun () ->
+  Atomic.set_temporarily Err.Private.warn_error true ~f:(fun () ->
     Err.For_test.protect (fun () -> Err.warning [ Pp.text "Hello Warning1" ]));
   [%expect
     {|

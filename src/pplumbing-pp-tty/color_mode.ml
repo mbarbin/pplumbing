@@ -33,7 +33,7 @@ let to_string : t -> string = function
   | `Never -> "never"
 ;;
 
-let value : t ref = ref `Auto
+let value : t Atomic.t = Atomic.make `Auto
 
 let env_color_mode =
   lazy
@@ -59,7 +59,7 @@ let env_color_mode =
 ;;
 
 let color_mode () =
-  match !value with
+  match Atomic.get value with
   | (`Always | `Never) as mode -> mode
   | `Auto -> Lazy.force env_color_mode
 ;;

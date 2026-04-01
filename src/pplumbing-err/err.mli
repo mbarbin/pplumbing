@@ -491,17 +491,17 @@ module Private : sig
       companion libs. Note any of this can change without notice and without
       requiring a semver bump, so use at your own risk (or don't). *)
 
-  val am_running_test : bool ref
+  val am_running_test : bool Atomic.t
   val reset_counts : unit -> unit
   val reset_separator : unit -> unit
-  val color_mode : Color_mode.t ref
+  val color_mode : Color_mode.t Atomic.t
 
   (** Since [Err] does not depend on [Logs], the [Err] and [Logs] levels must be
       set independently. However, this is done for you consistently if you are
       using [Log_cli]. *)
   val set_log_level : get:(unit -> Log_level.t) -> set:(Log_level.t -> unit) -> unit
 
-  val warn_error : bool ref
+  val warn_error : bool Atomic.t
 
   (** To avoid making this library depend on [Logs] we inject the dependency
       into the functions we need instead. To be called with [Logs.err_count]

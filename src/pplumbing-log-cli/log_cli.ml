@@ -132,7 +132,7 @@ end
    consistent color behavior across the entire application, including
    dependencies that rely on [Fmt]'s style renderer. *)
 let setup_log ~(config : Config.t) =
-  let () = Err.Private.color_mode := config.color_mode in
+  let () = Atomic.set Err.Private.color_mode config.color_mode in
   Fmt_tty.setup_std_outputs
     ?style_renderer:(Color_mode.to_fmt_style_renderer (Err.color_mode ()))
     ();
@@ -147,7 +147,7 @@ let setup_log ~(config : Config.t) =
 
 let setup_config ~config =
   setup_log ~config;
-  Err.Private.warn_error := config.warn_error;
+  Atomic.set Err.Private.warn_error config.warn_error;
   Err.Private.set_log_counts ~err_count:Logs.err_count ~warn_count:Logs.warn_count;
   ()
 ;;

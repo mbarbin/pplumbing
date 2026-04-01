@@ -24,7 +24,7 @@ val to_string : t -> string
 
 (** The current color mode setting. Set by [Err.Private.color_mode] (via
     [Log_cli.set_config]) to reflect the [--color] flag. Defaults to [`Auto]. *)
-val value : t ref
+val value : t Atomic.t
 
 (** Return the effective color mode, taking into account the user setting and
     environment variables.

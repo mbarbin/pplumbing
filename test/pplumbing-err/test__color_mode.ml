@@ -6,7 +6,7 @@
 
 let%expect_test "color_mode" =
   List.iter Err.Color_mode.all ~f:(fun color_mode ->
-    Err.Private.color_mode := color_mode;
+    Atomic.set Err.Private.color_mode color_mode;
     let color_mode' = Err.color_mode () in
     require_equal (module Err.Color_mode) color_mode color_mode';
     print_endline (Sexp.to_string_hum (Err.Color_mode.sexp_of_t color_mode')));
@@ -16,7 +16,7 @@ let%expect_test "color_mode" =
     Always
     Never
     |}];
-  Err.Private.color_mode := `Auto;
+  Atomic.set Err.Private.color_mode `Auto;
   ()
 ;;
 
