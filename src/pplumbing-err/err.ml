@@ -23,7 +23,7 @@ module Exit_code = struct
   let internal_error = 125
 end
 
-let to_stdune_pp pp = Pp.map_tags pp ~f:Pp_tty.Style.to_stdune
+let to_stdune_pp pp = Pp.filter_map_tags pp ~f:Pp_tty.Style.to_stdune
 let sexp = Pp_tty.sexp
 let exn e = sexp (Sexplib0.Sexp_conv.sexp_of_exn e)
 let dyn = Pp_tty.dyn

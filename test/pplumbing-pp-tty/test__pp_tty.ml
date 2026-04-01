@@ -228,9 +228,9 @@ let%expect_test "Style.of_stdune - all tags" =
 let%expect_test "Style.to_stdune - all tags" =
   let module Stdune_style = Stdune.User_message.Style in
   let test tag =
-    let stdune_tag = Pp_tty.Style.to_stdune tag in
-    (* We use Stdune's to_dyn to print the result. *)
-    print_dyn (Stdune_style.to_dyn stdune_tag)
+    match Pp_tty.Style.to_stdune tag with
+    | Some stdune_tag -> print_dyn (Stdune_style.to_dyn stdune_tag)
+    | None -> print_endline "None"
   in
   test Loc;
   [%expect {| Loc |}];
@@ -256,18 +256,22 @@ let%expect_test "Style.to_stdune - all tags" =
   [%expect {| Success |}];
   test (Ansi_styles [ `Bold; `Fg_red ]);
   [%expect {| Ansi_styles [ Bold; Fg_red ] |}];
-  (* Original_sexp and Original_dyn map to Details. *)
+  (* Original_sexp and Original_dyn have no Stdune equivalent. *)
   test (Original_sexp (Atom "x"));
-  [%expect {| Details |}];
+  [%expect {| None |}];
   test (Original_dyn (Dyn.int 0));
-  [%expect {| Details |}];
+  [%expect {| None |}];
   ()
 ;;
 
 let%expect_test "Style.of_stdune roundtrip" =
   let test (stdune_tag : Stdune.User_message.Style.t) =
     let tag = Pp_tty.Style.of_stdune stdune_tag in
-    let back = Pp_tty.Style.to_stdune tag in
+    let back =
+      match Pp_tty.Style.to_stdune tag with
+      | Some t -> t
+      | None -> assert false
+    in
     require_equal
       (module struct
         type t = Stdune.User_message.Style.t

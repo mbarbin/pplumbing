@@ -74,8 +74,9 @@ module Style : sig
   val of_stdune : Stdune.User_message.Style.t -> t
 
   (** Convert to [Stdune.User_message.Style.t]. The new structured-data tags
-      are mapped to [Details] as a visual fallback. *)
-  val to_stdune : t -> Stdune.User_message.Style.t
+      ([Original_sexp], [Original_dyn]) have no equivalent in Stdune and return
+      [None], causing the tag to be stripped when used with [Pp.filter_map_tags]. *)
+  val to_stdune : t -> Stdune.User_message.Style.t option
 end
 
 (** Styled document that can be printed to the console or in the log file. *)
