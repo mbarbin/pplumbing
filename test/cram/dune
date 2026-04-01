@@ -15,7 +15,13 @@
   Stdlib_for_test
   -open
   Cmdlang)
- (libraries cmdlang logs pplumbing-log pplumbing-log-cli stdlib_for_test)
+ (libraries
+  cmdlang
+  logs
+  pplumbing-log
+  pplumbing-log-cli
+  stdlib_for_test
+  unix)
  (modules command_test)
  (instrumentation
   (backend bisect_ppx))
