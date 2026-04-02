@@ -51,3 +51,6 @@ the user.
 """
 tags: [ "cli" "pp" ]
 x-maintenance-intent: [ "(latest)" ]
+conflicts: [
+  "pplumbing" { <= "0.0.16" }
+]
