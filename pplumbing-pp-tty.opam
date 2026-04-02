@@ -13,7 +13,7 @@ depends: [
   "dyn" {>= "3.17"}
   "loc" {>= "0.2.2"}
   "pp" {>= "2.0.0"}
-  "sexplib0" {>= "0.17"}
+  "sexplib0" {>= "v0.16"}
   "stdune" {>= "3.17"}
   "odoc" {with-doc}
 ]
