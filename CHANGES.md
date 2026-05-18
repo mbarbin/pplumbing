@@ -23,7 +23,7 @@
 - Simplify use of `Err` and `Pp_tty` in tests (#42, @mbarbin).
 - Document deprecation of `pplumbing` meta-package.
 - Vendor more of stdune `ansi-color` (#39, @mbarbin).
-- Reduce overal tests and dev dependencies (#37, @mbarbin).
+- Reduce overall tests and dev dependencies (#37, @mbarbin).
 - Various improvements to the project's CI (#32, @mbarbin).
 - Internal improvements to dune files (#31, @mbarbin).
 - Simplify dev dependencies (#27, @mbarbin).
@@ -39,7 +39,7 @@
 
 ### Changed
 
-- Split remaining pakages to isolate dependencies (#25, @mbarbin).
+- Split remaining packages to isolate dependencies (#25, @mbarbin).
 
 ## 0.0.15 (2025-09-19)
 
@@ -50,7 +50,7 @@
 ### Changed
 
 - Improve names `cmdlang-{backend}-err-runner` for cmd runners (#23, @mbarbin).
-- Split pakages to isolate dependencies (#18, #19, #20, #21, @mbarbin).
+- Split packages to isolate dependencies (#18, #19, #20, #21, @mbarbin).
 
 ## 0.0.14 (2025-05-26)
 
@@ -114,7 +114,7 @@ To automatically apply the migration changes, first upgrade your `pplumbing` dep
 
 ### Deprecated
 
-- In `Log_cli.Config` depreate `logs_level` and `fmt_style_renderer` (#3, @mbarbin).
+- In `Log_cli.Config` deprecate `logs_level` and `fmt_style_renderer` (#3, @mbarbin).
 
 ### Fixed
 
